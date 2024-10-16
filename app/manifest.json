@@ -1,0 +1,22 @@
+{
+  "name": "Willemijn Verkaik Fan Club",
+  "short_name": "WV Fan Club",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#141618",
+  "background_color": "#141618",
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait",
+  "description": "Willemijn Verkaik Fan Club"
+}
