@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { TextField, Button, Typography, Box } from "@mui/material";
 
 const SignupForm = () => {
   const [email, setEmail] = useState("");
@@ -22,27 +23,54 @@ const SignupForm = () => {
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignUp}>
-        <input
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        mt: 4
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Sign Up
+      </Typography>
+      <form
+        onSubmit={handleSignUp}
+        style={{ width: "100%", maxWidth: "400px" }}
+      >
+        <TextField
+          label="Email"
           type="email"
-          placeholder="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
+        <TextField
+          label="Password"
           type="password"
-          placeholder="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="new-password"
         />
-        <button type="submit">Sign Up</button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
+          Sign Up
+        </Button>
       </form>
-      {error && <p>{error}</p>}
-    </div>
+      {error && <Typography color="error">{error}</Typography>}
+    </Box>
   );
 };
 

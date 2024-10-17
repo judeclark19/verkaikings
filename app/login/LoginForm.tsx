@@ -4,8 +4,9 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { TextField, Button, Typography, Box } from "@mui/material";
 
-const LoginPage = () => {
+const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,28 +23,52 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        mt: 4
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Login
+      </Typography>
+      <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
+        <TextField
+          label="Email"
           type="email"
-          placeholder="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
+        <TextField
+          label="Password"
           type="password"
-          placeholder="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
-        <button type="submit">Login</button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
+          Login
+        </Button>
       </form>
-      {error && <p>{error}</p>}
-    </div>
+      {error && <Typography color="error">{error}</Typography>}
+    </Box>
   );
 };
 
-export default LoginPage;
+export default LoginForm;

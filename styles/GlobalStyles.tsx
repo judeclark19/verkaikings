@@ -119,9 +119,15 @@ import { createGlobalStyle } from "styled-components";
 // `;
 
 const GlobalStyles = createGlobalStyle`
+
+  html {
+    min-height: 100vh;
+  }
+
   body {
-    background: rgb(0,0,0);
-    background: linear-gradient(66deg, rgba(0,0,0,1) 0%, rgba(0,52,4,1) 100%);
+    /* background: rgb(0,0,0);
+    background: linear-gradient(66deg, rgba(0,0,0,1) 0%, rgba(0,52,4,1) 100%); */
+    background-color: #141514;
     color: white;
     font-family: sans-serif;
   }
