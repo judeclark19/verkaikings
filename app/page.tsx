@@ -1,7 +1,8 @@
+import FirebaseTest from "@/components/FirebaseTest";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Willemijn Verkaik Fan Club",
+  title: "Verkaikings",
   icons: {
     icon: ["/favicon.ico"],
     apple: ["/apple-touch-icon.png"],
@@ -11,12 +12,10 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div
-      style={{
-        padding: "20px"
-      }}
-    >
-      <h1>WV Fan Club</h1>
+    <div>
+      <h1>Verkaikings</h1>
+      <h2>Willemijn Verkaik fan club</h2>
+      <FirebaseTest />
     </div>
   );
 }
