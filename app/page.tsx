@@ -1,4 +1,4 @@
-import FirebaseTest from "@/components/FirebaseTest";
+import NewsFeed from "@/components/NewsFeed";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function Home() {
     <div>
       <h1>Verkaikings</h1>
       <h2>Willemijn Verkaik fan club</h2>
-      <FirebaseTest />
+      <NewsFeed />
     </div>
   );
 }

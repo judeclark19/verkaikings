@@ -32,7 +32,7 @@ const LoginForm = () => {
       }}
     >
       <Typography variant="h4" gutterBottom>
-        Login
+        Log In
       </Typography>
       <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
         <TextField
@@ -44,6 +44,7 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
         <TextField
           label="Password"

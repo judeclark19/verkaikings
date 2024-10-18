@@ -47,6 +47,7 @@ const SignupForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
         <TextField
           label="Password"

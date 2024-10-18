@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 function LoginPage() {
   return (
     <>
-      <h1>Login Page</h1>
       <LoginForm />
       <SignupForm />
     </>

@@ -2,15 +2,15 @@ import { Metadata } from "next";
 import { Typography } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "My Profile | Verkaikings"
+  title: "People | Verkaikings"
 };
 
-function ProfilePage() {
+function PeoplePage() {
   return (
     <Typography variant="h1" sx={{ my: 2 }}>
-      My Profile
+      List of People
     </Typography>
   );
 }
 
-export default ProfilePage;
+export default PeoplePage;

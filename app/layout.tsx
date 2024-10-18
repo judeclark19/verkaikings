@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material/styles"; // Import ThemeProvider
 import CssBaseline from "@mui/material/CssBaseline"; // Import CssBaseline
 import darkTheme from "@/styles/theme"; // Import your dark theme
 import { Inter } from "next/font/google";
+import Navbar from "@/components/Nav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,7 +38,15 @@ export default function RootLayout({
           <GlobalStyles />
           <ThemeProvider theme={darkTheme}>
             <CssBaseline /> {/* Applies Material UI baseline styles */}
-            <main>{children}</main>
+            <Navbar />
+            <main
+              style={{
+                paddingLeft: "1rem",
+                paddingRight: "1rem"
+              }}
+            >
+              {children}
+            </main>
           </ThemeProvider>
         </StyledComponentsRegistry>
       </body>

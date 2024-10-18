@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, authListener } from "@/lib/firebase"; // Adjust path as needed
 
-const FirebaseTest = () => {
+const NewsFeed = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -16,18 +16,18 @@ const FirebaseTest = () => {
     authListener((user) => {
       if (user) {
         // User is logged in, redirect to profile page
-        router.push("/profile");
+        // router.push("/profile");
+        setLoading(false);
       } else {
         // User is not logged in, redirect to login page
         router.push("/login");
       }
-      setLoading(false);
     });
   }, [router]);
 
   if (loading) return <div>Checking user...</div>;
 
-  return <div>Redirecting...</div>;
+  return <div>Logged in as {auth.currentUser?.email}, Show news feed</div>;
 };
 
-export default FirebaseTest;
+export default NewsFeed;
