@@ -15,8 +15,6 @@ const NewsFeed = () => {
   useEffect(() => {
     authListener((user) => {
       if (user) {
-        // User is logged in, redirect to profile page
-        // router.push("/profile");
         setLoading(false);
       } else {
         // User is not logged in, redirect to login page

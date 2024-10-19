@@ -7,7 +7,7 @@ import { ThemeProvider } from "@mui/material/styles"; // Import ThemeProvider
 import CssBaseline from "@mui/material/CssBaseline"; // Import CssBaseline
 import darkTheme from "@/styles/theme"; // Import your dark theme
 import { Inter } from "next/font/google";
-import Navbar from "@/components/Nav";
+import Navbar from "@/components/Navbar/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],

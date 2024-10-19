@@ -18,10 +18,8 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LoginIcon from "@mui/icons-material/Login";
+import { navLinks } from "./navLinks";
 
 const ListStyle = styled(List)`
   a {
@@ -43,7 +41,7 @@ const Navbar = () => {
   };
 
   // Dummy authentication check for example
-  const isLoggedIn = false; // Replace with actual auth logic
+  const isLoggedIn = true; // Replace with actual auth logic
   const isActive = (path: string) => pathname === path;
 
   // Drawer content for mobile view
@@ -53,50 +51,25 @@ const Navbar = () => {
         Verkaikings
       </Typography>
       <ListStyle>
-        <ListItem component={Link} href="/" sx={{ fontWeight: "inherit" }}>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Home"
-            primaryTypographyProps={{
-              fontWeight: isActive("/") ? "700" : "400"
-            }}
-          />
-        </ListItem>
-
-        <ListItem
-          component={Link}
-          href="/people"
-          sx={{ fontWeight: "inherit" }}
-        >
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="People"
-            primaryTypographyProps={{
-              fontWeight: isActive("/people") ? "700" : "400"
-            }}
-          />
-        </ListItem>
-
-        <ListItem
-          component={Link}
-          href="/profile"
-          sx={{ fontWeight: "inherit" }}
-        >
-          <ListItemIcon>
-            <AccountCircleIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="My Profile"
-            primaryTypographyProps={{
-              fontWeight: isActive("/profile") ? "700" : "400"
-            }}
-          />
-        </ListItem>
-
+        {navLinks.map((link) => (
+          <ListItem
+            component={Link}
+            href={link.href}
+            sx={{ fontWeight: "inherit" }}
+          >
+            {link.icon && (
+              <ListItemIcon>
+                <link.icon />
+              </ListItemIcon>
+            )}
+            <ListItemText
+              primary={link.title}
+              primaryTypographyProps={{
+                fontWeight: isActive(link.href) ? "700" : "400"
+              }}
+            />
+          </ListItem>
+        ))}
         <ListItem
           onClick={() => router.push(isLoggedIn ? "/logout" : "/login")}
           sx={{ fontWeight: "inherit" }}
@@ -130,36 +103,28 @@ const Navbar = () => {
           </IconButton>
           <Typography
             variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            component={Link}
+            href="/"
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block" },
+              color: "inherit",
+              textDecoration: "none"
+            }}
           >
             Verkaikings
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button
-              color="inherit"
-              component={Link}
-              href="/"
-              sx={{ fontWeight: isActive("/") ? "700" : "400" }}
-            >
-              Home
-            </Button>
-            <Button
-              color="inherit"
-              component={Link}
-              href="/people"
-              sx={{ fontWeight: isActive("/people") ? "700" : "400" }}
-            >
-              People
-            </Button>
-            <Button
-              color="inherit"
-              component={Link}
-              href="/profile"
-              sx={{ fontWeight: isActive("/profile") ? "700" : "400" }}
-            >
-              My Profile
-            </Button>
+            {navLinks.map((link) => (
+              <Button
+                color="inherit"
+                component={Link}
+                href={link.href}
+                sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
+              >
+                {link.title}
+              </Button>
+            ))}
             <Button
               color="inherit"
               onClick={() => router.push(isLoggedIn ? "/logout" : "/login")}

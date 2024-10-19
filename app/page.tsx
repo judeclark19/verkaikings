@@ -1,4 +1,5 @@
 import NewsFeed from "@/components/NewsFeed";
+import WelcomeMessage from "@/components/WelcomeMessage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +16,8 @@ export default function Home() {
     <div>
       <h1>Verkaikings</h1>
       <h2>Willemijn Verkaik fan club</h2>
-      <NewsFeed />
+      {/* <NewsFeed /> */}
+      <WelcomeMessage />
     </div>
   );
 }
