@@ -15,13 +15,6 @@ const WelcomeMessage = () => {
 
   useEffect(() => {
     authListener((user) => {
-      //   if (user) {
-      //     setLoading(false);
-      //   } else {
-      //     // User is not logged in, redirect to login page
-      //     router.push("/login");
-      //   }
-
       setUser(user);
       setLoading(false);
     });

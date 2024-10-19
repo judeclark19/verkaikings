@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { TextField, Button, Typography, Box } from "@mui/material";
+import Cookies from "js-cookie";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,8 +16,22 @@ const LoginForm = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/profile"); // Redirect to profile page after successful login
+      // Sign in the user
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Get the Firebase ID token
+      const token = await user.getIdToken();
+
+      // Store the token in cookies (expires in 1 day)
+      Cookies.set("authToken", token, { expires: 1 });
+
+      // Force server-side navigation to ensure middleware checks the cookie
+      window.location.href = "/profile"; // Triggers full page load
     } catch (err: any) {
       setError(err.message);
     }

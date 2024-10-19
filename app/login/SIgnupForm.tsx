@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { TextField, Button, Typography, Box } from "@mui/material";
+import Cookies from "js-cookie";
 
 const SignupForm = () => {
   const [email, setEmail] = useState("");
@@ -15,8 +16,19 @@ const SignupForm = () => {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/profile"); // Redirect to the profile page after successful sign-up
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      const token = await user.getIdToken();
+
+      Cookies.set("authToken", token, { expires: 1 });
+      // Redirect to the profile page after successful sign-up
+      // Force server-side navigation to ensure middleware checks the cookie
+      window.location.href = "/profile"; // Triggers full page load
     } catch (err: any) {
       setError(err.message);
     }
