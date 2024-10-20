@@ -6,8 +6,8 @@ import { doc, setDoc } from "firebase/firestore"; // Firestore imports
 import { auth, db } from "@/lib/firebase";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import Cookies from "js-cookie";
-import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
+import { MuiPhone } from "./MuiPhone";
 
 const SignupForm = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +15,9 @@ const SignupForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [countryCode, setCountryCode] = useState(""); // Country code (e.g., +1)
+  const [nationalNumber, setNationalNumber] = useState(""); // Phone number without country code
+  const [countryAbbr, setCountryAbbr] = useState(""); // Country abbreviation (e.g., US)
   const [error, setError] = useState("");
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,7 +30,6 @@ const SignupForm = () => {
       );
       const user = userCredential.user;
 
-      // Get the Firebase ID token
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
 
@@ -35,11 +37,14 @@ const SignupForm = () => {
       await setDoc(doc(db, "users", user.uid), {
         firstName,
         lastName,
+        email,
         phoneNumber,
-        email
+        countryCode,
+        nationalNumber,
+        countryAbbr
       });
 
-      window.location.href = "/profile"; // Redirect to profile page
+      window.location.href = "/profile"; // Redirect to profile page after sign-up
     } catch (err: any) {
       setError(err.message);
     }
@@ -92,18 +97,18 @@ const SignupForm = () => {
           required
           autoComplete="family-name"
         />
-        <PhoneInput
-          country={"us"} // Default country, change as needed
+        <MuiPhone
           value={phoneNumber}
-          onChange={setPhoneNumber}
-          inputProps={{
-            required: true,
-            autoFocus: true
-          }}
-          inputStyle={{
-            width: "100%",
-            marginTop: "16px",
-            marginBottom: "8px"
+          onChange={({
+            phoneNumber,
+            countryCode,
+            countryAbbr,
+            nationalNumber
+          }) => {
+            setPhoneNumber(phoneNumber);
+            setCountryCode(countryCode);
+            setCountryAbbr(countryAbbr);
+            setNationalNumber(nationalNumber);
           }}
         />
         <TextField
