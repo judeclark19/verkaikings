@@ -25,8 +25,10 @@ import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 
 const ListStyle = styled(List)`
-  a {
+  a,
+  .navLink {
     color: white;
+    cursor: pointer;
 
     &:hover {
       text-decoration: underline;
@@ -79,30 +81,38 @@ const Navbar = () => {
         Verkaikings
       </Typography>
       <ListStyle>
-        {navLinks.map((link) => (
-          <ListItem
-            key={link.href}
-            component={Link}
-            href={link.href}
-            sx={{ fontWeight: "inherit" }}
-          >
-            {link.icon && (
-              <ListItemIcon>
-                <link.icon />
-              </ListItemIcon>
-            )}
-            <ListItemText
-              primary={link.title}
-              primaryTypographyProps={{
-                fontWeight: isActive(link.href) ? "700" : "400"
-              }}
-            />
-          </ListItem>
-        ))}
+        {navLinks
+          .filter((link) => {
+            if (link.protected) {
+              return isLoggedIn;
+            }
+            return true;
+          })
+          .map((link) => (
+            <ListItem
+              key={link.href}
+              component={Link}
+              href={link.href}
+              sx={{ fontWeight: "inherit" }}
+            >
+              {link.icon && (
+                <ListItemIcon>
+                  <link.icon />
+                </ListItemIcon>
+              )}
+              <ListItemText
+                primary={link.title}
+                primaryTypographyProps={{
+                  fontWeight: isActive(link.href) ? "700" : "400"
+                }}
+              />
+            </ListItem>
+          ))}
         {!loading && (
           <ListItem
             onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
             sx={{ fontWeight: "inherit" }}
+            className="navLink"
           >
             <ListItemIcon>
               <LoginIcon />
@@ -146,17 +156,24 @@ const Navbar = () => {
             Verkaikings
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navLinks.map((link) => (
-              <Button
-                key={link.href}
-                color="inherit"
-                component={Link}
-                href={link.href}
-                sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
-              >
-                {link.title}
-              </Button>
-            ))}
+            {navLinks
+              .filter((link) => {
+                if (link.protected) {
+                  return isLoggedIn;
+                }
+                return true;
+              })
+              .map((link) => (
+                <Button
+                  key={link.href}
+                  color="inherit"
+                  component={Link}
+                  href={link.href}
+                  sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
+                >
+                  {link.title}
+                </Button>
+              ))}
             {!loading && (
               <Button
                 color="inherit"
