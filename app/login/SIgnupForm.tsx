@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore"; // Firestore imports
+import { auth, db } from "@/lib/firebase";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import Cookies from "js-cookie";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
 
 const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,12 +27,19 @@ const SignupForm = () => {
       );
       const user = userCredential.user;
 
+      // Get the Firebase ID token
       const token = await user.getIdToken();
-
       Cookies.set("authToken", token, { expires: 1 });
-      // Redirect to the profile page after successful sign-up
-      // Force server-side navigation to ensure middleware checks the cookie
-      window.location.href = "/profile"; // Triggers full page load
+
+      // Store user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        firstName,
+        lastName,
+        phoneNumber,
+        email
+      });
+
+      window.location.href = "/profile"; // Redirect to profile page
     } catch (err: any) {
       setError(err.message);
     }
@@ -58,6 +71,40 @@ const SignupForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
+        />
+        <TextField
+          label="First Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+          autoComplete="given-name"
+        />
+        <TextField
+          label="Last Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          autoComplete="family-name"
+        />
+        <PhoneInput
+          country={"us"} // Default country, change as needed
+          value={phoneNumber}
+          onChange={setPhoneNumber}
+          inputProps={{
+            required: true,
+            autoFocus: true
+          }}
+          inputStyle={{
+            width: "100%",
+            marginTop: "16px",
+            marginBottom: "8px"
+          }}
         />
         <TextField
           label="Password"

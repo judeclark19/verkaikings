@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // Import Firestore
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,8 +14,14 @@ const firebaseConfig = {
 
 // Check if Firebase has already been initialized
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Firebase Auth
 export const auth: Auth = getAuth(app);
 
+// Firestore
+export const db = getFirestore(app); // Initialize Firestore
+
+// Auth listener for state changes
 export const authListener = (callback: (user: any) => void) => {
   onAuthStateChanged(auth, (user) => {
     callback(user);

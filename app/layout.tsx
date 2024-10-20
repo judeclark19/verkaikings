@@ -41,8 +41,8 @@ export default function RootLayout({
             <Navbar />
             <main
               style={{
-                paddingLeft: "1rem",
-                paddingRight: "1rem"
+                padding: "1rem",
+                paddingBottom: "4rem"
               }}
             >
               {children}
