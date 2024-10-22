@@ -4,24 +4,46 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; // Firestore imports
 import { auth, db } from "@/lib/firebase";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import { PhoneNumberUtil } from "google-libphonenumber";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  CircularProgress
+} from "@mui/material";
 import Cookies from "js-cookie";
-import "react-phone-input-2/lib/material.css";
-import { MuiPhone } from "./MuiPhone";
+import { MuiPhone, PhoneData } from "./MuiPhone";
+const phoneUtil = PhoneNumberUtil.getInstance();
+
+const isPhoneValid = (phone: string) => {
+  try {
+    return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
+  } catch (error) {
+    return false;
+  }
+};
 
 const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [countryCode, setCountryCode] = useState(""); // Country code (e.g., +1)
-  const [nationalNumber, setNationalNumber] = useState(""); // Phone number without country code
-  const [countryAbbr, setCountryAbbr] = useState(""); // Country abbreviation (e.g., US)
+  const [phoneData, setPhoneData] = useState<PhoneData>({
+    inputValue: "",
+    phone: "",
+    country: {}
+  });
+
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state for the form
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when the form is submitted
+    setError(""); // Clear any previous errors
+
+    console.log("is phone valid?", isPhoneValid(phoneData.phone));
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -33,20 +55,30 @@ const SignupForm = () => {
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
 
+      // console.log(
+      //   `is ${phoneData.phone} valid?`,
+      //   isPhoneValid(phoneData.phone)
+      // );
+
       // Store user data in Firestore
       await setDoc(doc(db, "users", user.uid), {
         firstName,
         lastName,
         email,
-        phoneNumber,
-        countryCode,
-        nationalNumber,
-        countryAbbr
+        phoneNumber: phoneData.phone,
+        countryName: phoneData.country.name,
+        countryCode: `+${phoneData.country.dialCode}`,
+        nationalNumber: phoneData.phone.replace(
+          `+${phoneData.country.dialCode}`,
+          ""
+        ),
+        countryAbbr: phoneData.country.iso2
       });
 
       window.location.href = "/profile"; // Redirect to profile page after sign-up
     } catch (err: any) {
       setError(err.message);
+      setLoading(false); // Stop loading if there's an error
     }
   };
 
@@ -98,17 +130,9 @@ const SignupForm = () => {
           autoComplete="family-name"
         />
         <MuiPhone
-          value={phoneNumber}
-          onChange={({
-            phoneNumber,
-            countryCode,
-            countryAbbr,
-            nationalNumber
-          }) => {
-            setPhoneNumber(phoneNumber);
-            setCountryCode(countryCode);
-            setCountryAbbr(countryAbbr);
-            setNationalNumber(nationalNumber);
+          value={""}
+          onChange={(data: PhoneData) => {
+            setPhoneData(data);
           }}
         />
         <TextField
@@ -128,8 +152,9 @@ const SignupForm = () => {
           color="primary"
           fullWidth
           sx={{ mt: 2 }}
+          disabled={loading}
         >
-          Sign Up
+          {loading ? <CircularProgress size={24} /> : "Sign Up"}
         </Button>
       </form>
       {error && <Typography color="error">{error}</Typography>}

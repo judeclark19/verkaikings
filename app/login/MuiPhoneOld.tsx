@@ -1,62 +1,78 @@
 import "react-international-phone/style.css";
-
 import {
-  BaseTextFieldProps,
   InputAdornment,
   MenuItem,
   Select,
   TextField,
   Typography
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  CountryIso2,
   defaultCountries,
   FlagImage,
   parseCountry,
-  ParsedCountry,
   usePhoneInput
 } from "react-international-phone";
 
 export type PhoneData = {
-  phone: string;
-  inputValue: string;
-  country: ParsedCountry;
+  phoneNumber: string;
+  countryCode: string;
+  countryAbbr: string;
+  nationalNumber: string;
 };
 
-export interface MUIPhoneProps extends BaseTextFieldProps {
+interface MuiPhoneProps {
   value: string;
-  onChange: (phone: PhoneData) => void;
+  onChange: (data: PhoneData) => void;
 }
 
-export const MuiPhone: React.FC<MUIPhoneProps> = ({
+export const MuiPhone: React.FC<MuiPhoneProps> = ({
   value,
   onChange,
   ...restProps
 }) => {
+  const [initialCountry, setInitialCountry] = useState<string>("nl"); // Default to NL
+  const [isManualChange, setIsManualChange] = useState<boolean>(false); // Track manual changes
+
   const { inputValue, handlePhoneValueChange, inputRef, country, setCountry } =
     usePhoneInput({
-      defaultCountry: "nl",
+      defaultCountry: initialCountry, // This will work for the first load only
       value,
       countries: defaultCountries,
       onChange: (data) => {
-        onChange(data);
+        console.log("ee", data);
+        // onChange({
+        //   phoneNumber: data.phone, // Full phone number
+        //   countryCode: `+${data.country.dialCode}`, // Country calling code
+        //   countryAbbr: data.country.iso2, // Country ISO abbreviation
+        //   nationalNumber: data.phone.replace(`+${data.country.dialCode}`, "") // National number
+        // });
       }
     });
 
   useEffect(() => {
     // Get user's locale from the browser
-    const userLocale = navigator.language;
-    const localeCountryCode = userLocale.split("-")[1]?.toLowerCase();
+    if (!isManualChange) {
+      const userLocale = navigator.language;
+      const localeCountryCode = userLocale.split("-")[1]?.toLowerCase();
 
-    // If localeCountryCode is valid, set it; otherwise, default to NL
-    if (
-      localeCountryCode &&
-      defaultCountries.some((c) => c[1] === localeCountryCode)
-    ) {
-      setCountry(localeCountryCode); // Manually update the country in the input
+      // If localeCountryCode is valid, set it; otherwise, default to NL
+      if (
+        localeCountryCode &&
+        defaultCountries.some((c) => c[1] === localeCountryCode)
+      ) {
+        setInitialCountry(localeCountryCode); // Set the initial country based on locale
+        setCountry(localeCountryCode); // Manually update the country in the input
+      } else {
+        setCountry("nl"); // Fallback to NL if locale isn't valid
+      }
     }
-  }, []);
+  }, [setCountry, isManualChange]);
+
+  const handleCountryChange = (e: any) => {
+    setIsManualChange(true); // Mark that the user manually changed the country
+    setCountry(e.target.value); // Set the country based on the dropdown selection
+  };
 
   return (
     <TextField
@@ -109,7 +125,7 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
                   }
                 }}
                 value={country.iso2}
-                onChange={(e) => setCountry(e.target.value as CountryIso2)}
+                onChange={handleCountryChange} // Use the handler to mark manual changes
                 renderValue={(value) => (
                   <FlagImage iso2={value} style={{ display: "flex" }} />
                 )}

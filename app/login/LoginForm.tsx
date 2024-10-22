@@ -4,17 +4,27 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  CircularProgress
+} from "@mui/material";
 import Cookies from "js-cookie";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); // Start loading
+    setError(""); // Clear previous errors
+
     try {
       // Sign in the user
       const userCredential = await signInWithEmailAndPassword(
@@ -34,6 +44,7 @@ const LoginForm = () => {
       window.location.href = "/profile"; // Triggers full page load
     } catch (err: any) {
       setError(err.message);
+      setLoading(false); // Stop loading on error
     }
   };
 
@@ -78,8 +89,9 @@ const LoginForm = () => {
           color="primary"
           fullWidth
           sx={{ mt: 2 }}
+          disabled={loading}
         >
-          Login
+          {loading ? <CircularProgress size={24} /> : "Login"}
         </Button>
       </form>
       {error && <Typography color="error">{error}</Typography>}

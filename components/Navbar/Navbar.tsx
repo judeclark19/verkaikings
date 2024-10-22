@@ -23,6 +23,8 @@ import { navLinks } from "./navLinks";
 import { auth, authListener } from "@/lib/firebase"; // Import from firebase.ts
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
+import SubmenuDropdown from "./SubmenuDropdown";
+import DrawerLink from "./DrawerLink";
 
 const ListStyle = styled(List)`
   a,
@@ -77,7 +79,7 @@ const Navbar = () => {
   // Drawer content for mobile view
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography variant="h5" sx={{ my: 2 }}>
         Verkaikings
       </Typography>
       <ListStyle>
@@ -88,26 +90,22 @@ const Navbar = () => {
             }
             return true;
           })
-          .map((link) => (
-            <ListItem
-              key={link.href}
-              component={Link}
-              href={link.href}
-              sx={{ fontWeight: "inherit" }}
-            >
-              {link.icon && (
-                <ListItemIcon>
-                  <link.icon />
-                </ListItemIcon>
-              )}
-              <ListItemText
-                primary={link.title}
-                primaryTypographyProps={{
-                  fontWeight: isActive(link.href) ? "700" : "400"
-                }}
-              />
-            </ListItem>
-          ))}
+          .map((link) => {
+            if (link.submenu)
+              return (
+                <div key={link.title}>
+                  <Typography variant="h6" align="left" sx={{ pl: 2 }}>
+                    {link.title}
+                  </Typography>
+                  <div style={{ paddingLeft: "2rem" }}>
+                    {link.submenu.map((submenuLink) => (
+                      <DrawerLink key={submenuLink.href} link={submenuLink} />
+                    ))}
+                  </div>
+                </div>
+              );
+            else return <DrawerLink key={link.href} link={link} />;
+          })}
         {!loading && (
           <ListItem
             onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
@@ -155,7 +153,7 @@ const Navbar = () => {
           >
             Verkaikings
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             {navLinks
               .filter((link) => {
                 if (link.protected) {
@@ -163,17 +161,20 @@ const Navbar = () => {
                 }
                 return true;
               })
-              .map((link) => (
-                <Button
-                  key={link.href}
-                  color="inherit"
-                  component={Link}
-                  href={link.href}
-                  sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
-                >
-                  {link.title}
-                </Button>
-              ))}
+              .map((link) => {
+                if (link.submenu) return <SubmenuDropdown key={link.title} />;
+                return (
+                  <Button
+                    key={link.href}
+                    color="inherit"
+                    component={Link}
+                    href={link.href}
+                    sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
+                  >
+                    {link.title}
+                  </Button>
+                );
+              })}
             {!loading && (
               <Button
                 color="inherit"
