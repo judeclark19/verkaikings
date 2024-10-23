@@ -9,7 +9,7 @@ function DrawerLink({ link }: { link: NavLinkType }) {
   return (
     <ListItem component={Link} href={link.href} sx={{ fontWeight: "inherit" }}>
       {link.icon && (
-        <ListItemIcon>
+        <ListItemIcon sx={{ minWidth: 36 }}>
           <link.icon />
         </ListItemIcon>
       )}

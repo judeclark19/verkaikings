@@ -12,19 +12,21 @@ import {
   ListItem,
   ListItemText,
   Box,
-  styled,
-  ListItemIcon
+  ListItemIcon,
+  CircularProgress
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { navLinks } from "./navLinks";
 import { auth, authListener } from "@/lib/firebase"; // Import from firebase.ts
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerLink from "./DrawerLink";
+import { styled } from "styled-components";
 
 const ListStyle = styled(List)`
   a,
@@ -35,6 +37,25 @@ const ListStyle = styled(List)`
     &:hover {
       text-decoration: underline;
     }
+  }
+`;
+
+const WhiteLine = styled.li`
+  position: relative;
+
+  a {
+    padding-left: 0;
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background-color: white;
+    margin-right: 8px;
+    left: -24px;
   }
 `;
 
@@ -94,35 +115,57 @@ const Navbar = () => {
             if (link.submenu)
               return (
                 <div key={link.title}>
-                  <Typography variant="h6" align="left" sx={{ pl: 2 }}>
-                    {link.title}
-                  </Typography>
-                  <div style={{ paddingLeft: "2rem" }}>
-                    {link.submenu.map((submenuLink) => (
-                      <DrawerLink key={submenuLink.href} link={submenuLink} />
-                    ))}
-                  </div>
+                  <ul style={{ paddingLeft: "52px", listStyle: "none" }}>
+                    <li style={{ textAlign: "left", position: "relative" }}>
+                      <Box
+                        component="span"
+                        sx={{
+                          position: "absolute",
+                          left: "-30px",
+                          top: "6px",
+                          width: "12px",
+                          height: "12px",
+                          border: "2px solid white",
+                          borderRadius: "50%"
+                        }}
+                      />
+                      {link.title}
+                      <ul style={{ padding: "0", listStyle: "none" }}>
+                        {link.submenu.map((submenuLink) => (
+                          <WhiteLine>
+                            <DrawerLink
+                              key={submenuLink.href}
+                              link={submenuLink}
+                            />
+                          </WhiteLine>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
                 </div>
               );
             else return <DrawerLink key={link.href} link={link} />;
           })}
-        {!loading && (
-          <ListItem
-            onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
-            sx={{ fontWeight: "inherit" }}
-            className="navLink"
-          >
-            <ListItemIcon>
-              <LoginIcon />
-            </ListItemIcon>
+
+        <ListItem
+          onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
+          sx={{ fontWeight: "inherit" }}
+          className="navLink"
+        >
+          <ListItemIcon>
+            {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+          </ListItemIcon>
+          {loading ? (
+            <CircularProgress size={24} />
+          ) : (
             <ListItemText
               primary={isLoggedIn ? "Log Out" : "Log In"}
               primaryTypographyProps={{
                 fontWeight: isActive("/login") ? "700" : "400"
               }}
             />
-          </ListItem>
-        )}
+          )}
+        </ListItem>
       </ListStyle>
     </Box>
   );
@@ -175,17 +218,20 @@ const Navbar = () => {
                   </Button>
                 );
               })}
-            {!loading && (
-              <Button
-                color="inherit"
-                onClick={
-                  isLoggedIn ? handleLogout : () => router.push("/login")
-                }
-                sx={{ fontWeight: isActive("/login") ? "700" : "400" }}
-              >
-                {isLoggedIn ? "Log Out" : "Log In"}
-              </Button>
-            )}
+
+            <Button
+              color="inherit"
+              onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
+              sx={{ fontWeight: isActive("/login") ? "700" : "400" }}
+            >
+              {loading ? (
+                <CircularProgress size={24} />
+              ) : isLoggedIn ? (
+                "Log Out"
+              ) : (
+                "Log In"
+              )}
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
