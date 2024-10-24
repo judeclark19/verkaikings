@@ -9,15 +9,14 @@ import {
   getDocs,
   DocumentData
 } from "firebase/firestore";
-import { db } from "@/lib/firebase"; // Import your Firestore instance
-import UserProfile from "../UserProfile";
+import { db } from "@/lib/firebase";
+import { Skeleton, Typography } from "@mui/material";
 
 const UserProfileOld = () => {
   const params = useParams();
   const { username } = params;
 
   const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
-  const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(""); // Error state
 
   useEffect(() => {
@@ -39,23 +38,36 @@ const UserProfileOld = () => {
         }
       } catch (err) {
         setError("Error fetching user data.");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchUser();
   }, [username]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>{error}</div>;
   }
 
-  return <>{user ? <UserProfile user={user} /> : <p>No user found.</p>}</>;
+  return (
+    <div>
+      <Typography variant="h1">
+        {user ? `UserProfile of ${user.username}` : <Skeleton />}
+      </Typography>
+
+      <Typography component="p">
+        {user ? `First Name: ${user.firstName}` : <Skeleton />}
+      </Typography>
+      <Typography component="p">
+        {user ? `Last Name: ${user.lastName}` : <Skeleton />}
+      </Typography>
+      <Typography component="p">
+        {user ? `Email: ${user.email}` : <Skeleton />}
+      </Typography>
+      <Typography component="p">
+        {user ? `Country: ${user.countryName}` : <Skeleton />}
+      </Typography>
+    </div>
+  );
 };
 
 export default UserProfileOld;

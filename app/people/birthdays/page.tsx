@@ -6,11 +6,7 @@ export const metadata: Metadata = {
 };
 
 function BirthdaysPage() {
-  return (
-    <Typography variant="h1" sx={{ my: 2 }}>
-      List of Birthdays
-    </Typography>
-  );
+  return <Typography variant="h1">List of Birthdays</Typography>;
 }
 
 export default BirthdaysPage;

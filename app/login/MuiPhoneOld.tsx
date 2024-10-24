@@ -39,15 +39,7 @@ export const MuiPhone: React.FC<MuiPhoneProps> = ({
       defaultCountry: initialCountry, // This will work for the first load only
       value,
       countries: defaultCountries,
-      onChange: (data) => {
-        console.log("ee", data);
-        // onChange({
-        //   phoneNumber: data.phone, // Full phone number
-        //   countryCode: `+${data.country.dialCode}`, // Country calling code
-        //   countryAbbr: data.country.iso2, // Country ISO abbreviation
-        //   nationalNumber: data.phone.replace(`+${data.country.dialCode}`, "") // National number
-        // });
-      }
+      onChange: (data) => {}
     });
 
   useEffect(() => {

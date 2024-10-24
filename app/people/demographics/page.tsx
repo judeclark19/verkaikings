@@ -6,11 +6,7 @@ export const metadata: Metadata = {
 };
 
 function DemographicsPage() {
-  return (
-    <Typography variant="h1" sx={{ my: 2 }}>
-      List of Birthdays
-    </Typography>
-  );
+  return <Typography variant="h1">Demographics</Typography>;
 }
 
 export default DemographicsPage;
