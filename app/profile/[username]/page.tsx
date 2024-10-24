@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import UserProfile from "./UserProfile";
+import UserProfile from "./UserProfileGetter";
 
 export const metadata: Metadata = {
   title: "User Profile | Verkaikings"

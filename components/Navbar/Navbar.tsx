@@ -132,11 +132,8 @@ const Navbar = () => {
                       {link.title}
                       <ul style={{ padding: "0", listStyle: "none" }}>
                         {link.submenu.map((submenuLink) => (
-                          <WhiteLine>
-                            <DrawerLink
-                              key={submenuLink.href}
-                              link={submenuLink}
-                            />
+                          <WhiteLine key={submenuLink.href}>
+                            <DrawerLink link={submenuLink} />
                           </WhiteLine>
                         ))}
                       </ul>

@@ -1,16 +1,12 @@
 import { Metadata } from "next";
-import { Typography } from "@mui/material";
+import MyProfile from "./MyProfileGetter";
 
 export const metadata: Metadata = {
   title: "My Profile | Verkaikings"
 };
 
 function ProfilePage() {
-  return (
-    <Typography variant="h1" sx={{ my: 2 }}>
-      My Profile
-    </Typography>
-  );
+  return <MyProfile />;
 }
 
 export default ProfilePage;

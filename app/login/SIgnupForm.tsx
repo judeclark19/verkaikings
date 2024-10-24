@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; // Firestore imports
 import { auth, db } from "@/lib/firebase";
 import { PhoneNumberUtil } from "google-libphonenumber";
@@ -55,15 +55,21 @@ const SignupForm = () => {
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
 
-      // console.log(
-      //   `is ${phoneData.phone} valid?`,
-      //   isPhoneValid(phoneData.phone)
-      // );
+      try {
+        await updateProfile(user, {
+          displayName: `${firstName}_${lastName}`
+        });
+        console.log("Display name updated successfully");
+      } catch (updateError) {
+        console.error("Failed to update display name:", updateError);
+        throw updateError;
+      }
 
       // Store user data in Firestore
       await setDoc(doc(db, "users", user.uid), {
         firstName,
         lastName,
+        username: `${firstName}_${lastName}`,
         email,
         phoneNumber: phoneData.phone,
         countryName: phoneData.country.name,
@@ -74,7 +80,7 @@ const SignupForm = () => {
         ),
         countryAbbr: phoneData.country.iso2
       });
-
+      // setLoading(false);
       window.location.href = "/profile"; // Redirect to profile page after sign-up
     } catch (err: any) {
       setError(err.message);
