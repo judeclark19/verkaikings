@@ -10,7 +10,8 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Skeleton, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import ProfileSkeleton from "../ProfileSkeleton";
 
 const UserProfileOld = () => {
   const params = useParams();
@@ -47,24 +48,20 @@ const UserProfileOld = () => {
   if (error) {
     return <div>{error}</div>;
   }
+  if (!user) {
+    return <ProfileSkeleton />;
+  }
 
   return (
     <div>
-      <Typography variant="h1">
-        {user ? `UserProfile of ${user.username}` : <Skeleton />}
-      </Typography>
-      <Typography component="p">
-        {user ? `First Name: ${user.firstName}` : <Skeleton />}
-      </Typography>
-      <Typography component="p">
-        {user ? `Last Name: ${user.lastName}` : <Skeleton />}
-      </Typography>
-      <Typography component="p">
-        {user ? `Email: ${user.email}` : <Skeleton />}
-      </Typography>
-      <Typography component="p">
-        {user ? `Country: ${user.countryName}` : <Skeleton />}
-      </Typography>
+      <Typography variant="h1">User Profile: {user.username}</Typography>
+      <Typography component="p">First Name: {user.firstName}</Typography>
+      <Typography component="p">Last Name: {user.lastName}</Typography>
+      <Typography component="p">Email: {user.email}</Typography>
+      <Typography component="p">Country: {user.countryName}</Typography>
+      {user.bithday && (
+        <Typography component="p">Birthday: {user.birthday}</Typography>
+      )}
     </div>
   );
 };

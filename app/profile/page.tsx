@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import MyProfile from "./MyProfile";
 
-import { decodeToken, readTokenFromCookie } from "@/lib/readTokenFromCookie";
+import { decodeToken, getTokenFromCookie } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "My Profile | Verkaikings"

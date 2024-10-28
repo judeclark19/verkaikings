@@ -1,9 +1,9 @@
 import React from "react";
 import NavbarUI from "./NavbarUI";
-import { readTokenFromCookie } from "@/lib/readTokenFromCookie";
+import { getTokenFromCookie } from "@/lib/utils";
 
 function Navbar() {
-  const token = readTokenFromCookie();
+  const token = getTokenFromCookie();
   return <NavbarUI isLoggedIn={!!token} />;
 }
 

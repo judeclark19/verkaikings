@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -12,8 +12,7 @@ import {
   ListItem,
   ListItemText,
   Box,
-  ListItemIcon,
-  CircularProgress
+  ListItemIcon
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
@@ -21,7 +20,7 @@ import { useRouter, usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { navLinks } from "./navLinks";
-import { auth, authListener } from "@/lib/firebase"; // Import from firebase.ts
+import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 import SubmenuDropdown from "./SubmenuDropdown";
@@ -153,7 +152,13 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar
+          sx={{
+            width: "1400px",
+            maxWidth: "100%",
+            margin: "auto"
+          }}
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -185,24 +190,30 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
                 return true;
               })
               .map((link) => {
-                if (link.submenu) return <SubmenuDropdown key={link.title} />;
+                if (link.submenu)
+                  return <SubmenuDropdown key={link.title} parentLink={link} />;
                 return (
                   <Button
                     key={link.href}
                     color="inherit"
                     component={Link}
                     href={link.href}
-                    sx={{ fontWeight: isActive(link.href) ? "700" : "400" }}
+                    sx={{
+                      fontWeight: isActive(link.href) ? "700" : "400",
+                      textDecoration: isActive(link.href) ? "underline" : "none"
+                    }}
                   >
                     {link.title}
                   </Button>
                 );
               })}
-
             <Button
               color="inherit"
               onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
-              sx={{ fontWeight: isActive("/login") ? "700" : "400" }}
+              sx={{
+                fontWeight: isActive("/login") ? "700" : "400",
+                textDecoration: isActive("/login") ? "underline" : "none"
+              }}
             >
               {isLoggedIn ? "Log Out" : "Log In"}
             </Button>

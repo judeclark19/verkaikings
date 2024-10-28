@@ -1,5 +1,5 @@
 import WelcomeMessage from "@/components/WelcomeMessage";
-import { decodeToken, readTokenFromCookie } from "@/lib/readTokenFromCookie";
+import { decodeToken, getTokenFromCookie } from "@/lib/utils";
 import { Typography } from "@mui/material";
 import { Metadata } from "next";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const token = readTokenFromCookie();
+  const token = getTokenFromCookie();
   const decodedToken = decodeToken();
 
   return (
