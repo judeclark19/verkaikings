@@ -34,7 +34,7 @@ const UserProfileOld = () => {
           const userData = querySnapshot.docs[0].data();
           setUser(userData);
         } else {
-          setError("User not found.");
+          setError(`User with username ${username} not found.`);
         }
       } catch (err) {
         setError("Error fetching user data.");
@@ -53,7 +53,6 @@ const UserProfileOld = () => {
       <Typography variant="h1">
         {user ? `UserProfile of ${user.username}` : <Skeleton />}
       </Typography>
-
       <Typography component="p">
         {user ? `First Name: ${user.firstName}` : <Skeleton />}
       </Typography>
