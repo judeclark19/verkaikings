@@ -10,11 +10,15 @@ import { db } from "@/lib/firebase";
 export default function DatePickerForm({
   label,
   userId,
-  user
+  user,
+  setIsEditing,
+  setUser
 }: {
   label: string;
   userId: string;
   user: DocumentData;
+  setIsEditing: (state: boolean) => void;
+  setUser: (user: DocumentData) => void;
 }) {
   const [value, setValue] = useState<Dayjs | null>(dayjs(user.birthday));
   const [loading, setLoading] = useState(false);
@@ -29,15 +33,28 @@ export default function DatePickerForm({
         // TODO: visual feedback
         console.log("User's birthday updated successfully");
         setLoading(false);
+        setIsEditing(false);
+        setUser({
+          ...user,
+          birthday: value ? value.format("YYYY-MM-DD") : null
+        });
       })
       .catch((error) => {
         console.error("Error updating user's birthday: ", error);
         setLoading(false);
+        setIsEditing(false);
       });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem"
+      }}
+    >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label={label}
@@ -45,7 +62,7 @@ export default function DatePickerForm({
           onChange={(newValue) => setValue(newValue)}
         />
       </LocalizationProvider>
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+      <Button type="submit" variant="contained">
         {loading ? (
           <CircularProgress size={24} sx={{ color: "white" }} />
         ) : (

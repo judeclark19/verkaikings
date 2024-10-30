@@ -2,15 +2,19 @@
 
 import { Typography } from "@mui/material";
 import { DocumentData } from "firebase-admin/firestore";
-
-function getMonthName(monthNumber: number, locale = navigator.language) {
-  const date = new Date(2022, monthNumber - 1); // Use any non-leap year; January is 0
-  return date.toLocaleString(locale, { month: "long" });
-}
+import { useEffect, useState } from "react";
 
 function BirthdayList({ usersByMonth }: { usersByMonth: DocumentData }) {
-  console.log(getMonthName(1)); // January
-  console.log(usersByMonth);
+  const [locale, setLocale] = useState<string>("nl");
+
+  useEffect(() => {
+    setLocale(navigator.language || "nl");
+  }, []);
+
+  function getMonthName(monthNumber: number, locale: string) {
+    const date = new Date(2022, monthNumber - 1); // Use any non-leap year; January is 0
+    return date.toLocaleString(locale, { month: "long" });
+  }
 
   return (
     <div>
@@ -20,7 +24,7 @@ function BirthdayList({ usersByMonth }: { usersByMonth: DocumentData }) {
         .map((month) => (
           <div key={month}>
             <Typography variant="h2">
-              {getMonthName(parseInt(month))}
+              {getMonthName(parseInt(month), locale)}
             </Typography>
             {usersByMonth[month].map((user: DocumentData) => (
               <Typography key={user.id}>

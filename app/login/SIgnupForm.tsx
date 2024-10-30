@@ -32,7 +32,14 @@ const SignupForm = () => {
   const [phoneData, setPhoneData] = useState<PhoneData>({
     inputValue: "",
     phone: "",
-    country: {}
+    country: {
+      name: "",
+      iso2: "",
+      dialCode: "",
+      format: "",
+      priority: 0,
+      areaCodes: []
+    }
   });
 
   const [error, setError] = useState("");

@@ -1,6 +1,6 @@
 import React from "react";
 import NavbarUI from "./NavbarUI";
-import { getTokenFromCookie } from "@/lib/utils";
+import { getTokenFromCookie } from "@/lib/serverUtils";
 
 function Navbar() {
   const token = getTokenFromCookie();

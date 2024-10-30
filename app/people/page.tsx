@@ -7,7 +7,7 @@ import {
   ListItemText,
   Typography
 } from "@mui/material";
-import { fetchUsers } from "@/lib/utils";
+import { fetchUsers } from "@/lib/serverUtils";
 
 export const metadata: Metadata = {
   title: "People | Verkaikings"

@@ -1,5 +1,5 @@
 import WelcomeMessage from "@/components/WelcomeMessage";
-import { decodeToken, getTokenFromCookie } from "@/lib/utils";
+import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
 import { Typography } from "@mui/material";
 import { Metadata } from "next";
 

@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import LayoutProviders from "@/lib/LayoutProviders"; // client side stuff
 import Navbar from "@/components/Navbar";
+import Script from "next/script"; // Import Script
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,6 +16,12 @@ export default function RootLayout({
   return (
     <html>
       <body className={inter.className}>
+        {/* Google Maps API Script */}
+        <Script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&loading=async&libraries=places`}
+          strategy="beforeInteractive"
+        />
+
         <LayoutProviders>
           <Navbar />
           <main

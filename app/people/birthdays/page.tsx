@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Skeleton, Typography } from "@mui/material";
-import { fetchUsers } from "@/lib/utils";
+import { fetchUsers } from "@/lib/serverUtils";
 import BirthdayList from "./BirthdayList";
 
 export const metadata: Metadata = {
