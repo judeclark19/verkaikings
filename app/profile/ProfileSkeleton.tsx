@@ -11,6 +11,7 @@ function ProfileSkeleton() {
       <Skeleton />
       <Skeleton />
       <Skeleton />
+      <Skeleton />
     </div>
   );
 }

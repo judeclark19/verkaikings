@@ -5,19 +5,14 @@ import { Typography } from "@mui/material";
 import { doc, DocumentData, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import ProfileSkeleton from "./ProfileSkeleton";
-import DateOfBirth from "./EditableFields/DateOfBirth";
-import City from "./EditableFields/City";
-import { fetchCityName } from "@/lib/clientUtils";
+import { fetchCountryInfo } from "@/lib/clientUtils";
+import { City, Country, DateOfBirth } from "./EditableFields";
 
 const MyProfile = ({ userId }: { userId: string }) => {
-  const [userLocale, setUserLocale] = useState<string>("nl");
   const [user, setUser] = useState<DocumentData | null>(null); // Authenticated user
   const [error, setError] = useState<string | null>(null);
-  const [cityName, setCityName] = useState<string | null>(null);
-  const [cityId, setCityId] = useState<string | null>(null);
 
   useEffect(() => {
-    setUserLocale(navigator.language || "nl"); // Default to "nl" if not detected
     const fetchUser = async () => {
       try {
         // Firestore query to find user by userId
@@ -39,8 +34,8 @@ const MyProfile = ({ userId }: { userId: string }) => {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      fetchCityName(user, setCityName);
+    if (user && user.cityId) {
+      fetchCountryInfo(user.cityId);
     }
   }, [user]);
 

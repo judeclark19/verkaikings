@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { TextField, Button, CircularProgress } from "@mui/material";
 import { doc, DocumentData, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { fetchCityName } from "@/lib/clientUtils";
+import {
+  fetchCityName,
+  fetchCountryInfo,
+  getCityAndState
+} from "@/lib/clientUtils";
 
 export default function CityPicker({
   cityId,
@@ -43,33 +47,33 @@ export default function CityPicker({
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
         if (place.formatted_address && place.place_id) {
-          console.log("setcityname CityPicker.tsx", place.formatted_address);
-          setCityName(place.formatted_address);
+          console.log("place", place);
+          setCityName(getCityAndState(place.address_components));
           setCityId(place.place_id);
-          console.log("usestate setCityId:", place.place_id); // Log the place_id
         }
       });
     }
   }, [cityId]);
 
-  useEffect(() => {
-    console.log("CityPicker.tsx cityName", cityName);
-  }, [cityName]);
-
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("handleSubmit user:", user);
-    console.log("handleSubmit userId:", userId);
     const userDoc = doc(db, "users", userId);
     setLoading(true);
 
+    const { countryAbbr, countryName } = await fetchCountryInfo(cityId!);
+
     updateDoc(userDoc, {
-      cityId: cityId || null
+      cityId: cityId || null,
+      cityName: cityName || null,
+      countryAbbr: countryAbbr || null,
+      countryName: countryName || null
     })
       .then(() => {
         setUser({
           ...user,
-          cityId: cityId || null
+          cityId: cityId || null,
+          cityName: cityName || null,
+          countryAbbr: countryAbbr || null
         });
         console.log("User's city updated successfully");
         setLoading(false);
