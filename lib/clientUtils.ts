@@ -17,10 +17,7 @@ export function formatBirthday(input: string) {
     .replace(/,/g, ", ");
 }
 
-export const fetchCityName = async (
-  user: DocumentData,
-  setCityName: (cityName: string) => void
-) => {
+export const fetchCityName = async (user: DocumentData) => {
   if (user && user.cityId) {
     try {
       const response = await fetch(
@@ -29,18 +26,17 @@ export const fetchCityName = async (
       const data = await response.json();
 
       if (data.result && data.result.address_components) {
-        setCityName(getCityAndState(data.result.address_components));
+        return getCityAndState(data.result.address_components);
       }
     } catch (error) {
       console.error("Failed to fetch place details:", error);
     }
   }
+
+  return "";
 };
 
-export const fetchCountryInfo = async (
-  placeId: string
-  //   setCountryInfo: (countryInfo: { iso2: string; name: string }) => void
-) => {
+export const fetchCountryInfo = async (placeId: string) => {
   try {
     const response = await fetch(`/api/getPlaceDetails?placeId=${placeId}`);
     const data = await response.json();
@@ -57,8 +53,6 @@ export const fetchCountryInfo = async (
           countryName: countryComponent.long_name
         };
 
-        // setCountryInfo(countryInfo);
-        console.log("countryInfo", countryInfo);
         return countryInfo;
       }
     }

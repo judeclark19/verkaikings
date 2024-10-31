@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DateOfBirthPicker from "../DateOfBirthPicker";
+import DateOfBirthPicker from "./DateOfBirthPicker";
 import { DocumentData } from "firebase/firestore";
 import { Typography } from "@mui/material";
 import EditFieldBtn from "./EditFieldBtn";

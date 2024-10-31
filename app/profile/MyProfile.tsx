@@ -2,15 +2,19 @@
 
 import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
-import { doc, DocumentData, getDoc } from "firebase/firestore";
+import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import ProfileSkeleton from "./ProfileSkeleton";
 import { fetchCountryInfo } from "@/lib/clientUtils";
 import { City, Country, DateOfBirth } from "./EditableFields";
+import { observer } from "mobx-react-lite";
+import myProfileState from "./MyProfile.state";
 
-const MyProfile = ({ userId }: { userId: string }) => {
+const MyProfile = observer(({ userId }: { userId: string }) => {
   const [user, setUser] = useState<DocumentData | null>(null); // Authenticated user
   const [error, setError] = useState<string | null>(null);
+  const [countryName, setCountryName] = useState<string | null>(null);
+  const [placeId, setPlaceId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,7 +25,9 @@ const MyProfile = ({ userId }: { userId: string }) => {
 
         if (userDoc.exists()) {
           setUser(userDoc.data());
-          console.log(userDoc.data());
+          setCountryName(userDoc.data().countryName);
+          setPlaceId(userDoc.data().cityId);
+          myProfileState.init(userDoc.data());
         } else {
           setError("User not found.");
         }
@@ -34,10 +40,17 @@ const MyProfile = ({ userId }: { userId: string }) => {
   }, []);
 
   useEffect(() => {
-    if (user && user.cityId) {
-      fetchCountryInfo(user.cityId);
+    async function fetchData() {
+      if (placeId && user) {
+        const fetchedCountryInfo = await fetchCountryInfo(placeId);
+        if (fetchedCountryInfo.countryName !== user.countryName) {
+          setCountryName(fetchedCountryInfo.countryName);
+        }
+      }
     }
-  }, [user]);
+
+    fetchData();
+  }, [placeId]);
 
   if (error) {
     return <div>{error}</div>;
@@ -54,11 +67,18 @@ const MyProfile = ({ userId }: { userId: string }) => {
       <Typography component="p">Last Name: {user.lastName}</Typography>
       <Typography component="p">Email: {user.email}</Typography>
       <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
-      <Typography component="p">Country: {user.countryName}</Typography>
-      <City user={user} userId={userId} setUser={setUser} />
+      <Country countryName={countryName} />
+      <City
+        user={user}
+        userId={userId}
+        setUser={setUser}
+        setPlaceId={setPlaceId}
+      />
       <DateOfBirth user={user} userId={userId} setUser={setUser} />
     </div>
   );
-};
+});
 
 export default MyProfile;
+
+// make country editable

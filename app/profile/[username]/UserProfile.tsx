@@ -13,17 +13,16 @@ import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
 import ProfileSkeleton from "../ProfileSkeleton";
 import { fetchCityName, formatBirthday } from "@/lib/clientUtils";
+import MyProfile from "../MyProfile";
 
-const UserProfile = () => {
+const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
   const params = useParams();
   const { username } = params;
-  const [userLocale, setUserLocale] = useState<string>("nl");
   const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
   const [error, setError] = useState(""); // Error state
   const [cityName, setCityName] = useState<string | null>(null);
 
   useEffect(() => {
-    setUserLocale(navigator.language || "nl"); // Default to "nl" if not detected
     const fetchUser = async () => {
       try {
         // Firestore query to find user by username
@@ -54,8 +53,13 @@ const UserProfile = () => {
       document.title = `Loading Profile...`;
     }
 
+    async function fetchData() {
+      const fetchedCityAndState = await fetchCityName(user!);
+      setCityName(fetchedCityAndState);
+    }
+
     if (user) {
-      fetchCityName(user, setCityName);
+      fetchData();
     }
   }, [user]);
 
@@ -64,6 +68,10 @@ const UserProfile = () => {
   }
   if (!user) {
     return <ProfileSkeleton />;
+  }
+
+  if (decodedToken.name === username) {
+    return <MyProfile userId={decodedToken.user_id} />;
   }
 
   return (
