@@ -36,7 +36,11 @@ export const fetchCityName = async (user: DocumentData) => {
   return "";
 };
 
-export const fetchCountryInfo = async (placeId: string) => {
+export const fetchCountryInfo = async (placeId: string | null) => {
+  if (!placeId) {
+    return { countryAbbr: null, countryName: null };
+  }
+
   try {
     const response = await fetch(`/api/getPlaceDetails?placeId=${placeId}`);
     const data = await response.json();

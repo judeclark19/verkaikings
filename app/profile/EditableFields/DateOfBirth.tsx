@@ -4,17 +4,14 @@ import { DocumentData } from "firebase/firestore";
 import { Typography } from "@mui/material";
 import EditFieldBtn from "./EditFieldBtn";
 import { formatBirthday } from "@/lib/clientUtils";
+import { observer } from "mobx-react-lite";
+import myProfileState from "../MyProfile.state";
 
-function DateOfBirth({
-  user,
-  userId,
-  setUser
-}: {
-  user: DocumentData;
-  userId: string;
-  setUser: (user: DocumentData) => void;
-}) {
+const DateOfBirth = observer(({ userId }: { userId: string }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  if (!myProfileState.user) {
+    return;
+  }
 
   return (
     <>
@@ -22,9 +19,7 @@ function DateOfBirth({
         <DateOfBirthPicker
           label="Birthday"
           userId={userId}
-          user={user}
           setIsEditing={setIsEditing}
-          setUser={setUser}
         />
       ) : (
         <div
@@ -35,13 +30,14 @@ function DateOfBirth({
           }}
         >
           <Typography component="p">
-            Birthday:{user.birthday} {formatBirthday(user.birthday)}
+            Birthday:{myProfileState.user.birthday}{" "}
+            {formatBirthday(myProfileState.user.birthday)}
           </Typography>
           <EditFieldBtn setState={setIsEditing} />
         </div>
       )}
     </>
   );
-}
+});
 
 export default DateOfBirth;

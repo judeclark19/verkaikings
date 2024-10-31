@@ -2,49 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TextField, Button, CircularProgress } from "@mui/material";
-import { doc, DocumentData, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
-import {
-  fetchCityName,
-  fetchCountryInfo,
-  getCityAndState
-} from "@/lib/clientUtils";
-
-import myProfileState from "./MyProfile.state";
+import { fetchCountryInfo, getCityAndState } from "@/lib/clientUtils";
+import myProfileState from "../MyProfile.state";
 
 const CityPicker = observer(
   ({
-    cityId,
-    setCityId,
     setIsEditing,
-    user,
-    userId,
-    setUser,
-    setPlaceId
+    userId
   }: {
-    cityId: string | null;
-    setCityId: (cityId: string | null) => void;
     setIsEditing: (state: boolean) => void;
-    user: DocumentData;
     userId: string;
-    setUser: (user: DocumentData) => void;
-    setPlaceId: (placeId: string | null) => void;
   }) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-      const fetchData = async () => {
-        if (myProfileState.user) {
-          const fetchedCityName = await fetchCityName(myProfileState.user);
-          myProfileState.setCityName(fetchedCityName);
-        }
-      };
-      if (user) {
-        fetchData();
-      }
-    }, []);
 
     useEffect(() => {
       if (inputRef.current) {
@@ -61,43 +34,38 @@ const CityPicker = observer(
             myProfileState.setCityName(
               getCityAndState(place.address_components)
             );
-            setCityId(place.place_id);
+            myProfileState.setPlaceId(place.place_id);
           }
         });
       }
-    }, [cityId]);
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
       const userDoc = doc(db, "users", userId);
       setLoading(true);
 
-      const { countryAbbr, countryName } = await fetchCountryInfo(cityId!);
+      const { countryAbbr, countryName } = await fetchCountryInfo(
+        myProfileState.placeId
+      );
 
       updateDoc(userDoc, {
-        cityId: cityId || null,
+        cityId: myProfileState.placeId,
         cityName: myProfileState.cityName,
         countryAbbr: countryAbbr || null,
         countryName: countryName || null
       })
         .then(() => {
-          setUser({
-            ...user,
-            cityId: cityId || null,
-            cityName: myProfileState.cityName,
-            countryAbbr: countryAbbr || null
-          });
-
+          myProfileState.setCountryNameFromPlaceId(myProfileState.placeId);
           console.log(
             "User's city updated successfully",
             myProfileState.cityName
           );
-          setPlaceId(cityId);
-          setLoading(false);
-          setIsEditing(false);
         })
         .catch((error) => {
           console.error("Error updating user's city: ", error);
+        })
+        .finally(() => {
           setLoading(false);
           setIsEditing(false);
         });
