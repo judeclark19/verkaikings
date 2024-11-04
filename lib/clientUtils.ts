@@ -71,6 +71,11 @@ export function getCityAndState(addressComponents: any[]) {
   let city = "";
   let state = "";
 
+  const countriesWithState = ["US", "CA", "AU", "BR", "AR", "MX", "IN"];
+  const countryCodeFromAddressComponents = addressComponents.find((component) =>
+    component.types.includes("country")
+  ).short_name;
+
   addressComponents.forEach((component) => {
     if (component.types.includes("locality")) {
       city = component.long_name; // Usually the city name
@@ -95,6 +100,11 @@ export function getCityAndState(addressComponents: any[]) {
     state = "";
   }
 
-  // Return "City, State" if both are available, otherwise just return the city
-  return state ? `${city}, ${state}` : city;
+  // // Only include "City, State" format if the country requires it
+  if (state && countriesWithState.includes(countryCodeFromAddressComponents)) {
+    return `${city}, ${state}`;
+  }
+
+  // Otherwise, return just the city
+  return city;
 }

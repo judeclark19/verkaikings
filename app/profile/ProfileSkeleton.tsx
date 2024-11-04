@@ -11,6 +11,9 @@ function ProfileSkeleton() {
       <Skeleton />
       <Skeleton />
       <Skeleton />
+      <Typography variant="h2">
+        <Skeleton />
+      </Typography>
       <Skeleton />
     </div>
   );

@@ -3,11 +3,13 @@ import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
 class MyProfileState {
+  isFetched = false;
   user: DocumentData | null = null;
   placeId: string | null = null;
   cityName: string | null = null;
   countryName: string | null = null;
   countryAbbr: string | null = null;
+  myWillemijnStory: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -20,6 +22,12 @@ class MyProfileState {
     this.setCityName(cityName);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryName);
+    this.setMyWillemijnStory(user.myWillemijnStory);
+    this.setIsFetched(true);
+  }
+
+  setIsFetched(isFetched: boolean) {
+    this.isFetched = isFetched;
   }
 
   setUser(user: DocumentData | null) {
@@ -50,6 +58,10 @@ class MyProfileState {
     fetchCountryInfo(placeId).then(({ countryName }) => {
       this.setCountryName(countryName);
     });
+  }
+
+  setMyWillemijnStory(myWillemijnStory: string | null) {
+    this.myWillemijnStory = myWillemijnStory;
   }
 }
 

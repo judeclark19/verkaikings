@@ -8,7 +8,7 @@ import ProfileSkeleton from "./ProfileSkeleton";
 import { City, Country, DateOfBirth } from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
-import CountryPicker from "./EditableFields/CountryPicker";
+import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
 
 const MyProfile = observer(({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
     return <div>{error}</div>;
   }
 
-  if (!myProfileState.user) {
+  if (!myProfileState.isFetched || !myProfileState.user) {
     return <ProfileSkeleton />;
   }
 
@@ -59,10 +59,9 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
       <Country userId={userId} />
       <City userId={userId} />
       <DateOfBirth userId={userId} />
+      <MyWillemijnStory userId={userId} />
     </div>
   );
 });
 
 export default MyProfile;
-
-// TODO: make country editable

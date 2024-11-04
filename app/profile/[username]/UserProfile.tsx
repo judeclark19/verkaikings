@@ -82,11 +82,19 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
       <Typography component="p">Email: {user.email}</Typography>
       <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
       <Typography component="p">Country: {user.countryName}</Typography>
-      <Typography component="p">City: {cityName}</Typography>
+      {cityName && <Typography component="p">City: {cityName}</Typography>}
+
       {user.birthday && (
         <Typography component="p">
           Birthday:{user.birthday} {formatBirthday(user.birthday)}
         </Typography>
+      )}
+
+      {user.myWillemijnStory && (
+        <>
+          <Typography variant="h2">My Willemijn Story</Typography>
+          <Typography component="p">{user.myWillemijnStory}</Typography>
+        </>
       )}
     </div>
   );
