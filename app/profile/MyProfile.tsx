@@ -21,7 +21,7 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-          myProfileState.init(userDoc.data());
+          myProfileState.init(userDoc.data(), userId);
         } else {
           setError("User not found.");
         }
@@ -56,10 +56,10 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
       <Typography component="p">
         WhatsApp phone: {myProfileState.user.phoneNumber}
       </Typography>
-      <Country userId={userId} />
-      <City userId={userId} />
-      <DateOfBirth userId={userId} />
-      <MyWillemijnStory userId={userId} />
+      <Country />
+      <City />
+      <DateOfBirth />
+      <MyWillemijnStory />
     </div>
   );
 });

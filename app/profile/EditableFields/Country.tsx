@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
 
-const Country = observer(({ userId }: { userId: string }) => {
+const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   if (!myProfileState.countryName) {
@@ -14,7 +14,7 @@ const Country = observer(({ userId }: { userId: string }) => {
   return (
     <>
       {isEditing ? (
-        <CountryPicker userId={userId} setIsEditing={setIsEditing} />
+        <CountryPicker setIsEditing={setIsEditing} />
       ) : (
         <div
           style={{

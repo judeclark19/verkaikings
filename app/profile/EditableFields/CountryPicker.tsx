@@ -16,13 +16,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const CountryPicker = observer(
-  ({
-    userId,
-    setIsEditing
-  }: {
-    userId: string;
-    setIsEditing: (state: boolean) => void;
-  }) => {
+  ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
     const locale = navigator.language || "en"; // Detect user's locale
     const [loading, setLoading] = useState(false);
 
@@ -50,7 +44,7 @@ const CountryPicker = observer(
         myProfileState.countryAbbr !== myProfileState.user!.countryAbbr;
 
       if (changedCountry) {
-        const userDoc = doc(db, "users", userId);
+        const userDoc = doc(db, "users", myProfileState.userId!);
         setLoading(true);
 
         updateDoc(userDoc, {

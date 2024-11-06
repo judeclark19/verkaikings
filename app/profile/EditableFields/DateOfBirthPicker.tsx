@@ -12,13 +12,9 @@ import myProfileState from "../MyProfile.state";
 const DatePickerForm = observer(
   ({
     label,
-    userId,
-
     setIsEditing
   }: {
     label: string;
-    userId: string;
-
     setIsEditing: (state: boolean) => void;
   }) => {
     const [value, setValue] = useState<Dayjs | null>(
@@ -27,7 +23,7 @@ const DatePickerForm = observer(
     const [loading, setLoading] = useState(false);
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
-      const userDoc = doc(db, "users", userId);
+      const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
       updateDoc(userDoc, {
         birthday: value ? value.format("YYYY-MM-DD") : null

@@ -1,10 +1,11 @@
 import { fetchCityName, fetchCountryInfo } from "@/lib/clientUtils";
-import { DocumentData } from "firebase/firestore";
+import { DocumentData, DocumentReference } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
 class MyProfileState {
   isFetched = false;
   user: DocumentData | null = null;
+  userId: string | null = null;
   placeId: string | null = null;
   cityName: string | null = null;
   countryName: string | null = null;
@@ -15,8 +16,9 @@ class MyProfileState {
     makeAutoObservable(this);
   }
 
-  async init(user: DocumentData) {
+  async init(user: DocumentData, userId: string) {
     this.setUser(user);
+    this.userId = userId;
     this.setPlaceId(user.cityId);
     const cityName = await fetchCityName(user);
     this.setCityName(cityName);

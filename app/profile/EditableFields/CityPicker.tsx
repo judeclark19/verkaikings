@@ -9,13 +9,7 @@ import { fetchCountryInfo, getCityAndState } from "@/lib/clientUtils";
 import myProfileState from "../MyProfile.state";
 
 const CityPicker = observer(
-  ({
-    setIsEditing,
-    userId
-  }: {
-    setIsEditing: (state: boolean) => void;
-    userId: string;
-  }) => {
+  ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -42,7 +36,7 @@ const CityPicker = observer(
 
     const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
-      const userDoc = doc(db, "users", userId);
+      const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
 
       const { countryAbbr, countryName } = await fetchCountryInfo(

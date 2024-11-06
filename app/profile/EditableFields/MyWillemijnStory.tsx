@@ -12,10 +12,10 @@ import {
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const MyWillemijnStory = observer(({ userId }: { userId: string }) => {
+const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const userDoc = doc(db, "users", userId);
+  const userDoc = doc(db, "users", myProfileState.userId!);
   const [temp, setTemp] = useState(
     myProfileState.myWillemijnStory
       ? myProfileState.myWillemijnStory.slice()

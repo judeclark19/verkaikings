@@ -7,7 +7,7 @@ import { formatBirthday } from "@/lib/clientUtils";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 
-const DateOfBirth = observer(({ userId }: { userId: string }) => {
+const DateOfBirth = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   if (!myProfileState.user) {
     return;
@@ -16,11 +16,7 @@ const DateOfBirth = observer(({ userId }: { userId: string }) => {
   return (
     <>
       {isEditing ? (
-        <DateOfBirthPicker
-          label="Birthday"
-          userId={userId}
-          setIsEditing={setIsEditing}
-        />
+        <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
       ) : (
         <div
           style={{
