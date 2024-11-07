@@ -1,5 +1,3 @@
-import { DocumentData } from "firebase-admin/firestore";
-
 export function formatBirthday(input: string) {
   // Parse the input string into a Date object
   const date = new Date(`${input}T00:00:00`);
@@ -17,12 +15,10 @@ export function formatBirthday(input: string) {
     .replace(/,/g, ", ");
 }
 
-export const fetchCityName = async (user: DocumentData) => {
-  if (user && user.cityId) {
+export const fetchCityName = async (cityId: string) => {
+  if (cityId) {
     try {
-      const response = await fetch(
-        `/api/getPlaceDetails?placeId=${user.cityId}`
-      );
+      const response = await fetch(`/api/getPlaceDetails?placeId=${cityId}`);
       const data = await response.json();
 
       if (data.result && data.result.address_components) {
@@ -36,7 +32,7 @@ export const fetchCityName = async (user: DocumentData) => {
   return "";
 };
 
-export const fetchCountryInfo = async (placeId: string | null) => {
+export const fetchCountryInfoByPlaceId = async (placeId: string | null) => {
   if (!placeId) {
     return { countryAbbr: null, countryName: null };
   }
@@ -107,4 +103,12 @@ export function getCityAndState(addressComponents: any[]) {
 
   // Otherwise, return just the city
   return city;
+}
+
+export function getCountryNameByLocale(
+  countryCode: string,
+  locale = navigator.language || "en"
+) {
+  const displayNames = new Intl.DisplayNames([locale], { type: "region" });
+  return displayNames.of(countryCode.toUpperCase());
 }

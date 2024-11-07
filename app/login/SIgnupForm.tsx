@@ -79,7 +79,6 @@ const SignupForm = () => {
         username: `${firstName}_${lastName}`,
         email,
         phoneNumber: phoneData.phone,
-        countryName: phoneData.country.name,
         countryCode: `+${phoneData.country.dialCode}`,
         nationalNumber: phoneData.phone.replace(
           `+${phoneData.country.dialCode}`,

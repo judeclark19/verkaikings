@@ -8,6 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import { fetchUsers } from "@/lib/serverUtils";
+import UserListItem from "./demographics/UserListItem";
 
 export const metadata: Metadata = {
   title: "People | Verkaikings"
@@ -24,8 +25,7 @@ export default async function PeoplePage() {
         sx={{
           width: "100%",
           maxWidth: 360,
-          bgcolor: "background.paper",
-          margin: "auto"
+          bgcolor: "background.paper"
         }}
       >
         {users
@@ -34,27 +34,7 @@ export default async function PeoplePage() {
             (a, b) => a.username.localeCompare(b.username)
           )
           .map((user) => (
-            <ListItem
-              key={user.id}
-              disablePadding
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.04)"
-                }
-              }}
-            >
-              <ListItemButton
-                component={Link}
-                href={`/profile/${user.username}`}
-                sx={{
-                  textDecoration: "none",
-                  color: "inherit",
-                  width: "100%"
-                }}
-              >
-                <ListItemText primary={user.username} />
-              </ListItemButton>
-            </ListItem>
+            <UserListItem key={user.id} user={user} />
           ))}
       </List>
     </div>

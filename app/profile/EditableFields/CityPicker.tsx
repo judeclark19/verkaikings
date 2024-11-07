@@ -5,7 +5,7 @@ import { TextField, Button, CircularProgress } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
-import { fetchCountryInfo, getCityAndState } from "@/lib/clientUtils";
+import { fetchCountryInfoByPlaceId, getCityAndState } from "@/lib/clientUtils";
 import myProfileState from "../MyProfile.state";
 
 const CityPicker = observer(
@@ -39,7 +39,7 @@ const CityPicker = observer(
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
 
-      const { countryAbbr, countryName } = await fetchCountryInfo(
+      const { countryAbbr, countryName } = await fetchCountryInfoByPlaceId(
         myProfileState.placeId
       );
 

@@ -1,14 +1,18 @@
 "use client";
 
-import { Typography } from "@mui/material";
+import { List, Typography } from "@mui/material";
 import { DocumentData } from "firebase-admin/firestore";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import demographicsState from "../demographics/Demographics.state";
+import UserListItem from "../demographics/UserListItem";
 
-function BirthdayList({ usersByMonth }: { usersByMonth: DocumentData }) {
+const BirthdayList = observer(({ users }: { users: DocumentData[] }) => {
   const [locale, setLocale] = useState<string>("nl");
 
   useEffect(() => {
     setLocale(navigator.language || "nl");
+    demographicsState.init(users);
   }, []);
 
   function getMonthName(monthNumber: number, locale: string) {
@@ -17,24 +21,40 @@ function BirthdayList({ usersByMonth }: { usersByMonth: DocumentData }) {
   }
 
   return (
-    <div>
-      {Object.keys(usersByMonth)
+    <>
+      {Object.keys(demographicsState.usersByBirthday)
         .sort((a, b) => parseInt(a) - parseInt(b))
-
         .map((month) => (
           <div key={month}>
             <Typography variant="h2">
               {getMonthName(parseInt(month), locale)}
             </Typography>
-            {usersByMonth[month].map((user: DocumentData) => (
-              <Typography key={user.id}>
-                {user.birthday.split("-")[2]}: {user.username}
-              </Typography>
-            ))}
+            <div>
+              {Object.keys(demographicsState.usersByBirthday[month])
+                .sort((a, b) => parseInt(a) - parseInt(b))
+                .map((day) => (
+                  <div key={day}>
+                    <Typography variant="h3">{day}</Typography>
+                    <List
+                      sx={{
+                        width: "100%",
+                        maxWidth: 360,
+                        bgcolor: "background.paper"
+                      }}
+                    >
+                      {demographicsState.usersByBirthday[month][day].map(
+                        (user) => (
+                          <UserListItem key={user.id} user={user} />
+                        )
+                      )}
+                    </List>
+                  </div>
+                ))}
+            </div>
           </div>
         ))}
-    </div>
+    </>
   );
-}
+});
 
 export default BirthdayList;

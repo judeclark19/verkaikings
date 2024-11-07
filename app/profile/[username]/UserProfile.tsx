@@ -12,7 +12,11 @@ import {
 import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
 import ProfileSkeleton from "../ProfileSkeleton";
-import { fetchCityName, formatBirthday } from "@/lib/clientUtils";
+import {
+  fetchCityName,
+  formatBirthday,
+  getCountryNameByLocale
+} from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 
 const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
@@ -54,7 +58,7 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
     }
 
     async function fetchData() {
-      const fetchedCityAndState = await fetchCityName(user!);
+      const fetchedCityAndState = await fetchCityName(user!.cityId);
       setCityName(fetchedCityAndState);
     }
 
@@ -81,7 +85,9 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
       <Typography component="p">Last Name: {user.lastName}</Typography>
       <Typography component="p">Email: {user.email}</Typography>
       <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
-      <Typography component="p">Country: {user.countryName}</Typography>
+      <Typography component="p">
+        Country: {getCountryNameByLocale(user.countryAbbr)}
+      </Typography>
       {cityName && <Typography component="p">City: {cityName}</Typography>}
 
       {user.birthday && (

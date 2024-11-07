@@ -4,11 +4,12 @@ import EditFieldBtn from "./EditFieldBtn";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
+import { getCountryNameByLocale } from "@/lib/clientUtils";
 
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  if (!myProfileState.countryName) {
+  if (!myProfileState.countryAbbr) {
     return <Skeleton />;
   }
   return (
@@ -24,7 +25,7 @@ const Country = observer(() => {
           }}
         >
           <Typography component="p">
-            Country: {myProfileState.countryName}
+            Country: {getCountryNameByLocale(myProfileState.countryAbbr)}
           </Typography>
           <EditFieldBtn setState={setIsEditing} />
         </div>

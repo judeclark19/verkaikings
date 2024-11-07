@@ -1,5 +1,5 @@
-import { fetchCityName, fetchCountryInfo } from "@/lib/clientUtils";
-import { DocumentData, DocumentReference } from "firebase/firestore";
+import { fetchCityName, fetchCountryInfoByPlaceId } from "@/lib/clientUtils";
+import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
 class MyProfileState {
@@ -20,7 +20,7 @@ class MyProfileState {
     this.setUser(user);
     this.userId = userId;
     this.setPlaceId(user.cityId);
-    const cityName = await fetchCityName(user);
+    const cityName = await fetchCityName(user.cityId);
     this.setCityName(cityName);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryName);
@@ -57,7 +57,7 @@ class MyProfileState {
       this.setCountryName(null);
       return;
     }
-    fetchCountryInfo(placeId).then(({ countryName }) => {
+    fetchCountryInfoByPlaceId(placeId).then(({ countryName }) => {
       this.setCountryName(countryName);
     });
   }

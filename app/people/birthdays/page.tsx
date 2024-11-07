@@ -24,11 +24,7 @@ async function BirthdaysPage() {
   return (
     <div>
       <Typography variant="h1">List of Birthdays</Typography>
-      {usersByMonth ? (
-        <BirthdayList usersByMonth={usersByMonth} />
-      ) : (
-        <Skeleton />
-      )}
+      {usersByMonth ? <BirthdayList users={users} /> : <Skeleton />}
     </div>
   );
 }
