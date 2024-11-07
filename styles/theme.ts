@@ -19,18 +19,23 @@ const darkTheme = createTheme({
   typography: {
     fontFamily: "Inter, sans-serif",
     h1: {
-      fontSize: "3rem", // Customize h1 size
-      fontWeight: 700 // Adjust weight if necessary
+      fontSize: "3.5rem",
+      fontWeight: 700,
+      margin: "2rem 0"
     },
     h2: {
-      fontSize: "2.5rem", // You can adjust h2, h3, etc., if needed
-      fontWeight: 500
+      fontSize: "2.5rem",
+      fontWeight: 500,
+      margin: "1.5rem 0"
     },
     h3: {
-      fontSize: "2rem"
+      fontSize: "1.5rem",
+      fontWeight: 500,
+      margin: "1rem 0"
     },
     h4: {
-      fontSize: "1.5rem"
+      fontSize: "1rem",
+      margin: "1rem 0"
     }
   }
 });

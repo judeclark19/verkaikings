@@ -19,6 +19,7 @@ import {
   getCountryNameByLocale
 } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
+import Link from "next/link";
 
 const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
   const params = useParams();
@@ -99,9 +100,18 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
 
       {user.instagram && (
         <>
-          <Typography component="p">
+          <Link
+            href={`https://www.instagram.com/${user.instagram}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "inherit",
+              display: "flex",
+              gap: "0.5rem"
+            }}
+          >
             <InstagramIcon /> {user.instagram}
-          </Typography>
+          </Link>
         </>
       )}
 

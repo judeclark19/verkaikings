@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { fetchUsers } from "@/lib/serverUtils";
-import DemographicsUI from "./DemographicsUI";
+import ByLocation from "./ByLocation/ByLocation";
 
 export const metadata: Metadata = {
   title: "Demographics | Verkaikings"
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const DemographicsPage = async () => {
   const users = await fetchUsers();
 
-  return <DemographicsUI users={users} />;
+  return <ByLocation users={users} />;
 };
 
 export default DemographicsPage;

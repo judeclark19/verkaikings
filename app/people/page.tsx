@@ -8,7 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import { fetchUsers } from "@/lib/serverUtils";
-import UserListItem from "./demographics/UserListItem";
+import UserListItem from "./UserListItem";
 
 export const metadata: Metadata = {
   title: "People | Verkaikings"
@@ -19,7 +19,7 @@ export default async function PeoplePage() {
 
   return (
     <div>
-      <Typography variant="h1">List of People</Typography>
+      <Typography variant="h1">List of People alphabetically</Typography>
 
       <List
         sx={{

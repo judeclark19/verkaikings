@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { TextField, Button, CircularProgress } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -34,7 +34,7 @@ const CityPicker = observer(
       }
     }, []);
 
-    const handleSubmit = async (event: React.FormEvent) => {
+    const handleSubmit = async (event: FormEvent) => {
       event.preventDefault();
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
@@ -79,7 +79,7 @@ const CityPicker = observer(
           variant="outlined"
           fullWidth
           inputRef={inputRef}
-          value={myProfileState.cityName}
+          value={myProfileState.cityName || ""}
           onChange={(e) => {
             myProfileState.setCityName(e.target.value);
           }}

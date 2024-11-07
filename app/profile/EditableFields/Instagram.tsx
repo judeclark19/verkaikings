@@ -6,6 +6,7 @@ import EditFieldBtn from "./EditFieldBtn";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Link from "next/link";
 
 const Instagram = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -83,7 +84,22 @@ const Instagram = observer(() => {
           }}
         >
           <Typography component="p">
-            <InstagramIcon /> {myProfileState.instagram}
+            {myProfileState.instagram ? (
+              <Link
+                href={`https://www.instagram.com/${myProfileState.instagram}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "inherit",
+                  display: "flex",
+                  gap: "0.5rem"
+                }}
+              >
+                <InstagramIcon /> {myProfileState.instagram}
+              </Link>
+            ) : (
+              <InstagramIcon />
+            )}
           </Typography>
           <EditFieldBtn setState={setIsEditing} />
         </div>

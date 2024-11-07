@@ -7,7 +7,8 @@ type CountryUsersType = {
   cities: Record<string, DocumentData[]>;
 };
 
-class DemographicsState {
+class PeopleState {
+  isFetched = false;
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
@@ -22,7 +23,9 @@ class DemographicsState {
     this.usersByCountry = {};
     // calculate users by country
     this.users.forEach((user) => {
-      const { countryAbbr, cityId } = user;
+      let { countryAbbr, cityId } = user;
+
+      if (!cityId) cityId = "No city listed";
 
       if (!this.usersByCountry[countryAbbr]) {
         // init country object
@@ -74,7 +77,13 @@ class DemographicsState {
         this.usersByBirthday[month][day].push(user);
       }
     });
+
+    this.setIsFetched(true);
+  }
+
+  setIsFetched(isFetched: boolean) {
+    this.isFetched = isFetched;
   }
 }
 
-export default new DemographicsState();
+export default new PeopleState();
