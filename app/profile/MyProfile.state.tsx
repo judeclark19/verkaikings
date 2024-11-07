@@ -10,6 +10,7 @@ class MyProfileState {
   cityName: string | null = null;
   countryName: string | null = null;
   countryAbbr: string | null = null;
+  instagram: string | null = null;
   myWillemijnStory: string | null = null;
 
   constructor() {
@@ -24,6 +25,7 @@ class MyProfileState {
     this.setCityName(cityName);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryName);
+    this.setInstagram(user.instagram);
     this.setMyWillemijnStory(user.myWillemijnStory);
     this.setIsFetched(true);
   }
@@ -60,6 +62,10 @@ class MyProfileState {
     fetchCountryInfoByPlaceId(placeId).then(({ countryName }) => {
       this.setCountryName(countryName);
     });
+  }
+
+  setInstagram(instagram: string | null) {
+    this.instagram = instagram;
   }
 
   setMyWillemijnStory(myWillemijnStory: string | null) {

@@ -9,6 +9,7 @@ import { City, Country, DateOfBirth } from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
+import Instagram from "./EditableFields/Instagram";
 
 const MyProfile = observer(({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +60,7 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
       <Country />
       <City />
       <DateOfBirth />
+      <Instagram />
       <MyWillemijnStory />
     </div>
   );

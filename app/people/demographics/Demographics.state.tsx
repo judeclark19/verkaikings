@@ -7,22 +7,6 @@ type CountryUsersType = {
   cities: Record<string, DocumentData[]>;
 };
 
-type BirthMonthUsersType = {
-  day: string;
-  users: DocumentData[];
-};
-
-// {
-//     05: {
-//         01: [user1, user2, user3],
-//         02: [user4, user5]
-//     },
-//     06: {
-//         01: [user6, user7],
-//         02: [user8, user9]
-//     }
-// }
-
 class DemographicsState {
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
@@ -61,21 +45,12 @@ class DemographicsState {
         // add user to city
         this.usersByCountry[countryAbbr].cities[cityId].push(user);
       }
-
-      //   if (!this.usersByCountry[user.countryAbbr]) {
-      //     this.usersByCountry[user.countryAbbr] = {
-      //       countryName:
-      //         getCountryNameByLocale(user.countryAbbr.toUpperCase()) || "",
-      //       cities: {},
-      //       users: []
-      //     };
-      //   }
-      //   this.usersByCountry[user.countryAbbr].users.push(user);
     });
 
     this.usersByBirthday = {};
     // calculate users by birthday
     this.users.forEach((user) => {
+      if (!user.birthday) return;
       const { birthday } = user;
       const month = birthday.split("-")[1];
       const day = birthday.split("-")[2];
@@ -99,7 +74,6 @@ class DemographicsState {
         this.usersByBirthday[month][day].push(user);
       }
     });
-    console.log("BIRTHDAY LIST", toJS(this.usersByBirthday));
   }
 }
 

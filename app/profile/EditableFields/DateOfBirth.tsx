@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import DateOfBirthPicker from "./DateOfBirthPicker";
-import { DocumentData } from "firebase/firestore";
 import { Typography } from "@mui/material";
 import EditFieldBtn from "./EditFieldBtn";
 import { formatBirthday } from "@/lib/clientUtils";
@@ -12,6 +11,10 @@ const DateOfBirth = observer(() => {
   if (!myProfileState.user) {
     return;
   }
+
+  const birthdayText = (birthday: string) => {
+    return `${birthday} / ${formatBirthday(birthday)}`;
+  };
 
   return (
     <>
@@ -26,8 +29,10 @@ const DateOfBirth = observer(() => {
           }}
         >
           <Typography component="p">
-            Birthday:{myProfileState.user.birthday}{" "}
-            {formatBirthday(myProfileState.user.birthday)}
+            Birthday:{" "}
+            {myProfileState.user.birthday
+              ? birthdayText(myProfileState.user.birthday)
+              : ""}
           </Typography>
           <EditFieldBtn setState={setIsEditing} />
         </div>

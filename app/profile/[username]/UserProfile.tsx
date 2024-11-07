@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import ProfileSkeleton from "../ProfileSkeleton";
 import {
   fetchCityName,
@@ -92,8 +93,16 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
 
       {user.birthday && (
         <Typography component="p">
-          Birthday:{user.birthday} {formatBirthday(user.birthday)}
+          Birthday: {user.birthday} {formatBirthday(user.birthday)}
         </Typography>
+      )}
+
+      {user.instagram && (
+        <>
+          <Typography component="p">
+            <InstagramIcon /> {user.instagram}
+          </Typography>
+        </>
       )}
 
       {user.myWillemijnStory && (
