@@ -1,9 +1,18 @@
+import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { DocumentData } from "firebase-admin/firestore";
 import Link from "next/link";
 import React from "react";
 
 function UserListItem({ user }: { user: DocumentData }) {
+  const getText = () => {
+    if (checkIfBirthdayToday(user.birthday)) {
+      return `${user.firstName} ${user.lastName} 🎂`;
+    } else {
+      return `${user.firstName} ${user.lastName}`;
+    }
+  };
+
   return (
     <ListItem
       key={user.id}
@@ -23,7 +32,7 @@ function UserListItem({ user }: { user: DocumentData }) {
           width: "100%"
         }}
       >
-        <ListItemText primary={`${user.firstName} ${user.lastName}`} />
+        <ListItemText primary={getText()} />
       </ListItemButton>
     </ListItem>
   );

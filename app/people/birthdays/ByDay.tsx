@@ -1,6 +1,5 @@
 import { List, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import React from "react";
 import peopleState from "../People.state";
 import UserListItem from "../UserListItem";
 

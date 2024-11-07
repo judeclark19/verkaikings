@@ -14,6 +14,7 @@ import { Typography } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import ProfileSkeleton from "../ProfileSkeleton";
 import {
+  checkIfBirthdayToday,
   fetchCityName,
   formatBirthday,
   getCountryNameByLocale
@@ -94,7 +95,8 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
 
       {user.birthday && (
         <Typography component="p">
-          Birthday: {user.birthday} {formatBirthday(user.birthday)}
+          Birthday: {user.birthday} {formatBirthday(user.birthday)}{" "}
+          {checkIfBirthdayToday(user.birthday) && "🎂"}
         </Typography>
       )}
 

@@ -1,20 +1,3 @@
-export function formatBirthday(input: string) {
-  // Parse the input string into a Date object
-  const date = new Date(`${input}T00:00:00`);
-
-  // Detect the user's locale or default to "nl"
-  const userLocale = navigator.language || "nl";
-
-  // Format the date using toLocaleDateString with the detected locale
-  return date
-    .toLocaleDateString(userLocale, {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    })
-    .replace(/,/g, ", ");
-}
-
 export const fetchCityName = async (cityId: string) => {
   if (cityId) {
     try {
@@ -30,37 +13,6 @@ export const fetchCityName = async (cityId: string) => {
   }
 
   return "";
-};
-
-export const fetchCountryInfoByPlaceId = async (placeId: string | null) => {
-  if (!placeId) {
-    return { countryAbbr: null, countryName: null };
-  }
-
-  try {
-    const response = await fetch(`/api/getPlaceDetails?placeId=${placeId}`);
-    const data = await response.json();
-
-    if (data.result && data.result.address_components) {
-      const countryComponent = data.result.address_components.find(
-        (component: any) => component.types.includes("country")
-      );
-
-      if (countryComponent) {
-        // Extract the `iso2` code and the country name (already localized)
-        const countryInfo = {
-          countryAbbr: countryComponent.short_name.toLowerCase(),
-          countryName: countryComponent.long_name
-        };
-
-        return countryInfo;
-      }
-    }
-  } catch (error) {
-    console.error("Failed to fetch country details:", error);
-  }
-
-  return { countryAbbr: null, countryName: null };
 };
 
 export function getCityAndState(addressComponents: any[]) {
@@ -105,10 +57,75 @@ export function getCityAndState(addressComponents: any[]) {
   return city;
 }
 
+export const fetchCountryInfoByPlaceId = async (placeId: string | null) => {
+  if (!placeId) {
+    return { countryAbbr: null, countryName: null };
+  }
+
+  try {
+    const response = await fetch(`/api/getPlaceDetails?placeId=${placeId}`);
+    const data = await response.json();
+
+    if (data.result && data.result.address_components) {
+      const countryComponent = data.result.address_components.find(
+        (component: any) => component.types.includes("country")
+      );
+
+      if (countryComponent) {
+        // Extract the `iso2` code and the country name (already localized)
+        const countryInfo = {
+          countryAbbr: countryComponent.short_name.toLowerCase(),
+          countryName: countryComponent.long_name
+        };
+
+        return countryInfo;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch country details:", error);
+  }
+
+  return { countryAbbr: null, countryName: null };
+};
+
 export function getCountryNameByLocale(
   countryCode: string,
   locale = navigator.language || "en"
 ) {
   const displayNames = new Intl.DisplayNames([locale], { type: "region" });
   return displayNames.of(countryCode.toUpperCase());
+}
+
+export function formatBirthday(input: string) {
+  // Parse the input string into a Date object
+  const date = new Date(`${input}T00:00:00`);
+
+  // Detect the user's locale or default to "nl"
+  const userLocale = navigator.language || "nl";
+
+  // Format the date using toLocaleDateString with the detected locale
+  return date
+    .toLocaleDateString(userLocale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    })
+    .replace(/,/g, ", ");
+}
+
+export function checkIfBirthdayToday(birthday: string) {
+  if (!birthday) return false;
+
+  const today = new Date();
+  const todayMonth = today.getMonth() + 1;
+  const todayDay = today.getDate();
+
+  const userBirthdayMonth = birthday.split("-")[1];
+  const userBirthdayDay = birthday.split("-")[2];
+
+  const isToday =
+    parseInt(userBirthdayMonth) === todayMonth &&
+    parseInt(userBirthdayDay) === todayDay;
+
+  return isToday;
 }
