@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
-// import Link from "next/link";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -56,9 +55,57 @@ const SignupForm = () => {
 
     setTimeout(() => {
       setSignupStage(2);
-      console.log("value after switching to step 2", phoneData.inputValue);
       setLoading(false);
     }, 1000);
+  };
+
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true); // Set loading to true when the form is submitted
+    setError(""); // Clear any previous errors
+
+    console.log("is phone valid?", isPhoneValid(phoneData.phone));
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      const token = await user.getIdToken();
+      Cookies.set("authToken", token, { expires: 1 });
+
+      try {
+        await updateProfile(user, {
+          displayName: `${firstName}_${lastName}`
+        });
+        console.log("Display name updated successfully");
+      } catch (updateError) {
+        console.error("Failed to update display name:", updateError);
+        throw updateError;
+      }
+
+      // Store user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        firstName,
+        lastName,
+        username: `${firstName}_${lastName}`,
+        email,
+        phoneNumber: phoneData.phone,
+        countryCode: `+${phoneData.country.dialCode}`,
+        nationalNumber: phoneData.phone.replace(
+          `+${phoneData.country.dialCode}`,
+          ""
+        ),
+        countryAbbr: phoneData.country.iso2
+      });
+
+      window.location.href = "/profile"; // Redirect to profile page after sign-up
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false); // Stop loading if there's an error
+    }
   };
 
   return (
@@ -82,7 +129,6 @@ const SignupForm = () => {
             <MuiPhone
               value={phoneData.inputValue}
               onChange={(data: PhoneData) => {
-                console.log(data.inputValue);
                 setPhoneData(data);
               }}
             />
@@ -125,10 +171,7 @@ const SignupForm = () => {
       {signupStage === 2 && (
         <>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log("submitting");
-            }}
+            onSubmit={handleSignUp}
             style={{ width: "100%", maxWidth: "400px" }}
           >
             <TextField
@@ -166,6 +209,7 @@ const SignupForm = () => {
               value={phoneData.inputValue}
               disabled
               onChange={() => {}}
+              disabledCountry={phoneData.country.iso2}
             />
             <TextField
               label="Password"

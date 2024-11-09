@@ -78,8 +78,10 @@ const CountryPicker = observer(
               maxWidth: "300px"
             }}
           >
-            <InputLabel>Country</InputLabel>
+            <InputLabel id="country-picker-select-label">Country</InputLabel>
             <Select
+              labelId="country-picker-select-label"
+              id="country-picker-select"
               value={myProfileState.countryAbbr?.toUpperCase() || ""}
               onChange={handleChange}
               label="Country"

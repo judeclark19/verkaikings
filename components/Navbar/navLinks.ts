@@ -23,27 +23,27 @@ export const navLinks: NavLinkType[] = [
     title: "People",
     href: "/people",
     protected: true,
-    icon: PeopleIcon,
-    submenu: [
-      {
-        title: "List",
-        href: "/people",
-        icon: PeopleIcon,
-        protected: true
-      },
-      {
-        title: "Birthdays",
-        href: "/people/birthdays",
-        icon: CakeIcon,
-        protected: true
-      },
-      {
-        title: "Demographics",
-        href: "/people/demographics",
-        icon: PieChartIcon,
-        protected: true
-      }
-    ]
+    icon: PeopleIcon
+    // submenu: [
+    //   {
+    //     title: "List",
+    //     href: "/people",
+    //     icon: PeopleIcon,
+    //     protected: true
+    //   },
+    //   {
+    //     title: "Birthdays",
+    //     href: "/people/birthdays",
+    //     icon: CakeIcon,
+    //     protected: true
+    //   },
+    //   {
+    //     title: "Demographics",
+    //     href: "/people/demographics",
+    //     icon: PieChartIcon,
+    //     protected: true
+    //   }
+    // ]
   },
   {
     title: "Profile",

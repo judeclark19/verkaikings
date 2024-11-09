@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import {
-  CountryIso2,
   defaultCountries,
   FlagImage,
   parseCountry,
@@ -27,12 +26,14 @@ export interface MUIPhoneProps extends BaseTextFieldProps {
   value: string;
   onChange: (phone: PhoneData) => void;
   disabled?: boolean;
+  disabledCountry?: string;
 }
 
 export const MuiPhone: React.FC<MUIPhoneProps> = ({
   value,
   onChange,
   disabled,
+  disabledCountry,
   ...restProps
 }) => {
   const { inputValue, handlePhoneValueChange, inputRef, country, setCountry } =
@@ -63,11 +64,12 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
       label="Phone number"
       color="primary"
       placeholder="Phone number"
-      value={inputValue}
+      value={disabled ? value : inputValue}
       onChange={handlePhoneValueChange}
       type="tel"
       inputRef={inputRef}
       required
+      disabled={disabled}
       sx={{
         width: "100%",
         marginTop: "16px",
@@ -114,7 +116,7 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
                     right: 0
                   }
                 }}
-                value={country.iso2}
+                value={disabled ? disabledCountry : country.iso2}
                 disabled={disabled} // Disable country selection to make it read-only
                 renderValue={(value) => (
                   <FlagImage iso2={value} style={{ display: "flex" }} />

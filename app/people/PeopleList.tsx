@@ -8,11 +8,27 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   useEffect(() => {
-    peopleState.init(users);
+    let viewByParam = searchParams.get("viewBy")?.toLowerCase();
+    if (
+      viewByParam !== "name" &&
+      viewByParam !== "location" &&
+      viewByParam !== "birthday"
+    ) {
+      viewByParam = "name";
+    }
+    peopleState.init(users, viewByParam);
   }, [users]);
+
+  useEffect(() => {
+    router.replace(`?viewBy=${peopleState.viewingBy.toLowerCase()}`);
+  }, [peopleState.viewingBy, router]);
 
   return (
     <div>
@@ -23,17 +39,20 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
           id="people-list-select"
           value={peopleState.viewingBy}
           label="View people by:"
-          onChange={(e) => peopleState.setViewingBy(e.target.value)}
+          onChange={(e) =>
+            peopleState.setViewingBy(e.target.value.toLowerCase())
+          }
         >
-          <MenuItem value="Name">Name (Alphabetical)</MenuItem>
-          <MenuItem value="Location">Location (Country and City)</MenuItem>
-          <MenuItem value="Birthday">Birthday</MenuItem>
+          <MenuItem value="name">Name (Alphabetical)</MenuItem>
+          <MenuItem value="location">Location (Country and City)</MenuItem>
+          <MenuItem value="birthday">Birthday</MenuItem>
         </Select>
       </FormControl>
 
-      {peopleState.viewingBy === "Name" && <ByName />}
-      {peopleState.viewingBy === "Location" && <ByLocation />}
-      {peopleState.viewingBy === "Birthday" && <ByBirthday />}
+      {peopleState.viewingBy === "name" && <ByName />}
+      {peopleState.viewingBy === "location" && <ByLocation />}
+      {peopleState.viewingBy === "birthday" && <ByBirthday />}
+      {/* TODO: view all willemijn stories, view all socials? view by age or add age to birthday list? */}
     </div>
   );
 });

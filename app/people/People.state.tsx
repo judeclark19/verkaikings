@@ -9,7 +9,7 @@ type CountryUsersType = {
 
 class PeopleState {
   isFetched = false;
-  viewingBy = "Name";
+  viewingBy = "name";
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
@@ -18,9 +18,9 @@ class PeopleState {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[]) {
+  async init(users: DocumentData[], viewingBy: string) {
     this.users = users;
-
+    this.setViewingBy(viewingBy);
     this.usersByCountry = {};
     // calculate users by country
     this.users.forEach((user) => {

@@ -25,6 +25,7 @@ import Link from "next/link";
 const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
   const params = useParams();
   const { username } = params;
+  const [isSelf, setIsSelf] = useState(false);
   const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
   const [error, setError] = useState(""); // Error state
   const [cityName, setCityName] = useState<string | null>(null);
@@ -43,6 +44,9 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
           // Assuming usernames are unique, grab the first matching user
           const userData = querySnapshot.docs[0].data();
           setUser(userData);
+          if (userData.email === decodedToken.email) {
+            setIsSelf(true);
+          }
           document.title = `${userData.username}'s Profile | Verkaikings`; // Set the document title
         } else {
           setError(`User with username ${username} not found.`);
@@ -77,7 +81,7 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
     return <ProfileSkeleton />;
   }
 
-  if (decodedToken.name === username) {
+  if (isSelf) {
     return <MyProfile userId={decodedToken.user_id} />;
   }
 
