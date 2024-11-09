@@ -1,5 +1,4 @@
 import "react-international-phone/style.css";
-
 import {
   BaseTextFieldProps,
   InputAdornment,
@@ -27,11 +26,13 @@ export type PhoneData = {
 export interface MUIPhoneProps extends BaseTextFieldProps {
   value: string;
   onChange: (phone: PhoneData) => void;
+  disabled?: boolean;
 }
 
 export const MuiPhone: React.FC<MUIPhoneProps> = ({
   value,
   onChange,
+  disabled,
   ...restProps
 }) => {
   const { inputValue, handlePhoneValueChange, inputRef, country, setCountry } =
@@ -45,16 +46,14 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
     });
 
   useEffect(() => {
-    // Get user's locale from the browser
     const userLocale = navigator.language;
     const localeCountryCode = userLocale.split("-")[1]?.toLowerCase();
 
-    // If localeCountryCode is valid, set it; otherwise, default to NL
     if (
       localeCountryCode &&
       defaultCountries.some((c) => c[1] === localeCountryCode)
     ) {
-      setCountry(localeCountryCode); // Manually update the country in the input
+      setCountry(localeCountryCode);
     }
   }, []);
 
@@ -69,9 +68,15 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
       type="tel"
       inputRef={inputRef}
       required
-      sx={{ width: "100%", marginTop: "16px", marginBottom: "8px" }}
+      sx={{
+        width: "100%",
+        marginTop: "16px",
+        marginBottom: "8px",
+        cursor: disabled ? "not-allowed" : "text"
+      }}
       slotProps={{
         input: {
+          readOnly: disabled,
           startAdornment: (
             <InputAdornment
               position="start"
@@ -92,6 +97,7 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
                 }}
                 sx={{
                   width: "max-content",
+                  cursor: disabled ? "not-allowed" : "pointer",
                   fieldset: {
                     display: "none"
                   },
@@ -109,7 +115,7 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
                   }
                 }}
                 value={country.iso2}
-                onChange={(e) => setCountry(e.target.value as CountryIso2)}
+                disabled={disabled} // Disable country selection to make it read-only
                 renderValue={(value) => (
                   <FlagImage iso2={value} style={{ display: "flex" }} />
                 )}

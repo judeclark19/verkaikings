@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -7,12 +6,7 @@ export const metadata: Metadata = {
 };
 
 function LoginPage() {
-  return (
-    <>
-      <LoginForm />
-      <SignupForm />
-    </>
-  );
+  return <LoginForm />;
 }
 
 export default LoginPage;

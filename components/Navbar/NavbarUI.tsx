@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { AppRegistration } from "@mui/icons-material";
 import { navLinks } from "./navLinks";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -83,7 +84,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const isActive = (path: string) => pathname === path;
 
   // Drawer content for mobile view
-  const drawer = (
+  const drawerContent = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h5" sx={{ my: 2 }}>
         Verkaikings
@@ -145,6 +146,25 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             }}
           />
         </ListItem>
+
+        {!isLoggedIn && (
+          <ListItem
+            component={Link}
+            href="/signup"
+            sx={{ fontWeight: "inherit" }}
+          >
+            <ListItemIcon>
+              <AppRegistration />
+            </ListItemIcon>
+
+            <ListItemText
+              primary="Sign Up"
+              primaryTypographyProps={{
+                fontWeight: isActive("/signup") ? "700" : "400"
+              }}
+            />
+          </ListItem>
+        )}
       </ListStyle>
     </Box>
   );
@@ -217,6 +237,19 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             >
               {isLoggedIn ? "Log Out" : "Log In"}
             </Button>
+            {!isLoggedIn && (
+              <Button
+                color="inherit"
+                component={Link}
+                href="/signup"
+                sx={{
+                  fontWeight: isActive("/signup") ? "700" : "400",
+                  textDecoration: isActive("/signup") ? "underline" : "none"
+                }}
+              >
+                Sign Up
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
@@ -233,7 +266,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 }
           }}
         >
-          {drawer}
+          {drawerContent}
         </Drawer>
       </Box>
     </>

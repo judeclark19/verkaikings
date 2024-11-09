@@ -9,6 +9,7 @@ type CountryUsersType = {
 
 class PeopleState {
   isFetched = false;
+  viewingBy = "Name";
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
@@ -83,6 +84,10 @@ class PeopleState {
 
   setIsFetched(isFetched: boolean) {
     this.isFetched = isFetched;
+  }
+
+  setViewingBy(viewingBy: string) {
+    this.viewingBy = viewingBy;
   }
 }
 

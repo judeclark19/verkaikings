@@ -10,10 +10,13 @@ import {
   Button,
   Typography,
   Box,
-  CircularProgress
+  CircularProgress,
+  Link
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
+// import Link from "next/link";
+
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const isPhoneValid = (phone: string) => {
@@ -103,7 +106,7 @@ const SignupForm = () => {
         mt: 4
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Sign Up
       </Typography>
       <form
@@ -170,6 +173,13 @@ const SignupForm = () => {
         </Button>
       </form>
       {error && <Typography color="error">{error}</Typography>}
+      <Typography
+        sx={{
+          mt: 4
+        }}
+      >
+        Already have an account? <Link href="/login">Log in</Link>
+      </Typography>
     </Box>
   );
 };

@@ -1,20 +1,11 @@
 "use client";
 
 import { Skeleton, Typography } from "@mui/material";
-import { DocumentData } from "firebase-admin/firestore";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
 import peopleState from "../People.state";
 import ByDay from "./ByDay";
 
-const BirthdayList = observer(({ users }: { users: DocumentData[] }) => {
-  const [locale, setLocale] = useState<string>("nl");
-
-  useEffect(() => {
-    setLocale(navigator.language || "nl");
-    peopleState.init(users);
-  }, []);
-
+const ByBirthday = observer(() => {
   function getMonthName(monthNumber: number, locale: string) {
     const date = new Date(2022, monthNumber - 1); // Use any non-leap year; January is 0
     return date.toLocaleString(locale, { month: "long" });
@@ -22,6 +13,7 @@ const BirthdayList = observer(({ users }: { users: DocumentData[] }) => {
 
   return (
     <>
+      <Typography variant="h1">List of Birthdays</Typography>
       {peopleState.isFetched ? (
         <>
           {Object.keys(peopleState.usersByBirthday)
@@ -29,7 +21,7 @@ const BirthdayList = observer(({ users }: { users: DocumentData[] }) => {
             .map((month) => (
               <div key={month}>
                 <Typography variant="h2">
-                  {getMonthName(parseInt(month), locale)}
+                  {getMonthName(parseInt(month), navigator.language || "nl")}
                 </Typography>
                 <div>
                   {Object.keys(peopleState.usersByBirthday[month])
@@ -53,4 +45,4 @@ const BirthdayList = observer(({ users }: { users: DocumentData[] }) => {
   );
 });
 
-export default BirthdayList;
+export default ByBirthday;

@@ -8,9 +8,11 @@ import {
   Button,
   Typography,
   Box,
-  CircularProgress
+  CircularProgress,
+  Link
 } from "@mui/material";
 import Cookies from "js-cookie";
+// import Link from "next/link";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -55,7 +57,7 @@ const LoginForm = () => {
         mt: 4
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Log In
       </Typography>
       <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
@@ -93,6 +95,13 @@ const LoginForm = () => {
         </Button>
       </form>
       {error && <Typography color="error">{error}</Typography>}
+      <Typography
+        sx={{
+          mt: 4
+        }}
+      >
+        Don't have an account? <Link href="/signup">Sign up</Link>
+      </Typography>
     </Box>
   );
 };
