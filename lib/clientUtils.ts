@@ -88,6 +88,34 @@ export const fetchCountryInfoByPlaceId = async (placeId: string | null) => {
   return { countryAbbr: null, countryName: null };
 };
 
+export const getFullLocationNameByPlaceId = async (placeId: string) => {
+  try {
+    const response = await fetch(`/api/getPlaceDetails?placeId=${placeId}`);
+    const data = await response.json();
+
+    if (data.result && data.result.address_components) {
+      const addressComponents = data.result.address_components;
+      return {
+        locationName: `${getCityAndState(
+          addressComponents
+        )}, ${getCountryNameByLocale(
+          addressComponents.find((component: any) =>
+            component.types.includes("country")
+          ).short_name
+        )}`,
+        cityName: getCityAndState(addressComponents)
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch place details:", error);
+  }
+
+  return {
+    locationName: "",
+    cityName: ""
+  };
+};
+
 export function getCountryNameByLocale(
   countryCode: string,
   locale = navigator.language || "en"

@@ -1,28 +1,59 @@
-import { getCountryNameByLocale } from "@/lib/clientUtils";
+import {
+  getCountryNameByLocale,
+  getFullLocationNameByPlaceId
+} from "@/lib/clientUtils";
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
+import UserMapState from "./UserMap/UserMap.state";
 
 type CountryUsersType = {
   countryName: string;
   cities: Record<string, DocumentData[]>;
 };
 
+export enum PeopleViews {
+  NAME = "name",
+  BIRTHDAY = "birthday",
+  LOCATION = "location",
+  MAP = "map"
+}
+
 class PeopleState {
   isFetched = false;
-  viewingBy = "name";
+  viewingBy = PeopleViews.NAME;
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
+  userMap: UserMapState | null = null;
+  locationNames: Record<string, string> = {};
+  cityNames: Record<string, string> = {};
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[], viewingBy: string) {
+  async init(users: DocumentData[], viewingBy: PeopleViews) {
     this.users = users;
+
+    // INIT LOCATION AND CITY NAMES
+    for (const user of this.users) {
+      if (!this.locationNames[user.cityId]) {
+        try {
+          const { locationName, cityName } = await getFullLocationNameByPlaceId(
+            user.cityId
+          );
+          this.locationNames[user.cityId] = locationName;
+          this.cityNames[user.cityId] = cityName;
+        } catch (error) {
+          console.error(`Failed to fetch city name for ${user.cityId}:`, error);
+        }
+      }
+    }
+
     this.setViewingBy(viewingBy);
+
+    // INIT USERS BY COUNTRY
     this.usersByCountry = {};
-    // calculate users by country
     this.users.forEach((user) => {
       let { countryAbbr, cityId } = user;
 
@@ -51,8 +82,8 @@ class PeopleState {
       }
     });
 
+    // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
-    // calculate users by birthday
     this.users.forEach((user) => {
       if (!user.birthday) return;
       const { birthday } = user;
@@ -79,6 +110,13 @@ class PeopleState {
       }
     });
 
+    // INIT USER MAP
+    this.userMap = new UserMapState(
+      users,
+      this.usersByCountry,
+      this.locationNames
+    );
+
     this.setIsFetched(true);
   }
 
@@ -86,7 +124,7 @@ class PeopleState {
     this.isFetched = isFetched;
   }
 
-  setViewingBy(viewingBy: string) {
+  setViewingBy(viewingBy: PeopleViews) {
     this.viewingBy = viewingBy;
   }
 }

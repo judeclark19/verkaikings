@@ -2,13 +2,14 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import peopleState from "./People.state";
+import peopleState, { PeopleViews } from "./People.state";
 import { DocumentData } from "firebase/firestore";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";
+import UserMap from "./UserMap/UserMap.UI";
 
 const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
   const router = useRouter();
@@ -17,13 +18,12 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
   useEffect(() => {
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
     if (
-      viewByParam !== "name" &&
-      viewByParam !== "location" &&
-      viewByParam !== "birthday"
+      // check if viewByParam is one of enum Views
+      !Object.values(PeopleViews).includes(viewByParam as PeopleViews)
     ) {
-      viewByParam = "name";
+      viewByParam = PeopleViews.NAME;
     }
-    peopleState.init(users, viewByParam);
+    peopleState.init(users, viewByParam as PeopleViews);
   }, [users]);
 
   useEffect(() => {
@@ -40,18 +40,22 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
           value={peopleState.viewingBy}
           label="View people by:"
           onChange={(e) =>
-            peopleState.setViewingBy(e.target.value.toLowerCase())
+            peopleState.setViewingBy(
+              e.target.value.toLowerCase() as PeopleViews
+            )
           }
         >
           <MenuItem value="name">Name (Alphabetical)</MenuItem>
           <MenuItem value="location">Location (Country and City)</MenuItem>
           <MenuItem value="birthday">Birthday</MenuItem>
+          <MenuItem value="map">Map</MenuItem>
         </Select>
       </FormControl>
 
       {peopleState.viewingBy === "name" && <ByName />}
       {peopleState.viewingBy === "location" && <ByLocation />}
       {peopleState.viewingBy === "birthday" && <ByBirthday />}
+      {peopleState.viewingBy === "map" && <UserMap />}
       {/* TODO: view all willemijn stories, view all socials? view by age or add age to birthday list? */}
     </div>
   );

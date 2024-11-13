@@ -1,38 +1,11 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
 import peopleState from "../People.state";
-import { fetchCityName } from "@/lib/clientUtils";
 import { Typography } from "@mui/material";
 import ByCity from "./ByCity";
 
 const ByLocation = observer(() => {
-  const [cityNames, setCityNames] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const fetchCityNames = async () => {
-      for (const user of peopleState.users.slice()) {
-        if (!cityNames[user.cityId]) {
-          try {
-            const cityName = await fetchCityName(user.cityId);
-            setCityNames((prev) => ({
-              ...prev,
-              [user.cityId]: cityName
-            }));
-          } catch (error) {
-            console.error(
-              `Failed to fetch city name for ${user.cityId}:`,
-              error
-            );
-          }
-        }
-      }
-    };
-
-    fetchCityNames();
-  }, [peopleState.users]);
-
   const countries = Object.keys(peopleState.usersByCountry);
 
   return (
@@ -59,7 +32,6 @@ const ByLocation = observer(() => {
               return (
                 <ByCity
                   key={cityId}
-                  cityNames={cityNames}
                   countryAbbr={countryAbbr}
                   cityId={cityId}
                 />

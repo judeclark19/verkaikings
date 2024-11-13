@@ -24,7 +24,11 @@ const CityPicker = observer(
 
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete.getPlace();
-          if (place.formatted_address && place.place_id) {
+          if (
+            place.formatted_address &&
+            place.place_id &&
+            place.address_components
+          ) {
             myProfileState.setCityName(
               getCityAndState(place.address_components)
             );

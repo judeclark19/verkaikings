@@ -4,15 +4,7 @@ import { observer } from "mobx-react-lite";
 import peopleState from "../People.state";
 
 const ByCity = observer(
-  ({
-    cityNames,
-    countryAbbr,
-    cityId
-  }: {
-    cityNames: Record<string, string>;
-    countryAbbr: string;
-    cityId: string;
-  }) => {
+  ({ countryAbbr, cityId }: { countryAbbr: string; cityId: string }) => {
     return (
       <div
         key={cityId}
@@ -23,8 +15,8 @@ const ByCity = observer(
         <Typography variant="h3">
           {cityId === "No city listed" ? (
             "No city listed"
-          ) : cityNames[cityId] ? (
-            cityNames[cityId]
+          ) : peopleState.cityNames[cityId] ? (
+            peopleState.cityNames[cityId]
           ) : (
             <Skeleton />
           )}
