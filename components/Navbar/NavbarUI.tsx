@@ -101,7 +101,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               textDecoration: "none"
             }}
           >
-            Willemijn's World
+            Willemijn&apos;s World
           </Typography>
           <Box
             sx={{

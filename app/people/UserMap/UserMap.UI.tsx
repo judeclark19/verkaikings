@@ -4,8 +4,6 @@ import peopleState from "../People.state";
 import { Skeleton } from "@mui/material";
 
 const UserMap = observer(() => {
-  const users = peopleState.userMap?.users || [];
-
   useEffect(() => {
     if (!peopleState.userMap) return;
 

@@ -15,14 +15,19 @@ export const fetchCityName = async (cityId: string) => {
   return "";
 };
 
-export function getCityAndState(addressComponents: any[]) {
+export function getCityAndState(
+  addressComponents: google.maps.GeocoderAddressComponent[]
+) {
   let city = "";
   let state = "";
 
   const countriesWithState = ["US", "CA", "AU", "BR", "AR", "MX", "IN"];
-  const countryCodeFromAddressComponents = addressComponents.find((component) =>
+  const countryComponent = addressComponents.find((component) =>
     component.types.includes("country")
-  ).short_name;
+  );
+  const countryCodeFromAddressComponents = countryComponent
+    ? countryComponent.short_name
+    : "";
 
   addressComponents.forEach((component) => {
     if (component.types.includes("locality")) {
@@ -68,7 +73,9 @@ export const fetchCountryInfoByPlaceId = async (placeId: string | null) => {
 
     if (data.result && data.result.address_components) {
       const countryComponent = data.result.address_components.find(
-        (component: any) => component.types.includes("country")
+        (
+          component: google.maps.GeocoderAddressComponent | { types: string[] }
+        ) => component.types.includes("country")
       );
 
       if (countryComponent) {
@@ -99,8 +106,12 @@ export const getFullLocationNameByPlaceId = async (placeId: string) => {
         locationName: `${getCityAndState(
           addressComponents
         )}, ${getCountryNameByLocale(
-          addressComponents.find((component: any) =>
-            component.types.includes("country")
+          addressComponents.find(
+            (
+              component:
+                | google.maps.GeocoderAddressComponent
+                | { types: string[] }
+            ) => component.types.includes("country")
           ).short_name
         )}`,
         cityName: getCityAndState(addressComponents)

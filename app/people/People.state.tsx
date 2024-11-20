@@ -6,7 +6,7 @@ import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import UserMapState from "./UserMap/UserMap.state";
 
-type CountryUsersType = {
+export type CountryUsersType = {
   countryName: string;
   cities: Record<string, DocumentData[]>;
 };
@@ -69,7 +69,9 @@ class PeopleState {
     // INIT USERS BY COUNTRY
     this.usersByCountry = {};
     this.users.forEach((user) => {
-      let { countryAbbr, cityId } = user;
+      // let { countryAbbr, cityId } = user;
+      const countryAbbr = user.countryAbbr;
+      let cityId = user.cityId;
 
       if (!cityId) cityId = "No city listed";
 
@@ -145,4 +147,5 @@ class PeopleState {
   }
 }
 
-export default new PeopleState();
+const peopleState = new PeopleState();
+export default peopleState;

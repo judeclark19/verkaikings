@@ -1,17 +1,18 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { CountryUsersType } from "../People.state";
 
 class UserMapState {
   users: DocumentData[] = [];
-  usersByCountry: Record<string, any> = {};
+  usersByCountry: Record<string, CountryUsersType> = {};
   isInitialized = false;
-  mapItems: any[] = [];
+  mapItems: { cityId: string; users: DocumentData[] }[] = [];
   cityNames: Record<string, string> = {};
   openInfoWindow: google.maps.InfoWindow | null = null; // Track the open InfoWindow
 
   constructor(
     users: DocumentData[],
-    usersByCountry: Record<string, any>,
+    usersByCountry: Record<string, CountryUsersType>,
     cityNames: Record<string, string>
   ) {
     makeAutoObservable(this);
@@ -76,7 +77,7 @@ class UserMapState {
     });
 
     const contentString = `<div style="color: black;">
-        <strong>${this.cityNames[place.place_id as string]}</strong>
+        <strong>${this.cityNames[place.place_id!]}</strong>
         <ul>
         ${users
           .map(

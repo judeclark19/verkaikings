@@ -46,6 +46,7 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
       }
     });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const userLocale = navigator.language;
     const localeCountryCode = userLocale.split("-")[1]?.toLowerCase();

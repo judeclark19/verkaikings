@@ -73,4 +73,5 @@ class MyProfileState {
   }
 }
 
-export default new MyProfileState();
+const myProfileState = new MyProfileState();
+export default myProfileState;

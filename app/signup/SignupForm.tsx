@@ -22,6 +22,7 @@ const isPhoneValid = (phone: string) => {
   try {
     return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
   } catch (error) {
+    console.error("Error validating phone number:", error);
     return false;
   }
 };
@@ -102,9 +103,14 @@ const SignupForm = () => {
       });
 
       window.location.href = "/profile"; // Redirect to profile page after sign-up
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false); // Stop loading if there's an error
+    } catch (err: unknown) {
+      // Check if err is a Firebase error with a message
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
+      setLoading(false); // Stop loading on error
     }
   };
 
