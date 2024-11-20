@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import MyProfile from "./MyProfile";
 
-import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
+import { decodeToken } from "@/lib/serverUtils";
 
 export const metadata: Metadata = {
-  title: "My Profile | Verkaikings"
+  title: "My Profile | Willemijn's World Website"
 };
 
 function ProfilePage() {

@@ -47,7 +47,7 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
           if (userData.email === decodedToken.email) {
             setIsSelf(true);
           }
-          document.title = `${userData.username}'s Profile | Verkaikings`; // Set the document title
+          document.title = `${userData.username}'s Profile | Willemijn's World Website`; // Set the document title
         } else {
           setError(`User with username ${username} not found.`);
         }

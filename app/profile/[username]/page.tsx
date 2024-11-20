@@ -3,7 +3,7 @@ import UserProfile from "./UserProfile";
 import { decodeToken } from "@/lib/serverUtils";
 
 export const metadata: Metadata = {
-  title: "User Profile | Verkaikings"
+  title: "User Profile | Willemijn's World Website"
 };
 
 function ProfilePage() {

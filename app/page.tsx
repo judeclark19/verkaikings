@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Verkaikings",
+  title: "Willemijn's World Website",
   icons: {
     icon: ["/favicon.ico"],
     apple: ["/apple-touch-icon.png"],
@@ -17,9 +17,9 @@ export default function Home() {
   const decodedToken = decodeToken();
 
   return (
-    <div>
-      <Typography variant="h1">Verkaikings</Typography>
-      <Typography variant="h2">Willemijn Verkaik fan club</Typography>
+    <div style={{ textAlign: "center" }}>
+      <Typography variant="h1">Willemijn's World Website</Typography>
+      <Typography variant="h2">Verkaikings Society</Typography>
       <WelcomeMessage
         isLoggedIn={!!token}
         email={decodedToken ? decodedToken.email : null}

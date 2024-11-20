@@ -35,6 +35,20 @@ class PeopleState {
   async init(users: DocumentData[], viewingBy: PeopleViews) {
     this.users = users;
 
+    this.initLocationAndCityNames();
+
+    this.setViewingBy(viewingBy);
+
+    this.initUsersByCountry();
+
+    this.initUsersByBirthday();
+
+    this.initUserMap(users);
+
+    this.setIsFetched(true);
+  }
+
+  async initLocationAndCityNames() {
     // INIT LOCATION AND CITY NAMES
     for (const user of this.users) {
       if (!this.locationNames[user.cityId]) {
@@ -49,9 +63,9 @@ class PeopleState {
         }
       }
     }
+  }
 
-    this.setViewingBy(viewingBy);
-
+  initUsersByCountry() {
     // INIT USERS BY COUNTRY
     this.usersByCountry = {};
     this.users.forEach((user) => {
@@ -81,7 +95,9 @@ class PeopleState {
         this.usersByCountry[countryAbbr].cities[cityId].push(user);
       }
     });
+  }
 
+  initUsersByBirthday() {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
     this.users.forEach((user) => {
@@ -109,15 +125,15 @@ class PeopleState {
         this.usersByBirthday[month][day].push(user);
       }
     });
+  }
 
+  initUserMap(users: DocumentData[]) {
     // INIT USER MAP
     this.userMap = new UserMapState(
       users,
       this.usersByCountry,
       this.locationNames
     );
-
-    this.setIsFetched(true);
   }
 
   setIsFetched(isFetched: boolean) {

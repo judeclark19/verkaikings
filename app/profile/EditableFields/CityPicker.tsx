@@ -55,6 +55,7 @@ const CityPicker = observer(
       })
         .then(() => {
           myProfileState.setCountryNameFromPlaceId(myProfileState.placeId);
+          myProfileState.setCountryAbbr(countryAbbr);
           console.log(
             "User's city updated successfully",
             myProfileState.cityName

@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import peopleState, { PeopleViews } from "./People.state";
 import { DocumentData } from "firebase/firestore";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
@@ -30,33 +30,49 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
     router.replace(`?viewBy=${peopleState.viewingBy.toLowerCase()}`);
   }, [peopleState.viewingBy, router]);
 
+  const handleViewChange = (view: PeopleViews) => {
+    peopleState.setViewingBy(view);
+  };
+
   return (
     <div>
-      <FormControl fullWidth>
-        <InputLabel id="people-list-select-label">View people by:</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="people-list-select"
-          value={peopleState.viewingBy}
-          label="View people by:"
-          onChange={(e) =>
-            peopleState.setViewingBy(
-              e.target.value.toLowerCase() as PeopleViews
-            )
-          }
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: "1rem"
+        }}
+      >
+        <Typography variant="h3" gutterBottom>
+          View people by:
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "1rem"
+          }}
         >
-          <MenuItem value="name">Name (Alphabetical)</MenuItem>
-          <MenuItem value="location">Location (Country and City)</MenuItem>
-          <MenuItem value="birthday">Birthday</MenuItem>
-          <MenuItem value="map">Map</MenuItem>
-        </Select>
-      </FormControl>
+          {Object.values(PeopleViews).map((view) => (
+            <Button
+              key={view}
+              variant={
+                peopleState.viewingBy === view ? "contained" : "outlined"
+              }
+              onClick={() => handleViewChange(view)}
+            >
+              {view.charAt(0).toUpperCase() + view.slice(1)} {/* Capitalize */}
+            </Button>
+          ))}
+        </Box>
+      </Box>
 
       {peopleState.viewingBy === "name" && <ByName />}
       {peopleState.viewingBy === "location" && <ByLocation />}
       {peopleState.viewingBy === "birthday" && <ByBirthday />}
       {peopleState.viewingBy === "map" && <UserMap />}
-      {/* TODO: view all willemijn stories, view all socials? view by age or add age to birthday list? */}
     </div>
   );
 });

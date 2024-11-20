@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,56 +8,28 @@ import {
   Button,
   IconButton,
   Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Box,
-  ListItemIcon
+  Box
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { AppRegistration } from "@mui/icons-material";
 import { navLinks } from "./navLinks";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 import SubmenuDropdown from "./SubmenuDropdown";
-import DrawerLink from "./DrawerLink";
-import { styled } from "styled-components";
+import DrawerUI from "./DrawerUI";
 
-const ListStyle = styled(List)`
-  a,
-  .navLink {
-    color: white;
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
-
-const WhiteLine = styled.li`
-  position: relative;
-
-  a {
-    padding-left: 0;
-  }
-
-  &::before {
-    content: "";
-    display: inline-block;
-    position: absolute;
-    width: 2px;
-    height: 100%;
-    background-color: white;
-    margin-right: 8px;
-    left: -24px;
-  }
-`;
+const verticalDivider = (
+  <Box
+    sx={{
+      height: "auto",
+      width: "2px",
+      backgroundColor: "text.secondary",
+      margin: "0 16px"
+    }}
+  />
+);
 
 const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -83,95 +55,25 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 
   const isActive = (path: string) => pathname === path;
 
-  // Drawer content for mobile view
-  const drawerContent = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h5" sx={{ my: 2 }}>
-        Verkaikings
-      </Typography>
-      <ListStyle>
-        {navLinks
-          .filter((link) => {
-            if (link.protected) {
-              return isLoggedIn;
-            }
-            return true;
-          })
-          .map((link) => {
-            if (link.submenu)
-              return (
-                <div key={link.title}>
-                  <ul style={{ paddingLeft: "52px", listStyle: "none" }}>
-                    <li style={{ textAlign: "left", position: "relative" }}>
-                      <Box
-                        component="span"
-                        sx={{
-                          position: "absolute",
-                          left: "-30px",
-                          top: "6px",
-                          width: "12px",
-                          height: "12px",
-                          border: "2px solid white",
-                          borderRadius: "50%"
-                        }}
-                      />
-                      {link.title}
-                      <ul style={{ padding: "0", listStyle: "none" }}>
-                        {link.submenu.map((submenuLink) => (
-                          <WhiteLine key={submenuLink.href}>
-                            <DrawerLink link={submenuLink} />
-                          </WhiteLine>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-              );
-            else return <DrawerLink key={link.href} link={link} />;
-          })}
-
-        <ListItem
-          onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
-          sx={{ fontWeight: "inherit" }}
-          className="navLink"
-        >
-          <ListItemIcon>
-            {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
-          </ListItemIcon>
-
-          <ListItemText
-            primary={isLoggedIn ? "Log Out" : "Log In"}
-            primaryTypographyProps={{
-              fontWeight: isActive("/login") ? "700" : "400"
-            }}
-          />
-        </ListItem>
-
-        {!isLoggedIn && (
-          <ListItem
-            component={Link}
-            href="/signup"
-            sx={{ fontWeight: "inherit" }}
-          >
-            <ListItemIcon>
-              <AppRegistration />
-            </ListItemIcon>
-
-            <ListItemText
-              primary="Sign Up"
-              primaryTypographyProps={{
-                fontWeight: isActive("/signup") ? "700" : "400"
-              }}
-            />
-          </ListItem>
-        )}
-      </ListStyle>
-    </Box>
-  );
+  const getNavLinkStyle = (link: string) => {
+    return {
+      fontWeight: isActive(link) ? "700" : "400",
+      backgroundColor: isActive(link) ? "primary.dark" : "transparent",
+      "&:hover": {
+        textDecoration: "underline"
+      }
+    };
+  };
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "primary.main",
+          color: "text.secondary"
+        }}
+      >
         <Toolbar
           sx={{
             width: "1400px",
@@ -184,24 +86,28 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ display: { sm: "none" }, mr: 2 }}
+            sx={{ display: { m: "none" }, mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h6"
+            variant="h3"
             component={Link}
             href="/"
             sx={{
               flexGrow: 1,
-              display: { xs: "none", sm: "block" },
+              display: { xs: "none", md: "block" },
               color: "inherit",
               textDecoration: "none"
             }}
           >
-            Verkaikings
+            Willemijn's World
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "flex" } }}>
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" }
+            }}
+          >
             {navLinks
               .filter((link) => {
                 if (link.protected) {
@@ -211,44 +117,45 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               })
               .map((link) => {
                 if (link.submenu)
-                  return <SubmenuDropdown key={link.title} parentLink={link} />;
+                  return (
+                    <Fragment key={link.title}>
+                      <SubmenuDropdown parentLink={link} />
+                      {verticalDivider}
+                    </Fragment>
+                  );
                 return (
-                  <Button
-                    key={link.href}
-                    color="inherit"
-                    component={Link}
-                    href={link.href}
-                    sx={{
-                      fontWeight: isActive(link.href) ? "700" : "400",
-                      textDecoration: isActive(link.href) ? "underline" : "none"
-                    }}
-                  >
-                    {link.title}
-                  </Button>
+                  <Fragment key={link.href}>
+                    <Button
+                      color="inherit"
+                      component={Link}
+                      href={link.href}
+                      sx={getNavLinkStyle(link.href)}
+                    >
+                      {link.title}
+                    </Button>
+                    {verticalDivider}
+                  </Fragment>
                 );
               })}
             <Button
               color="inherit"
               onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
-              sx={{
-                fontWeight: isActive("/login") ? "700" : "400",
-                textDecoration: isActive("/login") ? "underline" : "none"
-              }}
+              sx={getNavLinkStyle("/login")}
             >
               {isLoggedIn ? "Log Out" : "Log In"}
             </Button>
             {!isLoggedIn && (
-              <Button
-                color="inherit"
-                component={Link}
-                href="/signup"
-                sx={{
-                  fontWeight: isActive("/signup") ? "700" : "400",
-                  textDecoration: isActive("/signup") ? "underline" : "none"
-                }}
-              >
-                Sign Up
-              </Button>
+              <>
+                {verticalDivider}
+                <Button
+                  color="inherit"
+                  component={Link}
+                  href="/signup"
+                  sx={getNavLinkStyle("/signup")}
+                >
+                  Sign Up
+                </Button>
+              </>
             )}
           </Box>
         </Toolbar>
@@ -262,11 +169,21 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             keepMounted: true // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 }
+            display: { xs: "block", md: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: 240,
+
+              backgroundColor: "primary.main",
+              color: "text.secondary"
+            }
           }}
         >
-          {drawerContent}
+          <DrawerUI
+            isLoggedIn={isLoggedIn}
+            handleLogout={handleLogout}
+            handleDrawerToggle={handleDrawerToggle}
+          />
         </Drawer>
       </Box>
     </>

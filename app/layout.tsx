@@ -15,8 +15,15 @@ export default function RootLayout({
 }) {
   return (
     <html>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className={inter.className}>
         {/* Google Maps API Script */}
+
         <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&loading=async&libraries=places,marker`}
           strategy="beforeInteractive"

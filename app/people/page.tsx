@@ -3,7 +3,7 @@ import { fetchUsers } from "@/lib/serverUtils";
 import PeopleList from "./PeopleList";
 
 export const metadata: Metadata = {
-  title: "People | Verkaikings"
+  title: "People | Willemijn's World Website"
 };
 
 const PeoplePage = async () => {

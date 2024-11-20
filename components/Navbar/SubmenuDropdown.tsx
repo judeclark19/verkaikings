@@ -1,20 +1,23 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { NavLinkType } from "./navLinks";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useState, MouseEvent } from "react";
 
 export default function SubmenuDropdown({
   parentLink
 }: {
   parentLink: NavLinkType;
 }) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const pathname = usePathname();
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const searchParams = useSearchParams();
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -34,8 +37,24 @@ export default function SubmenuDropdown({
         color="inherit"
         sx={{
           fontWeight: isActive(parentLink.href) ? "700" : "400",
-          textDecoration: isActive(parentLink.href) ? "underline" : "none"
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: isActive(parentLink.href)
+            ? "primary.dark"
+            : "transparent",
+
+          "&:hover": {
+            textDecoration: "underline"
+          }
         }}
+        endIcon={
+          <ArrowDropDownIcon
+            sx={{
+              transition: "transform 0.3s ease",
+              transform: open ? "rotate(180deg)" : "rotate(360deg)"
+            }}
+          />
+        }
       >
         People
       </Button>
@@ -45,23 +64,47 @@ export default function SubmenuDropdown({
         open={open}
         onClose={handleClose}
         MenuListProps={{
-          "aria-labelledby": "submenu-button"
+          "aria-labelledby": "submenu-button",
+          role: "menu"
+        }}
+        sx={{
+          "& .MuiMenu-paper": {
+            backgroundColor: "primary.dark",
+            color: "text.primary"
+          },
+          "& .MuiMenu-list": {
+            backgroundColor: "primary.dark"
+          }
         }}
       >
-        {parentLink.submenu!.map((link) => (
-          <MenuItem
-            key={link.href}
-            onClick={handleClose}
-            component={Link}
-            href={link.href}
-            sx={{
-              fontWeight: isActive(link.href) ? "700" : "400",
-              textDecoration: isActive(link.href) ? "underline" : "none"
-            }}
-          >
-            {link.title}
-          </MenuItem>
-        ))}
+        {parentLink.submenu!.map((link) => {
+          return (
+            <MenuItem
+              key={link.href}
+              onClick={handleClose}
+              component={Link}
+              href={link.href}
+              sx={{
+                fontWeight: isActive(link.href) ? "700" : "400",
+                textDecoration: isActive(link.href) ? "underline" : "none",
+                fontSize: "14px",
+                backgroundColor:
+                  isActive(parentLink.href) &&
+                  searchParams.get(parentLink.paramKey!) === link.paramValue
+                    ? "primary.main"
+                    : "primary.dark",
+                color: "text.secondary",
+                "&:hover": {
+                  textDecoration: "underline",
+                  backgroundColor: "primary.main"
+                },
+                padding: "0.75rem 1.5rem"
+              }}
+            >
+              {link.title.toUpperCase()}
+            </MenuItem>
+          );
+        })}
       </Menu>
     </div>
   );
