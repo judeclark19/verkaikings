@@ -41,8 +41,13 @@ const LoginForm = () => {
 
       // Force server-side navigation to ensure middleware checks the cookie
       window.location.href = "/profile"; // Triggers full page load
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      // Check if err is a Firebase error with a message
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
       setLoading(false); // Stop loading on error
     }
   };
@@ -99,7 +104,7 @@ const LoginForm = () => {
           mt: 4
         }}
       >
-        Don't have an account? <Link href="/signup">Sign up</Link>
+        Don&apos;t have an account? <Link href="/signup">Sign up</Link>
       </Typography>
     </Box>
   );

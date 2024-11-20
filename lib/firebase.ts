@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, Auth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Import Firestore
 
 const firebaseConfig = {
@@ -22,7 +22,7 @@ export const auth: Auth = getAuth(app);
 export const db = getFirestore(app); // Initialize Firestore
 
 // Auth listener for state changes
-export const authListener = (callback: (user: any) => void) => {
+export const authListener = (callback: (user: User | null) => void) => {
   onAuthStateChanged(auth, (user) => {
     callback(user);
   });

@@ -25,24 +25,24 @@ const ListStyle = styled(List)`
   }
 `;
 
-const VerticalLine = styled("li")`
-  position: relative;
+// const VerticalLine = styled("li")`
+//   position: relative;
 
-  a {
-    padding-left: 0;
-  }
+//   a {
+//     padding-left: 0;
+//   }
 
-  &::before {
-    content: "";
-    display: inline-block;
-    position: absolute;
-    width: 2px;
-    height: 100%;
-    background-color: #232323;
-    margin-right: 8px;
-    left: -24px;
-  }
-`;
+//   &::before {
+//     content: "";
+//     display: inline-block;
+//     position: absolute;
+//     width: 2px;
+//     height: 100%;
+//     background-color: #232323;
+//     margin-right: 8px;
+//     left: -24px;
+//   }
+// `;
 
 function DrawerUI({
   isLoggedIn,
@@ -61,7 +61,7 @@ function DrawerUI({
   return (
     <Box onClick={handleDrawerToggle}>
       <Typography variant="h4" sx={{ my: 2, ml: 2 }}>
-        Willemijn's World Website
+        Willemijn&apos;s World Website
       </Typography>
       <ListStyle>
         {navLinks

@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <Typography variant="h1">Willemijn's World Website</Typography>
+      <Typography variant="h1">Willemijn&apos;s World Website</Typography>
       <Typography variant="h2">Verkaikings Society</Typography>
       <WelcomeMessage
         isLoggedIn={!!token}

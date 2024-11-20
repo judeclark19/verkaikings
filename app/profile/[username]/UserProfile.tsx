@@ -22,7 +22,11 @@ import {
 import MyProfile from "../MyProfile";
 import Link from "next/link";
 
-const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
+const UserProfile = ({
+  decodedToken
+}: {
+  decodedToken: { email: string; user_id: string };
+}) => {
   const params = useParams();
   const { username } = params;
   const [isSelf, setIsSelf] = useState(false);
@@ -30,6 +34,7 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
   const [error, setError] = useState(""); // Error state
   const [cityName, setCityName] = useState<string | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -52,6 +57,7 @@ const UserProfile = ({ decodedToken }: { decodedToken: any }) => {
           setError(`User with username ${username} not found.`);
         }
       } catch (err) {
+        console.error(err);
         setError("Error fetching user data.");
       }
     };
