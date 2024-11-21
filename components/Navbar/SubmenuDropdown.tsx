@@ -40,7 +40,7 @@ export default function SubmenuDropdown({
           display: "flex",
           alignItems: "center",
           backgroundColor: isActive(parentLink.href)
-            ? "primary.dark"
+            ? "primary.main"
             : "transparent",
 
           "&:hover": {
@@ -69,11 +69,11 @@ export default function SubmenuDropdown({
         }}
         sx={{
           "& .MuiMenu-paper": {
-            backgroundColor: "primary.dark",
+            backgroundColor: "primary.main",
             color: "text.primary"
           },
           "& .MuiMenu-list": {
-            backgroundColor: "primary.dark"
+            backgroundColor: "primary.main"
           }
         }}
       >
@@ -91,12 +91,12 @@ export default function SubmenuDropdown({
                 backgroundColor:
                   isActive(parentLink.href) &&
                   searchParams.get(parentLink.paramKey!) === link.paramValue
-                    ? "primary.main"
-                    : "primary.dark",
-                color: "text.secondary",
+                    ? "primary.dark"
+                    : "primary.main",
+                color: "background.default",
                 "&:hover": {
                   textDecoration: "underline",
-                  backgroundColor: "primary.main"
+                  backgroundColor: "primary.dark"
                 },
                 padding: "0.75rem 1.5rem"
               }}

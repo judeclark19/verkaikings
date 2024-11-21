@@ -126,6 +126,17 @@ const SignupForm = () => {
       <Typography variant="h2" gutterBottom>
         Sign Up
       </Typography>
+      <Typography
+        gutterBottom
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        This website is only for members of the &ldquo;Willemijn as
+        Always&rdquo; WhatsApp group.
+        <br />
+        Please enter the phone number that you use in WhatsApp to continue.
+      </Typography>
       {signupStage === 1 && (
         <>
           <form
@@ -154,7 +165,7 @@ const SignupForm = () => {
               sx={{ mt: 2 }}
               onClick={() => {
                 setError(
-                  "Sorry, that phone number was not found on our members list."
+                  "Sorry, that phone number was not found on our members list. If you think this may be a mistake, please message Jude Clark in WhatsApp."
                 );
               }}
             >

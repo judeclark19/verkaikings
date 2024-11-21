@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import DateOfBirthPicker from "./DateOfBirthPicker";
 import { Typography } from "@mui/material";
-import EditFieldBtn from "./EditFieldBtn";
 import { checkIfBirthdayToday, formatBirthday } from "@/lib/clientUtils";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
+import EditBtn from "./EditBtn";
 
 const DateOfBirth = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const DateOfBirth = observer(() => {
               : ""}{" "}
             {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
           </Typography>
-          <EditFieldBtn setState={setIsEditing} />
+          <EditBtn setIsEditing={setIsEditing} />
         </div>
       )}
     </>

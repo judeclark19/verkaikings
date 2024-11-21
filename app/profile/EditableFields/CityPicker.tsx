@@ -1,12 +1,13 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { TextField, Button, CircularProgress } from "@mui/material";
+import { TextField } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
 import { fetchCountryInfoByPlaceId, getCityAndState } from "@/lib/clientUtils";
 import myProfileState from "../MyProfile.state";
+import SaveBtn from "./SaveBtn";
 
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -40,13 +41,44 @@ const CityPicker = observer(
 
     const handleSubmit = async (event: FormEvent) => {
       event.preventDefault();
-      const userDoc = doc(db, "users", myProfileState.userId!);
-      setLoading(true);
 
+      const changedCity =
+        myProfileState.placeId !== myProfileState.user!.cityId;
+
+      const userDoc = doc(db, "users", myProfileState.userId!);
       const { countryAbbr, countryName } = await fetchCountryInfoByPlaceId(
         myProfileState.placeId
       );
 
+      // case 1: user clears the city
+      if (inputRef.current!.value === "") {
+        setLoading(true);
+        updateDoc(userDoc, {
+          cityId: null,
+          cityName: null
+        })
+          .then(() => {
+            console.log("User's city removed.", myProfileState.cityName);
+          })
+          .catch((error) => {
+            console.error("Error updating user's city: ", error);
+          })
+          .finally(() => {
+            setLoading(false);
+            setIsEditing(false);
+          });
+
+        return;
+      }
+
+      // case 2: user does not change the city
+      if (!changedCity) {
+        setIsEditing(false);
+        return;
+      }
+
+      // case 3: user changes the city
+      setLoading(true);
       updateDoc(userDoc, {
         cityId: myProfileState.placeId,
         cityName: myProfileState.cityName,
@@ -90,13 +122,7 @@ const CityPicker = observer(
           }}
           sx={{ margin: "10px 0", width: "300px", maxWidth: "100%" }}
         />
-        <Button type="submit" variant="contained">
-          {loading ? (
-            <CircularProgress size={24} sx={{ color: "white" }} />
-          ) : (
-            "Save"
-          )}
-        </Button>
+        <SaveBtn loading={loading} />
       </form>
     );
   }

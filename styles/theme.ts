@@ -12,8 +12,8 @@ const darkTheme = createTheme({
       dark: "#A3AE6A" // dark green
     },
     text: {
-      primary: "#ffffff", // White text color
-      secondary: "#232323" // Dark text
+      primary: "#FFFFFF", // Input and select values
+      secondary: "rgba(255, 255, 255, 0.7)" // Input and Select colors
     },
     background: {
       default: "#232323" // Dark background color
@@ -66,14 +66,27 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiInputLabel-root": {
-            color: "rgba(255, 255, 255, 0.7)" // Adjust label color
+            color: "rgba(255, 255, 255, 0.7)"
           },
           "& .MuiInputBase-input::placeholder": {
-            color: "rgba(255, 255, 255, 0.7)" // Adjust placeholder color
+            color: "rgba(255, 255, 255, 0.7)"
           }
         }
       }
     }
+    // MuiSelect: {
+    //   styleOverrides: {
+    //     root: {
+    //       "& .MuiInputLabel-root": {
+    //         // color: "inherit"
+    //         color: "rgba(255, 255, 255, 0.7)" // Label color for Select
+    //       },
+    //       "& .MuiSelect-select": {
+    //         color: "rgba(255, 255, 255, 0.7)" // Adjust selected value color
+    //       }
+    //     }
+    //   }
+    // }
   }
 });
 

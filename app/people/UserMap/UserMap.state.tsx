@@ -76,13 +76,19 @@ class UserMapState {
       title: place.name
     });
 
-    const contentString = `<div style="color: black;">
-        <strong>${this.cityNames[place.place_id!]}</strong>
+    const contentString = `<div class="info-window">
+        <h2>${this.cityNames[place.place_id!]}</h2>
         <ul>
         ${users
           .map(
             (user) =>
-              `<li><a href="/profile/${user.username}">${user.firstName} ${user.lastName}</a></li>`
+              `<li>
+                <a href="/profile/${user.username}">
+                  <button>
+                  ${user.firstName} ${user.lastName}
+                  </button>
+                </a>
+              </li>`
           )
           .join("")}
         </ul>

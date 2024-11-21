@@ -25,25 +25,6 @@ const ListStyle = styled(List)`
   }
 `;
 
-// const VerticalLine = styled("li")`
-//   position: relative;
-
-//   a {
-//     padding-left: 0;
-//   }
-
-//   &::before {
-//     content: "";
-//     display: inline-block;
-//     position: absolute;
-//     width: 2px;
-//     height: 100%;
-//     background-color: #232323;
-//     margin-right: 8px;
-//     left: -24px;
-//   }
-// `;
-
 function DrawerUI({
   isLoggedIn,
   handleDrawerToggle,
@@ -60,8 +41,8 @@ function DrawerUI({
 
   return (
     <Box onClick={handleDrawerToggle}>
-      <Typography variant="h4" sx={{ my: 2, ml: 2 }}>
-        Willemijn&apos;s World Website
+      <Typography variant="h3" sx={{ my: 2, ml: 2 }}>
+        Willemijn&apos;s World
       </Typography>
       <ListStyle>
         {navLinks
@@ -104,12 +85,11 @@ function DrawerUI({
                       component={Link}
                       href={link.href}
                       sx={{
-                        marginLeft: "3px",
-                        padding: "8px 16px",
-                        color: "text.secondary"
+                        padding: "8px 16px 8px 4px",
+                        color: "background.default"
                       }}
                     >
-                      {link.title}
+                      {link.title.toUpperCase()}
                     </Typography>
                   </Box>
                   <Box
@@ -117,6 +97,7 @@ function DrawerUI({
                     sx={{
                       padding: 0,
                       margin: 0,
+                      marginLeft: "-15px",
                       listStyle: "none",
                       position: "relative"
                     }}
@@ -125,7 +106,7 @@ function DrawerUI({
                     <Box
                       sx={{
                         position: "absolute",
-                        left: "-24px",
+                        left: "-11px",
                         top: 0,
                         bottom: 0,
                         width: "2px",
@@ -168,7 +149,7 @@ function DrawerUI({
         >
           <ListItemIcon
             sx={{
-              color: "text.secondary"
+              color: "background.default"
             }}
           >
             {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
@@ -190,7 +171,7 @@ function DrawerUI({
             href="/signup"
             sx={{
               fontWeight: "inherit",
-              color: "text.secondary",
+              color: "background.default",
               backgroundColor: isActive("/signup")
                 ? "primary.dark"
                 : "transparent"
@@ -198,7 +179,7 @@ function DrawerUI({
           >
             <ListItemIcon
               sx={{
-                color: "text.secondary"
+                color: "background.default"
               }}
             >
               <AppRegistration />
