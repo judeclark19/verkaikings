@@ -1,12 +1,13 @@
 import { useState } from "react";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import { Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { CircularProgress, Fab, TextField, Typography } from "@mui/material";
 import myProfileState from "../MyProfile.state";
-import EditFieldBtn from "./EditFieldBtn";
+import EditIcon from "@mui/icons-material/Edit";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
+import SaveIcon from "@mui/icons-material/Save";
 
 const Instagram = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -17,6 +18,11 @@ const Instagram = observer(() => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (myProfileState.instagram === temp) {
+      setIsEditing(false);
+      return;
+    }
 
     const userDoc = doc(db, "users", myProfileState.userId!);
     setLoading(true);
@@ -58,22 +64,21 @@ const Instagram = observer(() => {
             }}
             sx={{ margin: "10px 0", width: "300px", maxWidth: "100%" }}
           />
-          <Button
-            variant="outlined"
-            onClick={() => {
-              myProfileState.setInstagram(temp);
-              setIsEditing(false);
+          <Fab
+            type="submit"
+            color="secondary"
+            size="medium"
+            aria-label="save"
+            sx={{
+              flexShrink: 0
             }}
           >
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained">
             {loading ? (
               <CircularProgress size={24} sx={{ color: "white" }} />
             ) : (
-              "Save"
+              <SaveIcon />
             )}
-          </Button>
+          </Fab>
         </form>
       ) : (
         <div
@@ -101,7 +106,16 @@ const Instagram = observer(() => {
               <InstagramIcon />
             )}
           </Typography>
-          <EditFieldBtn setState={setIsEditing} />
+          <Fab
+            size="medium"
+            color="secondary"
+            aria-label="edit"
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
+            <EditIcon />
+          </Fab>
         </div>
       )}
     </>

@@ -43,8 +43,6 @@ class PeopleState {
 
     this.initUsersByBirthday();
 
-    this.initUserMap(users);
-
     this.setIsFetched(true);
   }
 
@@ -63,6 +61,8 @@ class PeopleState {
         }
       }
     }
+
+    this.initUserMap(this.users);
   }
 
   initUsersByCountry() {

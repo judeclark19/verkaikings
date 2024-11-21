@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import peopleState from "../People.state";
-import { Skeleton } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 
 const UserMap = observer(() => {
   useEffect(() => {
@@ -19,11 +19,19 @@ const UserMap = observer(() => {
     }
   }, [peopleState.userMap]);
 
-  if (!peopleState.userMap) return;
-  <div style={{ width: "100%", height: "600px" }}>
-    <Skeleton />
-  </div>;
-  return <div id="map" style={{ width: "100%", height: "600px" }} />;
+  return (
+    <>
+      <Typography variant="h1">Map of Verkaikings</Typography>
+
+      {peopleState.userMap ? (
+        <div id="map" style={{ width: "100%", height: "600px" }} />
+      ) : (
+        <div style={{ width: "100%", height: "600px" }}>
+          <Skeleton />
+        </div>
+      )}
+    </>
+  );
 });
 
 export default UserMap;

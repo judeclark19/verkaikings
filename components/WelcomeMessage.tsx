@@ -13,9 +13,12 @@ const WelcomeMessage = ({
 
   return (
     <Typography component="p">
-      Please{" "}
       <Link href="/login" style={{ color: "white" }}>
-        log in
+        Log in
+      </Link>{" "}
+      or{" "}
+      <Link href="/signup" style={{ color: "white" }}>
+        sign up
       </Link>
       .
     </Typography>

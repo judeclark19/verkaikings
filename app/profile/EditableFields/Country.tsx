@@ -1,10 +1,10 @@
 import { Skeleton, Typography } from "@mui/material";
 import { useState } from "react";
-import EditFieldBtn from "./EditFieldBtn";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
 import { getCountryNameByLocale } from "@/lib/clientUtils";
+import EditBtn from "./EditBtn";
 
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -27,7 +27,7 @@ const Country = observer(() => {
           <Typography component="p">
             Country: {getCountryNameByLocale(myProfileState.countryAbbr)}
           </Typography>
-          <EditFieldBtn setState={setIsEditing} />
+          <EditBtn setIsEditing={setIsEditing} />
         </div>
       )}
     </>

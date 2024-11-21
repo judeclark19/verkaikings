@@ -4,16 +4,16 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Button,
-  CircularProgress,
   Box,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Fab
 } from "@mui/material";
 import { countries } from "countries-list";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import SaveBtn from "./SaveBtn";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -43,28 +43,31 @@ const CountryPicker = observer(
       const changedCountry =
         myProfileState.countryAbbr !== myProfileState.user!.countryAbbr;
 
-      if (changedCountry) {
-        const userDoc = doc(db, "users", myProfileState.userId!);
-        setLoading(true);
-
-        updateDoc(userDoc, {
-          countryAbbr: myProfileState.countryAbbr,
-          countryName: myProfileState.countryName,
-          cityId: null
-        })
-          .then(() => {
-            console.log("Country updated");
-            myProfileState.setCityName(null);
-            myProfileState.setPlaceId(null);
-          })
-          .catch((error) => {
-            console.error("Error updating document: ", error);
-          })
-          .finally(() => {
-            setLoading(false);
-            setIsEditing(false);
-          });
+      if (!changedCountry) {
+        setIsEditing(false);
+        return;
       }
+
+      const userDoc = doc(db, "users", myProfileState.userId!);
+      setLoading(true);
+
+      updateDoc(userDoc, {
+        countryAbbr: myProfileState.countryAbbr,
+        countryName: myProfileState.countryName,
+        cityId: null
+      })
+        .then(() => {
+          console.log("Country updated");
+          myProfileState.setCityName(null);
+          myProfileState.setPlaceId(null);
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+        })
+        .finally(() => {
+          setLoading(false);
+          setIsEditing(false);
+        });
     };
 
     return (
@@ -94,13 +97,7 @@ const CountryPicker = observer(
               ))}
             </Select>
 
-            <Button type="submit" variant="contained">
-              {loading ? (
-                <CircularProgress size={24} sx={{ color: "white" }} />
-              ) : (
-                "Save"
-              )}
-            </Button>
+            <SaveBtn loading={loading} />
           </Box>
         </FormControl>
       </form>

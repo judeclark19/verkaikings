@@ -1,16 +1,20 @@
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { getEmojiFlag } from "countries-list";
 import { DocumentData } from "firebase-admin/firestore";
 import Link from "next/link";
-import React from "react";
 
 function UserListItem({ user }: { user: DocumentData }) {
   const getText = () => {
+    let text = `${getEmojiFlag(user.countryAbbr.toUpperCase())} ${
+      user.firstName
+    } ${user.lastName}`;
+
     if (checkIfBirthdayToday(user.birthday)) {
-      return `${user.firstName} ${user.lastName} 🎂`;
-    } else {
-      return `${user.firstName} ${user.lastName}`;
+      text += " 🎂";
     }
+
+    return text;
   };
 
   return (

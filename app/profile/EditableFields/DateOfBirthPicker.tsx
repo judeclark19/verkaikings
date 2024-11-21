@@ -3,11 +3,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
-import { Button, CircularProgress } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
+import SaveBtn from "./SaveBtn";
 
 const DatePickerForm = observer(
   ({
@@ -61,13 +61,7 @@ const DatePickerForm = observer(
             onChange={(newValue) => setValue(newValue)}
           />
         </LocalizationProvider>
-        <Button type="submit" variant="contained">
-          {loading ? (
-            <CircularProgress size={24} sx={{ color: "white" }} />
-          ) : (
-            "Save"
-          )}
-        </Button>
+        <SaveBtn loading={loading} />
       </form>
     );
   }

@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import peopleState, { PeopleViews } from "./People.state";
 import { DocumentData } from "firebase/firestore";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, ButtonGroup } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
@@ -41,32 +41,28 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginBottom: "1rem"
+          marginBottom: "2rem"
         }}
       >
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" sx={{ marginBottom: "2rem" }}>
           View people by:
         </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "1rem"
-          }}
-        >
+        <ButtonGroup variant="contained" aria-label="Basic button group">
           {Object.values(PeopleViews).map((view) => (
             <Button
               key={view}
-              variant={
-                peopleState.viewingBy === view ? "contained" : "outlined"
-              }
               onClick={() => handleViewChange(view)}
+              sx={{
+                backgroundColor:
+                  peopleState.viewingBy === view
+                    ? "primary.dark"
+                    : "primary.main"
+              }}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)} {/* Capitalize */}
             </Button>
           ))}
-        </Box>
+        </ButtonGroup>
       </Box>
 
       {peopleState.viewingBy === "name" && <ByName />}

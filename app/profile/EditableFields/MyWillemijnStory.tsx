@@ -1,16 +1,10 @@
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import { useState } from "react";
-import EditFieldBtn from "./EditFieldBtn";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  TextField,
-  Typography
-} from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { EditBtn, SaveBtn } from ".";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
@@ -24,6 +18,11 @@ const MyWillemijnStory = observer(() => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (myProfileState.myWillemijnStory === temp) {
+      setIsEditing(false);
+      return;
+    }
 
     setLoading(true);
     updateDoc(userDoc, {
@@ -68,7 +67,7 @@ const MyWillemijnStory = observer(() => {
             onChange={(e) => myProfileState.setMyWillemijnStory(e.target.value)}
             variant="outlined"
           />
-          <Button
+          {/* <Button
             variant="outlined"
             onClick={() => {
               myProfileState.setMyWillemijnStory(temp);
@@ -76,15 +75,8 @@ const MyWillemijnStory = observer(() => {
             }}
           >
             Cancel
-          </Button>
-
-          <Button type="submit" variant="contained" disabled={loading}>
-            {loading ? (
-              <CircularProgress size={24} sx={{ color: "white" }} />
-            ) : (
-              "Save"
-            )}
-          </Button>
+          </Button> */}
+          <SaveBtn loading={loading} />
         </Box>
       ) : (
         <div
@@ -95,7 +87,7 @@ const MyWillemijnStory = observer(() => {
           }}
         >
           <p>{myProfileState.myWillemijnStory}</p>
-          <EditFieldBtn setState={setIsEditing} />
+          <EditBtn setIsEditing={setIsEditing} />
         </div>
       )}
     </>

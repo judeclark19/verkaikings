@@ -25,8 +25,8 @@ const verticalDivider = (
     sx={{
       height: "auto",
       width: "2px",
-      backgroundColor: "text.secondary",
-      margin: "0 16px"
+      backgroundColor: "background.default",
+      margin: "0 8px"
     }}
   />
 );
@@ -71,7 +71,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
         position="static"
         sx={{
           backgroundColor: "primary.main",
-          color: "text.secondary"
+          color: "background.default"
         }}
       >
         <Toolbar
@@ -86,7 +86,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ display: { m: "none" }, mr: 2 }}
+            sx={{ display: { md: "none" }, mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
@@ -96,7 +96,8 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             href="/"
             sx={{
               flexGrow: 1,
-              display: { xs: "none", md: "block" },
+              display: "block",
+              textAlign: { xs: "right", md: "left" },
               color: "inherit",
               textDecoration: "none"
             }}
@@ -175,7 +176,7 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               width: 240,
 
               backgroundColor: "primary.main",
-              color: "text.secondary"
+              color: "background.default"
             }
           }}
         >

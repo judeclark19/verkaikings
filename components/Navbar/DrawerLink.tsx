@@ -33,17 +33,18 @@ function DrawerLink({
       {link.icon && (
         <ListItemIcon
           sx={{
-            color: "text.secondary"
+            color: "background.default",
+            minWidth: "40px"
           }}
         >
           <link.icon />
         </ListItemIcon>
       )}
       <ListItemText
-        primary={link.title}
+        primary={link.title.toUpperCase()}
         primaryTypographyProps={{
           fontWeight: isActive(link.href) ? "700" : "400",
-          color: "text.secondary"
+          color: "background.default"
         }}
       />
     </ListItem>

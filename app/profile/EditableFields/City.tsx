@@ -1,9 +1,9 @@
 import { useState } from "react";
 import CityPicker from "./CityPicker";
 import { Typography } from "@mui/material";
-import EditFieldBtn from "./EditFieldBtn";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
+import EditBtn from "./EditBtn";
 
 const City = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -21,7 +21,7 @@ const City = observer(() => {
           }}
         >
           <Typography component="p">City: {myProfileState.cityName}</Typography>
-          <EditFieldBtn setState={setIsEditing} />
+          <EditBtn setIsEditing={setIsEditing} />
         </div>
       )}
     </>
