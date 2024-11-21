@@ -42,7 +42,8 @@ const CityPicker = observer(
     const handleSubmit = async (event: FormEvent) => {
       event.preventDefault();
 
-      let changedCity = myProfileState.placeId !== myProfileState.user!.cityId;
+      const changedCity =
+        myProfileState.placeId !== myProfileState.user!.cityId;
 
       const userDoc = doc(db, "users", myProfileState.userId!);
       const { countryAbbr, countryName } = await fetchCountryInfoByPlaceId(

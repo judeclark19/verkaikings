@@ -132,8 +132,8 @@ const SignupForm = () => {
           textAlign: "center"
         }}
       >
-        This website is only for members of the "Willemijn as Always" WhatsApp
-        group.
+        This website is only for members of the &ldquo;Willemijn as
+        Always&rdquo; WhatsApp group.
         <br />
         Please enter the phone number that you use in WhatsApp to continue.
       </Typography>

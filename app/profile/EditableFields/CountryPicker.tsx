@@ -5,8 +5,7 @@ import {
   FormControl,
   InputLabel,
   Box,
-  SelectChangeEvent,
-  Fab
+  SelectChangeEvent
 } from "@mui/material";
 import { countries } from "countries-list";
 import myProfileState from "../MyProfile.state";
