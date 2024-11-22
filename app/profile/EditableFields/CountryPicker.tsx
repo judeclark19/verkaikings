@@ -10,9 +10,10 @@ import {
 import { countries } from "countries-list";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -31,9 +32,7 @@ const CountryPicker = observer(
         event.target.value.toLowerCase() !== myProfileState.user!.countryAbbr;
 
       if (changedCountry) {
-        myProfileState.setCountryName(
-          displayNames.of(event.target.value) || null
-        );
+        myProfileState.setCountryName(event.target.value.toLowerCase());
       }
     };
 
@@ -50,12 +49,21 @@ const CountryPicker = observer(
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
 
+      async function fetchUsers() {
+        const users = await getDocs(collection(db, "users"));
+        return users.docs.map((doc) => doc.data());
+      }
+
       updateDoc(userDoc, {
         countryAbbr: myProfileState.countryAbbr,
         countryName: myProfileState.countryName,
         cityId: null
       })
         .then(() => {
+          fetchUsers().then((users) => {
+            placeDataCache.setUsers(users);
+          });
+
           console.log("Country updated");
           myProfileState.setCityName(null);
           myProfileState.setPlaceId(null);

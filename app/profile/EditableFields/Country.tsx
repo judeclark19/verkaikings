@@ -25,7 +25,7 @@ const Country = observer(() => {
           }}
         >
           <Typography component="p">
-            Country: {placeDataCache.countryNames[myProfileState.countryAbbr]}
+            Country: {myProfileState.countryName || ""}
           </Typography>
           <EditBtn setIsEditing={setIsEditing} />
         </div>

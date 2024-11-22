@@ -15,13 +15,13 @@ class PlaceDataCache {
     makeAutoObservable(this);
   }
 
-  init(users: DocumentData[]) {
+  async init(users: DocumentData[]) {
     // Prevent reinitialization
     if (this.isInitialized) {
-      console.log("placeDataCache already initialized", toJS(this));
       return;
     }
-    console.log("initializing...");
+
+    this.loadFromLocalStorage();
 
     this.users = users;
     // Populate city names
@@ -29,7 +29,7 @@ class PlaceDataCache {
     for (const cityId of cityIds) {
       if (!cityId || this.cityNames[cityId]) continue;
 
-      this.cityNames[cityId] = this.fetchCityName(cityId);
+      this.cityNames[cityId] = await this.fetchCityName(cityId);
     }
 
     // Populate country names
@@ -42,34 +42,73 @@ class PlaceDataCache {
     // Populate usersByCountry
     this.initUsersByCountry();
 
+    // update local storage
+    this.saveToLocalStorage();
+
     this.isInitialized = true;
-    console.log("PLACEDATACACHE AFTER INIT:", toJS(this));
   }
 
-  fetchCityName(cityId: string) {
+  setUsers(users: DocumentData[]) {
+    this.users = users;
+    this.initUsersByCountry();
+  }
+  loadFromLocalStorage() {
+    try {
+      const stored = localStorage.getItem("placeDataCache");
+
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        if (Date.now() - parsed.lastUpdated <= oneMonthInMs) {
+          this.cityNames = parsed.cityNames || {};
+        } else {
+          localStorage.removeItem("placeDataCache"); // Clear outdated data
+        }
+      }
+    } catch (error) {
+      console.error("Error loading from localStorage:", error);
+    }
+  }
+
+  saveToLocalStorage() {
+    try {
+      const data = {
+        cityNames: toJS(this.cityNames),
+        lastUpdated: Date.now()
+      };
+      localStorage.setItem("placeDataCache", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }
+
+  async fetchCityName(cityId: string) {
     console.log("$$$$$$");
-    return "CityAndState";
 
-    // if (cityId) {
-    //   try {
-    //     const response = await fetch(`/api/getPlaceDetails?placeId=${cityId}`);
-    //     const data = await response.json();
+    if (cityId) {
+      try {
+        const response = await fetch(`/api/getPlaceDetails?placeId=${cityId}`);
+        const data = await response.json();
 
-    //     if (data.result && data.result.address_components) {
-    //       return formatCityAndStatefromAddress(data.result.address_components);
-    //     }
-    //   } catch (error) {
-    //     console.error("Failed to fetch place details:", error);
-    //   }
-    // }
+        if (data.result && data.result.address_components) {
+          return this.formatCityAndStatefromAddress(
+            data.result.address_components
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch place details:", error);
+      }
+    }
 
-    // return "";
+    return "";
   }
 
   formatCountryNameFromISOCode(isoCode: string) {
-    return "CountryName";
-    //  const displayNames = new Intl.DisplayNames([locale], { type: "region" });
-    //  return displayNames.of(countryCode.toUpperCase());
+    // return "CountryName";
+    const displayNames = new Intl.DisplayNames([navigator.language || "en"], {
+      type: "region"
+    });
+    return displayNames.of(isoCode.toUpperCase());
   }
 
   initUsersByCountry() {
@@ -169,7 +208,8 @@ class PlaceDataCache {
 
   addCountryToList(isoCode: string) {
     if (!this.countryNames[isoCode]) {
-      this.countryNames[isoCode] = this.formatCountryNameFromISOCode(isoCode);
+      this.countryNames[isoCode] =
+        this.formatCountryNameFromISOCode(isoCode) || "";
     }
   }
 }

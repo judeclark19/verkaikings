@@ -31,11 +31,13 @@ class UserMapState {
     Object.keys(this.usersByCountry).forEach((country) => {
       const countryObject = this.usersByCountry[country];
       Object.keys(countryObject.cities).forEach((city) => {
-        this.mapItems.push({
-          cityId: city,
-          countryAbbr: country,
-          users: countryObject.cities[city]
-        });
+        if (city !== "No city listed") {
+          this.mapItems.push({
+            cityId: city,
+            countryAbbr: country,
+            users: countryObject.cities[city]
+          });
+        }
       });
     });
   }

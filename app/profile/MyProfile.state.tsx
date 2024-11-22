@@ -9,6 +9,7 @@ class MyProfileState {
   placeId: string | null = null;
   cityName: string | null = null;
   countryAbbr: string | null = null;
+  countryName: string | null = null;
   instagram: string | null = null;
   myWillemijnStory: string | null = null;
 
@@ -22,6 +23,7 @@ class MyProfileState {
     this.setPlaceId(user.cityId);
     this.setCityName(placeDataCache.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
+    this.setCountryName(user.countryAbbr);
     this.setInstagram(user.instagram);
     this.setMyWillemijnStory(user.myWillemijnStory);
     this.setIsFetched(true);
@@ -45,6 +47,18 @@ class MyProfileState {
 
   setCountryAbbr(countryAbbr: string | null) {
     this.countryAbbr = countryAbbr;
+  }
+
+  setCountryName(countryAbbr: string | null) {
+    if (!countryAbbr) {
+      return "";
+    }
+
+    if (!placeDataCache.countryNames[countryAbbr]) {
+      placeDataCache.addCountryToList(countryAbbr);
+    }
+
+    this.countryName = placeDataCache.countryNames[countryAbbr];
   }
 
   setInstagram(instagram: string | null) {

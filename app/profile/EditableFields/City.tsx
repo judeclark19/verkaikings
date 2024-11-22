@@ -22,9 +22,7 @@ const City = observer(() => {
           }}
         >
           <Typography component="p">
-            City:{" "}
-            {myProfileState.placeId &&
-              placeDataCache.cityNames[myProfileState.placeId]}
+            City: {myProfileState.cityName || ""}
           </Typography>
           <EditBtn setIsEditing={setIsEditing} />
         </div>

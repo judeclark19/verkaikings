@@ -2,10 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
-import { fetchCountryInfoByPlaceId } from "@/lib/clientUtils";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
 import placeDataCache from "@/lib/PlaceDataCache";
@@ -46,7 +45,7 @@ const CityPicker = observer(
             const countryCodeFromAddressComponents = countryComponent
               ? countryComponent.short_name
               : "";
-            myProfileState.setCountryAbbr(countryCodeFromAddressComponents);
+            setCountry(countryCodeFromAddressComponents);
           }
         });
       }
@@ -59,8 +58,6 @@ const CityPicker = observer(
         myProfileState.placeId !== myProfileState.user!.cityId;
 
       const userDoc = doc(db, "users", myProfileState.userId!);
-
-      console.log(myProfileState.countryAbbr);
 
       // case 1: user clears the city
       if (inputRef.current!.value === "") {
@@ -94,19 +91,35 @@ const CityPicker = observer(
       // check if city is in cache
       if (!placeDataCache.cityNames[myProfileState.placeId!]) {
         placeDataCache.cityNames[myProfileState.placeId!] =
-          placeDataCache.fetchCityName(myProfileState.placeId!.toLowerCase());
+          await placeDataCache.fetchCityName(
+            myProfileState.placeId!.toLowerCase()
+          );
       }
 
       // check if country is in cache
-      if (!placeDataCache.countryNames[myProfileState.countryAbbr!]) {
-        placeDataCache.addCountryToList(myProfileState.countryAbbr!);
+      if (country && !placeDataCache.countryNames[country]) {
+        placeDataCache.addCountryToList(country);
+      }
+
+      async function fetchUsers() {
+        const users = await getDocs(collection(db, "users"));
+        return users.docs.map((doc) => doc.data());
       }
 
       updateDoc(userDoc, {
         cityId: myProfileState.placeId,
-        countryAbbr: myProfileState.countryAbbr || null
+        countryAbbr: country?.toLowerCase() || null
       })
         .then(() => {
+          fetchUsers().then((users) => {
+            placeDataCache.setUsers(users);
+          });
+
+          // check if country was changed, if so update myProfileStae.countryName
+          if (country && country !== myProfileState.countryAbbr) {
+            myProfileState.setCountryAbbr(country.toLowerCase());
+            myProfileState.setCountryName(country);
+          }
           console.log(
             "User's city updated successfully",
             myProfileState.cityName
