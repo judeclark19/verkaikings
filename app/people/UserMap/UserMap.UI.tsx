@@ -4,7 +4,6 @@ import { Skeleton, Typography } from "@mui/material";
 import placeDataCache from "@/lib/PlaceDataCache";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { toJS } from "mobx";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);

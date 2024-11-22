@@ -28,7 +28,6 @@ const UserProfile = ({
   const [isSelf, setIsSelf] = useState(false);
   const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
   const [error, setError] = useState(""); // Error state
-  const [cityName, setCityName] = useState<string | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {

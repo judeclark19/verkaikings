@@ -1,5 +1,5 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { CountryUsersType } from "../People.state";
 import placeDataCache from "@/lib/PlaceDataCache";
 

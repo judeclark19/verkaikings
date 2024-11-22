@@ -4,7 +4,6 @@ import { Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import EditBtn from "./EditBtn";
-import placeDataCache from "@/lib/PlaceDataCache";
 
 const City = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
