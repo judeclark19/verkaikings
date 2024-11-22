@@ -20,7 +20,9 @@ const City = observer(() => {
             gap: "1rem"
           }}
         >
-          <Typography component="p">City: {myProfileState.cityName}</Typography>
+          <Typography component="p">
+            City: {myProfileState.cityName || ""}
+          </Typography>
           <EditBtn setIsEditing={setIsEditing} />
         </div>
       )}

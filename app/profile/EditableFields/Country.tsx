@@ -3,7 +3,6 @@ import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
-import { getCountryNameByLocale } from "@/lib/clientUtils";
 import EditBtn from "./EditBtn";
 
 const Country = observer(() => {
@@ -25,7 +24,7 @@ const Country = observer(() => {
           }}
         >
           <Typography component="p">
-            Country: {getCountryNameByLocale(myProfileState.countryAbbr)}
+            Country: {myProfileState.countryName || ""}
           </Typography>
           <EditBtn setIsEditing={setIsEditing} />
         </div>

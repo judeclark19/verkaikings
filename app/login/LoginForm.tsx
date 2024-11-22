@@ -12,8 +12,9 @@ import {
   Link
 } from "@mui/material";
 import Cookies from "js-cookie";
+import { observer } from "mobx-react-lite";
 
-const LoginForm = () => {
+const LoginForm = observer(() => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -108,6 +109,6 @@ const LoginForm = () => {
       </Typography>
     </Box>
   );
-};
+});
 
 export default LoginForm;

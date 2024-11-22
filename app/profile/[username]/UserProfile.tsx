@@ -13,14 +13,10 @@ import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import ProfileSkeleton from "../ProfileSkeleton";
-import {
-  checkIfBirthdayToday,
-  fetchCityName,
-  formatBirthday,
-  getCountryNameByLocale
-} from "@/lib/clientUtils";
+import { checkIfBirthdayToday, formatBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import Link from "next/link";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const UserProfile = ({
   decodedToken
@@ -32,7 +28,6 @@ const UserProfile = ({
   const [isSelf, setIsSelf] = useState(false);
   const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
   const [error, setError] = useState(""); // Error state
-  const [cityName, setCityName] = useState<string | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -69,15 +64,6 @@ const UserProfile = ({
     if (!user) {
       document.title = `Loading Profile...`;
     }
-
-    async function fetchData() {
-      const fetchedCityAndState = await fetchCityName(user!.cityId);
-      setCityName(fetchedCityAndState);
-    }
-
-    if (user) {
-      fetchData();
-    }
   }, [user]);
 
   if (error) {
@@ -99,9 +85,13 @@ const UserProfile = ({
       <Typography component="p">Email: {user.email}</Typography>
       <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
       <Typography component="p">
-        Country: {getCountryNameByLocale(user.countryAbbr)}
+        Country: {placeDataCache.countryNames[user.countryAbbr]}
       </Typography>
-      {cityName && <Typography component="p">City: {cityName}</Typography>}
+      {user.cityId && (
+        <Typography component="p">
+          City: {placeDataCache.cityNames[user.cityId]}
+        </Typography>
+      )}
 
       {user.birthday && (
         <Typography component="p">

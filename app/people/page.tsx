@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { fetchUsers } from "@/lib/serverUtils";
 import PeopleList from "./PeopleList";
 
 export const metadata: Metadata = {
@@ -7,9 +6,7 @@ export const metadata: Metadata = {
 };
 
 const PeoplePage = async () => {
-  const users = await fetchUsers();
-
-  return <PeopleList users={users} />;
+  return <PeopleList />;
 };
 
 export default PeoplePage;

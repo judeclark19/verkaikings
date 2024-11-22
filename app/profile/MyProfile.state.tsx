@@ -1,4 +1,4 @@
-import { fetchCityName, fetchCountryInfoByPlaceId } from "@/lib/clientUtils";
+import placeDataCache from "@/lib/PlaceDataCache";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
@@ -8,8 +8,8 @@ class MyProfileState {
   userId: string | null = null;
   placeId: string | null = null;
   cityName: string | null = null;
-  countryName: string | null = null;
   countryAbbr: string | null = null;
+  countryName: string | null = null;
   instagram: string | null = null;
   myWillemijnStory: string | null = null;
 
@@ -21,10 +21,9 @@ class MyProfileState {
     this.setUser(user);
     this.userId = userId;
     this.setPlaceId(user.cityId);
-    const cityName = await fetchCityName(user.cityId);
-    this.setCityName(cityName);
+    this.setCityName(placeDataCache.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
-    this.setCountryName(user.countryName);
+    this.setCountryName(user.countryAbbr);
     this.setInstagram(user.instagram);
     this.setMyWillemijnStory(user.myWillemijnStory);
     this.setIsFetched(true);
@@ -50,18 +49,16 @@ class MyProfileState {
     this.countryAbbr = countryAbbr;
   }
 
-  setCountryName(countryName: string | null) {
-    this.countryName = countryName;
-  }
-
-  setCountryNameFromPlaceId(placeId: string | null) {
-    if (!placeId) {
-      this.setCountryName(null);
-      return;
+  setCountryName(countryAbbr: string | null) {
+    if (!countryAbbr) {
+      return "";
     }
-    fetchCountryInfoByPlaceId(placeId).then(({ countryName }) => {
-      this.setCountryName(countryName);
-    });
+
+    if (!placeDataCache.countryNames[countryAbbr]) {
+      placeDataCache.addCountryToList(countryAbbr);
+    }
+
+    this.countryName = placeDataCache.countryNames[countryAbbr];
   }
 
   setInstagram(instagram: string | null) {

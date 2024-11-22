@@ -2,17 +2,20 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
-import { fetchCountryInfoByPlaceId, getCityAndState } from "@/lib/clientUtils";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [loading, setLoading] = useState(false);
+    const [country, setCountry] = useState<string | null>(
+      myProfileState.countryAbbr
+    );
 
     useEffect(() => {
       if (inputRef.current) {
@@ -31,9 +34,18 @@ const CityPicker = observer(
             place.address_components
           ) {
             myProfileState.setCityName(
-              getCityAndState(place.address_components)
+              placeDataCache.formatCityAndStatefromAddress(
+                place.address_components
+              )
             );
             myProfileState.setPlaceId(place.place_id);
+            const countryComponent = place.address_components.find(
+              (component) => component.types.includes("country")
+            );
+            const countryCodeFromAddressComponents = countryComponent
+              ? countryComponent.short_name
+              : "";
+            setCountry(countryCodeFromAddressComponents);
           }
         });
       }
@@ -46,16 +58,12 @@ const CityPicker = observer(
         myProfileState.placeId !== myProfileState.user!.cityId;
 
       const userDoc = doc(db, "users", myProfileState.userId!);
-      const { countryAbbr, countryName } = await fetchCountryInfoByPlaceId(
-        myProfileState.placeId
-      );
 
       // case 1: user clears the city
       if (inputRef.current!.value === "") {
         setLoading(true);
         updateDoc(userDoc, {
-          cityId: null,
-          cityName: null
+          cityId: null
         })
           .then(() => {
             console.log("User's city removed.", myProfileState.cityName);
@@ -79,15 +87,39 @@ const CityPicker = observer(
 
       // case 3: user changes the city
       setLoading(true);
+
+      // check if city is in cache
+      if (!placeDataCache.cityNames[myProfileState.placeId!]) {
+        placeDataCache.cityNames[myProfileState.placeId!] =
+          await placeDataCache.fetchCityName(
+            myProfileState.placeId!.toLowerCase()
+          );
+      }
+
+      // check if country is in cache
+      if (country && !placeDataCache.countryNames[country]) {
+        placeDataCache.addCountryToList(country);
+      }
+
+      async function fetchUsers() {
+        const users = await getDocs(collection(db, "users"));
+        return users.docs.map((doc) => doc.data());
+      }
+
       updateDoc(userDoc, {
         cityId: myProfileState.placeId,
-        cityName: myProfileState.cityName,
-        countryAbbr: countryAbbr || null,
-        countryName: countryName || null
+        countryAbbr: country?.toLowerCase() || null
       })
         .then(() => {
-          myProfileState.setCountryNameFromPlaceId(myProfileState.placeId);
-          myProfileState.setCountryAbbr(countryAbbr);
+          fetchUsers().then((users) => {
+            placeDataCache.setUsers(users);
+          });
+
+          // check if country was changed, if so update myProfileStae.countryName
+          if (country && country !== myProfileState.countryAbbr) {
+            myProfileState.setCountryAbbr(country.toLowerCase());
+            myProfileState.setCountryName(country);
+          }
           console.log(
             "User's city updated successfully",
             myProfileState.cityName

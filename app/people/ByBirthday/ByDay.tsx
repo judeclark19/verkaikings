@@ -20,7 +20,7 @@ const ByDay = observer(({ day, month }: { day: string; month: string }) => {
         }}
       >
         {peopleState.usersByBirthday[month][day].map((user) => (
-          <UserListItem key={user.id} user={user} />
+          <UserListItem key={user.username} user={user} />
         ))}
       </List>
     </div>
