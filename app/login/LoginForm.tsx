@@ -12,12 +12,16 @@ import {
   Link
 } from "@mui/material";
 import Cookies from "js-cookie";
+import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
 
-const LoginForm = () => {
+const LoginForm = observer(() => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,6 +45,7 @@ const LoginForm = () => {
 
       // Force server-side navigation to ensure middleware checks the cookie
       window.location.href = "/profile"; // Triggers full page load
+      // router.push("/profile");
     } catch (err: unknown) {
       // Check if err is a Firebase error with a message
       if (err instanceof Error) {
@@ -108,6 +113,6 @@ const LoginForm = () => {
       </Typography>
     </Box>
   );
-};
+});
 
 export default LoginForm;

@@ -3,15 +3,15 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import peopleState, { PeopleViews } from "./People.state";
-import { DocumentData } from "firebase/firestore";
 import { Button, Box, Typography, ButtonGroup } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";
 import UserMap from "./UserMap/UserMap.UI";
+import placeDataCache from "@/lib/PlaceDataCache";
 
-const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
+const PeopleList = observer(() => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -23,8 +23,8 @@ const PeopleList = observer(({ users }: { users: DocumentData[] }) => {
     ) {
       viewByParam = PeopleViews.NAME;
     }
-    peopleState.init(users, viewByParam as PeopleViews);
-  }, [users]);
+    peopleState.init(placeDataCache.users, viewByParam as PeopleViews);
+  }, []);
 
   useEffect(() => {
     router.replace(`?viewBy=${peopleState.viewingBy.toLowerCase()}`);

@@ -1,12 +1,19 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { CountryUsersType } from "../People.state";
+import placeDataCache from "@/lib/PlaceDataCache";
+
+type MapItem = {
+  cityId: string;
+  users: DocumentData[];
+  countryAbbr: string;
+};
 
 class UserMapState {
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   isInitialized = false;
-  mapItems: { cityId: string; users: DocumentData[] }[] = [];
+  mapItems: MapItem[] = [];
   cityNames: Record<string, string> = {};
   openInfoWindow: google.maps.InfoWindow | null = null; // Track the open InfoWindow
 
@@ -26,24 +33,24 @@ class UserMapState {
       Object.keys(countryObject.cities).forEach((city) => {
         this.mapItems.push({
           cityId: city,
+          countryAbbr: country,
           users: countryObject.cities[city]
         });
       });
     });
   }
 
-  initializeMap() {
+  initializeMap(mapContainer: HTMLElement) {
     if (!window.google) return;
-    const map = new window.google.maps.Map(
-      document.getElementById("map") as HTMLElement,
-      {
-        center: { lat: 20, lng: 0 },
-        zoom: 2,
-        mapId: process.env.NEXT_PUBLIC_USERMAP_ID
-      }
-    );
+
+    const map = new window.google.maps.Map(mapContainer, {
+      center: { lat: 20, lng: 0 },
+      zoom: 2,
+      mapId: process.env.NEXT_PUBLIC_USERMAP_ID
+    });
 
     const service = new window.google.maps.places.PlacesService(map);
+
     this.mapItems.forEach((mapItem) => {
       service.getDetails(
         { placeId: mapItem.cityId },
@@ -55,20 +62,21 @@ class UserMapState {
             status === google.maps.places.PlacesServiceStatus.OK &&
             place?.geometry?.location
           ) {
-            this.createMarker(map, place, mapItem.users);
+            this.createMarker(map, place, mapItem);
           } else {
             console.error("Place details could not be retrieved:", status);
           }
         }
       );
     });
+
     this.isInitialized = true;
   }
 
   createMarker(
     map: google.maps.Map,
     place: google.maps.places.PlaceResult,
-    users: DocumentData[]
+    mapItem: MapItem
   ) {
     const marker = new google.maps.marker.AdvancedMarkerElement({
       map,
@@ -77,9 +85,11 @@ class UserMapState {
     });
 
     const contentString = `<div class="info-window">
-        <h2>${this.cityNames[place.place_id!]}</h2>
+        <h2>${placeDataCache.cityNames[place.place_id!]}, ${
+      placeDataCache.countryNames[mapItem.countryAbbr]
+    }</h2>
         <ul>
-        ${users
+        ${mapItem.users
           .map(
             (user) =>
               `<li>

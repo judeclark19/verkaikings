@@ -1,35 +1,47 @@
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
-import peopleState from "../People.state";
+import { useEffect, useRef } from "react";
 import { Skeleton, Typography } from "@mui/material";
+import placeDataCache from "@/lib/PlaceDataCache";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const UserMap = observer(() => {
-  useEffect(() => {
-    if (!peopleState.userMap) return;
+  const mapRef = useRef<HTMLDivElement>(null);
 
-    if (window.google) {
-      peopleState.userMap.initializeMap();
-    } else {
-      window.addEventListener("load", peopleState.userMap.initializeMap);
-      return () => {
-        if (peopleState.userMap) {
-          window.removeEventListener("load", peopleState.userMap.initializeMap);
-        }
-      };
+  useEffect(() => {
+    console.log("UserMap mounted");
+    console.log(mapRef.current);
+    if (!mapRef.current) return; // Ensure mapRef is ready
+
+    async function initialize() {
+      if (!placeDataCache.isInitialized) {
+        const users = await getDocs(collection(db, "users"));
+        placeDataCache.init(users.docs.map((doc) => doc.data()));
+      }
+
+      if (window.google) {
+        // Initialize the map
+        placeDataCache.userMap?.initializeMap(mapRef.current as HTMLElement);
+      } else {
+        // Attach an event listener to wait for the Google Maps library to load
+        const onGoogleLoad = () =>
+          placeDataCache.userMap?.initializeMap(mapRef.current as HTMLElement);
+
+        window.addEventListener("load", onGoogleLoad);
+        return () => window.removeEventListener("load", onGoogleLoad);
+      }
     }
-  }, [peopleState.userMap]);
+
+    initialize();
+  }, []);
 
   return (
     <>
       <Typography variant="h1">Map of Verkaikings</Typography>
 
-      {peopleState.userMap ? (
-        <div id="map" style={{ width: "100%", height: "600px" }} />
-      ) : (
-        <div style={{ width: "100%", height: "600px" }}>
-          <Skeleton />
-        </div>
-      )}
+      <div id="map" ref={mapRef} style={{ width: "100%", height: "600px" }}>
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+      </div>
     </>
   );
 });

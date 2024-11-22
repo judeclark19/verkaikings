@@ -8,7 +8,8 @@ import {
   Button,
   IconButton,
   Drawer,
-  Box
+  Box,
+  Divider
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
@@ -19,17 +20,6 @@ import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
-
-const verticalDivider = (
-  <Box
-    sx={{
-      height: "auto",
-      width: "2px",
-      backgroundColor: "background.default",
-      margin: "0 8px"
-    }}
-  />
-);
 
 const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -121,7 +111,13 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
                   return (
                     <Fragment key={link.title}>
                       <SubmenuDropdown parentLink={link} />
-                      {verticalDivider}
+                      <Divider
+                        orientation="vertical"
+                        flexItem
+                        sx={{
+                          borderColor: "background.default"
+                        }}
+                      />
                     </Fragment>
                   );
                 return (
@@ -134,7 +130,13 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
                     >
                       {link.title}
                     </Button>
-                    {verticalDivider}
+                    <Divider
+                      orientation="vertical"
+                      flexItem
+                      sx={{
+                        borderColor: "background.default"
+                      }}
+                    />
                   </Fragment>
                 );
               })}
@@ -147,7 +149,13 @@ const NavbarUI = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             </Button>
             {!isLoggedIn && (
               <>
-                {verticalDivider}
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{
+                    borderColor: "background.default"
+                  }}
+                />
                 <Button
                   color="inherit"
                   component={Link}

@@ -24,7 +24,7 @@ const ByName = observer(() => {
               (a, b) => a.username.localeCompare(b.username)
             )
             .map((user) => (
-              <UserListItem key={user.id} user={user} />
+              <UserListItem key={user.username} user={user} />
             ))}
         </List>
       ) : (

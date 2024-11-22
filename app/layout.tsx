@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import LayoutProviders from "@/lib/LayoutProviders"; // client side stuff
 import Navbar from "@/components/Navbar";
 import Script from "next/script"; // Import Script
+import { getTokenFromCookie } from "@/lib/serverUtils";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,6 +14,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const token = getTokenFromCookie();
   return (
     <html>
       <head>
@@ -29,7 +31,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        <LayoutProviders>
+        <LayoutProviders isLoggedIn={!!token}>
           <Navbar />
           <main
             style={{

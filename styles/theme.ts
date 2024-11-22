@@ -27,7 +27,7 @@ const darkTheme = createTheme({
       fontWeight: 700,
       margin: "2rem 0",
       "@media (max-width:600px)": {
-        fontSize: "2rem" // Adjusted size for mobile
+        fontSize: "2rem"
       }
     },
     h2: {
@@ -36,7 +36,7 @@ const darkTheme = createTheme({
       fontWeight: 500,
       margin: "1.5rem 0",
       "@media (max-width:600px)": {
-        fontSize: "1.8rem" // Adjusted size for mobile
+        fontSize: "1.8rem"
       }
     },
     h3: {
@@ -74,19 +74,6 @@ const darkTheme = createTheme({
         }
       }
     }
-    // MuiSelect: {
-    //   styleOverrides: {
-    //     root: {
-    //       "& .MuiInputLabel-root": {
-    //         // color: "inherit"
-    //         color: "rgba(255, 255, 255, 0.7)" // Label color for Select
-    //       },
-    //       "& .MuiSelect-select": {
-    //         color: "rgba(255, 255, 255, 0.7)" // Adjust selected value color
-    //       }
-    //     }
-    //   }
-    // }
   }
 });
 

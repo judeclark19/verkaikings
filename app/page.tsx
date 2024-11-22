@@ -35,6 +35,7 @@ export default function Home() {
           fill
           style={{ objectFit: "cover" }}
           sizes="(max-width: 600px) 150px, 220px"
+          priority
         />
       </Box>
       <Typography variant="h1">Willemijn&apos;s World Website</Typography>
