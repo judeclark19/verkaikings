@@ -8,7 +8,7 @@ const darkTheme = createTheme({
       dark: "#D25169" // dark pink
     },
     secondary: {
-      main: "#F0F2E7", // light green
+      main: "#DADFC3", // light green
       dark: "#A3AE6A" // dark green
     },
     text: {
