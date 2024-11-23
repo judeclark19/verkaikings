@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 verkaikings-firebase-adminsdk.json 
+cors.json
 
 # dependencies
 /node_modules
