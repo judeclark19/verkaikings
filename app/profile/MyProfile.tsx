@@ -10,14 +10,19 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
 import Instagram from "./EditableFields/Instagram";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const MyProfile = observer(({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!placeDataCache.isInitialized) {
+        console.log("Waiting for placeDataCache...");
+        return;
+      }
+
       try {
-        // Firestore query to find user by userId
         const userDocRef = doc(db, "users", userId);
         const userDoc = await getDoc(userDocRef);
 
@@ -33,13 +38,17 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
     };
 
     fetchUser();
-  }, []);
+  }, [userId, placeDataCache.isInitialized]); // Watch for `isInitialized`
 
   if (error) {
     return <div>{error}</div>;
   }
 
-  if (!myProfileState.isFetched || !myProfileState.user) {
+  if (
+    !placeDataCache.isInitialized ||
+    !myProfileState.isFetched ||
+    !myProfileState.user
+  ) {
     return <ProfileSkeleton />;
   }
 
