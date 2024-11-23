@@ -1,3 +1,4 @@
+import placeDataCache from "@/lib/PlaceDataCache";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
@@ -16,7 +17,6 @@ export enum PeopleViews {
 class PeopleState {
   isFetched = false;
   viewingBy = PeopleViews.NAME;
-  users: DocumentData[] = [];
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
   cityNames: Record<string, string> = {};
 
@@ -24,9 +24,7 @@ class PeopleState {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[], viewingBy: PeopleViews) {
-    this.users = users;
-
+  async init(viewingBy: PeopleViews) {
     this.setViewingBy(viewingBy);
 
     this.initUsersByBirthday();
@@ -37,7 +35,7 @@ class PeopleState {
   initUsersByBirthday() {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
-    this.users.forEach((user) => {
+    placeDataCache.users.forEach((user) => {
       if (!user.birthday) return;
       const { birthday } = user;
       const month = birthday.split("-")[1];

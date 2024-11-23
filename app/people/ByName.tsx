@@ -4,6 +4,7 @@ import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
 import peopleState from "./People.state";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const ByName = observer(() => {
   return (
@@ -17,7 +18,7 @@ const ByName = observer(() => {
             bgcolor: "background.paper"
           }}
         >
-          {peopleState.users
+          {placeDataCache.users
             .slice()
             .sort(
               // Sort users alphabetically by username
