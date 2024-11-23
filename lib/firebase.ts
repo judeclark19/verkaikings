@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // Import Firestore
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,6 +21,9 @@ export const auth: Auth = getAuth(app);
 
 // Firestore
 export const db = getFirestore(app); // Initialize Firestore
+
+// Storage
+export const storage = getStorage(app);
 
 // Auth listener for state changes
 export const authListener = (callback: (user: User | null) => void) => {

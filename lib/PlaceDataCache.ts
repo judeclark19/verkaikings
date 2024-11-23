@@ -66,6 +66,7 @@ class PlaceDataCache {
     this.users = users;
     this.initUsersByCountry();
   }
+
   loadFromLocalStorage() {
     try {
       const stored = localStorage.getItem("placeDataCache");

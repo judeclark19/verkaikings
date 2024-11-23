@@ -11,6 +11,7 @@ import myProfileState from "./MyProfile.state";
 import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
 import Instagram from "./EditableFields/Instagram";
 import placeDataCache from "@/lib/PlaceDataCache";
+import ProfilePic from "./EditableFields/ProfilePic";
 
 const MyProfile = observer(({ userId }: { userId: string }) => {
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +58,7 @@ const MyProfile = observer(({ userId }: { userId: string }) => {
       <Typography variant="h1">
         My Profile: {myProfileState.user.username}
       </Typography>
+      <ProfilePic />
       <Typography component="p">
         First Name: {myProfileState.user.firstName}
       </Typography>

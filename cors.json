@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:3002", "https://verkaikings.netlify.app/"],
+    "responseHeader": ["Content-Type"],
+    "method": ["GET", "POST", "PUT"],
+    "maxAgeSeconds": 3600
+  }
+]

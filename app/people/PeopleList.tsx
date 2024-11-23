@@ -1,9 +1,15 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import peopleState, { PeopleViews } from "./People.state";
-import { Button, Box, Typography, ButtonGroup } from "@mui/material";
+import {
+  Button,
+  Box,
+  Typography,
+  ButtonGroup,
+  CircularProgress
+} from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
@@ -12,18 +18,27 @@ import UserMap from "./UserMap/UserMap.UI";
 import placeDataCache from "@/lib/PlaceDataCache";
 
 const PeopleList = observer(() => {
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    const initialize = async () => {
+      if (!placeDataCache.isInitialized) {
+        await placeDataCache.waitForInitialization(); // Wait for PlaceDataCache to initialize
+      }
+      setLoading(false); // Set loading to false after initialization
+    };
+
+    initialize();
+  }, []);
+
+  useEffect(() => {
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
-    if (
-      // check if viewByParam is one of enum Views
-      !Object.values(PeopleViews).includes(viewByParam as PeopleViews)
-    ) {
+    if (!Object.values(PeopleViews).includes(viewByParam as PeopleViews)) {
       viewByParam = PeopleViews.NAME;
     }
-    peopleState.init(placeDataCache.users, viewByParam as PeopleViews);
+    peopleState.init(viewByParam as PeopleViews);
   }, []);
 
   useEffect(() => {
@@ -33,6 +48,21 @@ const PeopleList = observer(() => {
   const handleViewChange = (view: PeopleViews) => {
     peopleState.setViewingBy(view);
   };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh"
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div>
@@ -59,7 +89,7 @@ const PeopleList = observer(() => {
                     : "primary.main"
               }}
             >
-              {view.charAt(0).toUpperCase() + view.slice(1)} {/* Capitalize */}
+              {view.charAt(0).toUpperCase() + view.slice(1)}
             </Button>
           ))}
         </ButtonGroup>

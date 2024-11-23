@@ -1,22 +1,10 @@
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
-import { ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { ListItem, ListItemButton, ListItemText, Avatar } from "@mui/material";
 import { getEmojiFlag } from "countries-list";
 import { DocumentData } from "firebase-admin/firestore";
 import Link from "next/link";
 
 function UserListItem({ user }: { user: DocumentData }) {
-  const getText = () => {
-    let text = `${getEmojiFlag(user.countryAbbr.toUpperCase())} ${
-      user.firstName
-    } ${user.lastName}`;
-
-    if (checkIfBirthdayToday(user.birthday)) {
-      text += " 🎂";
-    }
-
-    return text;
-  };
-
   return (
     <ListItem
       key={user.id}
@@ -33,10 +21,31 @@ function UserListItem({ user }: { user: DocumentData }) {
         sx={{
           textDecoration: "none",
           color: "inherit",
-          width: "100%"
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem"
         }}
       >
-        <ListItemText primary={getText()} />
+        {/* Flag */}
+        <span>{getEmojiFlag(user.countryAbbr.toUpperCase())}</span>
+
+        {/* Avatar */}
+        <Avatar
+          src={user.profilePicture || ""}
+          alt={`${user.firstName} ${user.lastName}`}
+          sx={{ width: 24, height: 24, fontSize: 12, bgcolor: "primary.main" }}
+        >
+          {!user.profilePicture &&
+            `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}
+        </Avatar>
+
+        {/* Name and birthday cake */}
+        <ListItemText
+          primary={`${user.firstName} ${user.lastName}${
+            checkIfBirthdayToday(user.birthday) ? " 🎂" : ""
+          }`}
+        />
       </ListItemButton>
     </ListItem>
   );

@@ -10,7 +10,7 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import ProfileSkeleton from "../ProfileSkeleton";
 import { checkIfBirthdayToday, formatBirthday } from "@/lib/clientUtils";
@@ -79,7 +79,30 @@ const UserProfile = ({
 
   return (
     <div>
-      <Typography variant="h1">User Profile: {user.username}</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          mt: 4
+        }}
+      >
+        <Avatar
+          src={user.profilePicture || ""}
+          alt={`${user.firstName} ${user.lastName}`}
+          sx={{
+            width: 150,
+            height: 150,
+            fontSize: 40,
+            bgcolor: "primary.main"
+          }}
+        >
+          {!user.profilePicture &&
+            `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}
+        </Avatar>
+        <Typography variant="h1">User Profile: {user.username}</Typography>
+      </Box>
+
       <Typography component="p">First Name: {user.firstName}</Typography>
       <Typography component="p">Last Name: {user.lastName}</Typography>
       <Typography component="p">Email: {user.email}</Typography>
