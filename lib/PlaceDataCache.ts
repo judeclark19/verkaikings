@@ -6,7 +6,7 @@ class PlaceDataCache {
   isInitialized = false;
   users: DocumentData[] = [];
   cityNames: Record<string, string> = {};
-  cityDetails: Record<string, any> = {}; // For storing full city details
+  cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
   usersByCountry: Record<string, CountryUsersType> = {};
   userMap: UserMapState | null = null;
@@ -96,27 +96,6 @@ class PlaceDataCache {
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
-  }
-
-  async fetchCityName(cityId: string) {
-    console.log("$$$$$ Fetching city name for:", cityId);
-
-    if (cityId) {
-      try {
-        const response = await fetch(`/api/getPlaceDetails?placeId=${cityId}`);
-        const data = await response.json();
-
-        if (data.result && data.result.address_components) {
-          return this.formatCityAndStatefromAddress(
-            data.result.address_components
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch place details:", error);
-      }
-    }
-
-    return "";
   }
 
   async fetchCityDetails(cityId: string) {
