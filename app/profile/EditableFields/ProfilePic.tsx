@@ -17,35 +17,49 @@ const ProfilePic = observer(() => {
     if (!file || !myProfileState.userId) return;
 
     setLoading(true);
-    try {
-      // Upload the file to Firebase Storage
-      const storageRef = ref(
-        storage,
-        `users/${myProfileState.userId}/profile.jpg`
-      );
-      await uploadBytes(storageRef, file);
 
-      // Get the public download URL
-      const url = await getDownloadURL(storageRef);
+    const MAX_RETRIES = 3; // Limit the number of attempts
+    let attempts = 0;
 
-      // Save the URL to Firestore
-      const userDoc = doc(db, "users", myProfileState.userId);
-      await updateDoc(userDoc, { profilePicture: url });
+    while (attempts < MAX_RETRIES) {
+      try {
+        attempts++;
+        console.log(`Upload attempt ${attempts}`);
 
-      // Update local state
-      myProfileState.setUser({
-        ...myProfileState.user,
-        profilePicture: url
-      });
+        // Upload the file to Firebase Storage
+        const storageRef = ref(
+          storage,
+          `users/${myProfileState.userId}/profile.jpg`
+        );
+        await uploadBytes(storageRef, file);
 
-      console.log("Profile picture updated:", url);
-    } catch (error) {
-      console.error("Error uploading profile picture:", error);
-    } finally {
-      setLoading(false);
+        // Get the public download URL
+        const url = await getDownloadURL(storageRef);
+
+        // Save the URL to Firestore
+        const userDoc = doc(db, "users", myProfileState.userId);
+        await updateDoc(userDoc, { profilePicture: url });
+
+        // Update local state
+        myProfileState.setUser({
+          ...myProfileState.user,
+          profilePicture: url
+        });
+
+        console.log("Profile picture updated:", url);
+
+        break; // Stop retrying if upload is successful
+      } catch (error) {
+        console.error(`Error on upload attempt ${attempts}:`, error);
+        if (attempts >= MAX_RETRIES) {
+          console.error("Max upload attempts reached. Stopping retries.");
+          alert("Failed to upload profile picture. Please try again later.");
+        }
+      }
     }
-  };
 
+    setLoading(false);
+  };
   return (
     <Box
       sx={{

@@ -51,10 +51,14 @@ class PlaceDataCache {
 
       this.initUsersByCountry();
       this.saveToLocalStorage();
-      this.isInitialized = true;
+      this.setInitialized(true);
     })();
 
     await this.initPromise;
+  }
+
+  setInitialized(value: boolean) {
+    this.isInitialized = value;
   }
 
   async waitForInitialization() {
