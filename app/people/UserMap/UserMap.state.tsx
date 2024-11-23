@@ -54,6 +54,16 @@ class UserMapState {
     const service = new window.google.maps.places.PlacesService(map);
 
     this.mapItems.forEach((mapItem) => {
+      // Check cache first
+      const cachedPlace = placeDataCache.cityDetails[mapItem.cityId];
+      if (cachedPlace) {
+        console.log("creating marker from cache:", cachedPlace);
+        // Create marker from cached data
+        this.createMarker(map, cachedPlace, mapItem);
+        return;
+      }
+
+      // Fetch details only if not cached
       service.getDetails(
         { placeId: mapItem.cityId },
         (
@@ -64,6 +74,8 @@ class UserMapState {
             status === google.maps.places.PlacesServiceStatus.OK &&
             place?.geometry?.location
           ) {
+            placeDataCache.cityNames[mapItem.cityId] = place.name || "";
+            placeDataCache.saveToLocalStorage(); // Save updated cache
             this.createMarker(map, place, mapItem);
           } else {
             console.error("Place details could not be retrieved:", status);

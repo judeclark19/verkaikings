@@ -90,10 +90,7 @@ const CityPicker = observer(
 
       // check if city is in cache
       if (!placeDataCache.cityNames[myProfileState.placeId!]) {
-        placeDataCache.cityNames[myProfileState.placeId!] =
-          await placeDataCache.fetchCityName(
-            myProfileState.placeId!.toLowerCase()
-          );
+        await placeDataCache.fetchCityDetails(myProfileState.placeId!);
       }
 
       // check if country is in cache

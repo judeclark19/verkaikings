@@ -18,8 +18,6 @@ export default function LayoutProviders({
   isLoggedIn: boolean;
 }) {
   useEffect(() => {
-    console.log(`LayoutProviders mounted isLoggedIn: ${isLoggedIn}`);
-
     async function fetchUsers() {
       const users = await getDocs(collection(db, "users"));
       return users.docs.map((doc) => doc.data());
