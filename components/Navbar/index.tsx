@@ -1,10 +1,13 @@
 import React from "react";
 import NavbarUI from "./NavbarUI";
-import { getTokenFromCookie } from "@/lib/serverUtils";
+import { decodeToken } from "@/lib/serverUtils";
 
 function Navbar() {
-  const token = getTokenFromCookie();
-  return <NavbarUI isLoggedIn={!!token} />;
+  const decodedToken = decodeToken();
+
+  return (
+    <NavbarUI isLoggedIn={!!decodedToken} userId={decodedToken?.user_id} />
+  );
 }
 
 export default Navbar;

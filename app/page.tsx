@@ -1,5 +1,5 @@
 import WelcomeMessage from "@/components/WelcomeMessage";
-import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
+import { decodeToken } from "@/lib/serverUtils";
 import { Box, Typography } from "@mui/material";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const token = getTokenFromCookie();
   const decodedToken = decodeToken();
 
   return (
@@ -41,7 +40,7 @@ export default function Home() {
       <Typography variant="h1">Willemijn&apos;s World Website</Typography>
       <Typography variant="h2">Verkaikings Society</Typography>
       <WelcomeMessage
-        isLoggedIn={!!token}
+        isLoggedIn={!!decodedToken}
         email={decodedToken ? decodedToken.email : null}
       />
     </div>
