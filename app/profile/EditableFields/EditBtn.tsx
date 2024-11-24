@@ -14,6 +14,9 @@ function EditBtn({
       onClick={() => {
         setIsEditing(true);
       }}
+      sx={{
+        flexShrink: 0
+      }}
     >
       <EditIcon />
     </Fab>
