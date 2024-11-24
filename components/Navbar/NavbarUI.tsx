@@ -34,14 +34,9 @@ const NavbarUI = observer(
     const pathname = usePathname();
 
     useEffect(() => {
-      if (!userId) return;
+      if (!userId || !placeDataCache.isInitialized) return;
 
       const fetchUser = async () => {
-        if (!placeDataCache.isInitialized) {
-          console.log("Waiting for placeDataCache...");
-          return;
-        }
-
         try {
           const userDocRef = doc(db, "users", userId);
           const userDoc = await getDoc(userDocRef);
@@ -55,7 +50,7 @@ const NavbarUI = observer(
       };
 
       fetchUser();
-    }, [userId, placeDataCache.isInitialized]); // Watch for `isInitialized`
+    }, [userId, placeDataCache.isInitialized]);
 
     const handleDrawerToggle = () => {
       setMobileOpen(!mobileOpen);
