@@ -27,7 +27,12 @@ export default function SubmenuDropdown({
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center"
+      }}
+    >
       <Button
         id="submenu-button"
         aria-controls={open ? "basic-menu" : undefined}

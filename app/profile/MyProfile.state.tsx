@@ -21,7 +21,7 @@ class MyProfileState {
     await placeDataCache.waitForInitialization(); // Ensure PlaceDataCache is ready
 
     this.setUser(user);
-    this.userId = userId;
+    this.setUserId(userId);
     this.setPlaceId(user.cityId);
     console.log("init my profile state", toJS(placeDataCache));
     this.setCityName(placeDataCache.cityNames[user.cityId]);
@@ -38,6 +38,10 @@ class MyProfileState {
 
   setUser(user: DocumentData | null) {
     this.user = user;
+  }
+
+  setUserId(userId: string | null) {
+    this.userId = userId;
   }
 
   setPlaceId(placeId: string | null) {

@@ -1,9 +1,6 @@
 "use client";
 
-import { db } from "@/lib/firebase";
 import { Typography } from "@mui/material";
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
 import ProfileSkeleton from "./ProfileSkeleton";
 import { City, Country, DateOfBirth } from "./EditableFields";
 import { observer } from "mobx-react-lite";
@@ -13,38 +10,7 @@ import Instagram from "./EditableFields/Instagram";
 import placeDataCache from "@/lib/PlaceDataCache";
 import ProfilePic from "./EditableFields/ProfilePic";
 
-const MyProfile = observer(({ userId }: { userId: string }) => {
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!placeDataCache.isInitialized) {
-        console.log("Waiting for placeDataCache...");
-        return;
-      }
-
-      try {
-        const userDocRef = doc(db, "users", userId);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          myProfileState.init(userDoc.data(), userId);
-        } else {
-          setError("User not found.");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Error fetching user data.");
-      }
-    };
-
-    fetchUser();
-  }, [userId, placeDataCache.isInitialized]); // Watch for `isInitialized`
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
+const MyProfile = observer(() => {
   if (
     !placeDataCache.isInitialized ||
     !myProfileState.isFetched ||

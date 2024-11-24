@@ -74,7 +74,7 @@ const UserProfile = ({
   }
 
   if (isSelf) {
-    return <MyProfile userId={decodedToken.user_id} />;
+    return <MyProfile />;
   }
 
   return (
