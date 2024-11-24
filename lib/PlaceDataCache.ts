@@ -73,17 +73,27 @@ class PlaceDataCache {
 
   loadFromLocalStorage() {
     try {
-      const stored = localStorage.getItem("placeDataCache");
+      const storedCache = localStorage.getItem("placeDataCache");
 
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
-        if (Date.now() - parsed.lastUpdated <= oneMonthInMs) {
-          this.cityNames = parsed.cityNames || {};
-          this.cityDetails = parsed.cityDetails || {};
-        } else {
-          localStorage.removeItem("placeDataCache"); // Clear outdated data
+      if (storedCache) {
+        const parsedCache = JSON.parse(storedCache);
+
+        if (!localStorage.getItem("pdcLastUpdated")) {
+          localStorage.setItem("pdcLastUpdated", Date.now().toString());
         }
+
+        const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        if (
+          Date.now() - parseInt(localStorage.getItem("pdcLastUpdated")!, 10) <=
+          oneMonthInMs
+        ) {
+          this.cityNames = parsedCache.cityNames || {};
+          this.cityDetails = parsedCache.cityDetails || {};
+        } else {
+          localStorage.removeItem("placeDataCache"); // Clear cache after 30 days to force a fresh fetch
+        }
+      } else {
+        localStorage.setItem("pdcLastUpdated", Date.now().toString());
       }
     } catch (error) {
       console.error("Error loading from localStorage:", error);
@@ -94,8 +104,7 @@ class PlaceDataCache {
     try {
       const data = {
         cityNames: toJS(this.cityNames),
-        cityDetails: toJS(this.cityDetails), // Save detailed location data
-        lastUpdated: Date.now()
+        cityDetails: toJS(this.cityDetails) // Save detailed location data
       };
       localStorage.setItem("placeDataCache", JSON.stringify(data));
     } catch (error) {
