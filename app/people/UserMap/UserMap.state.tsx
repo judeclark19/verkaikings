@@ -1,7 +1,6 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import { CountryUsersType } from "../People.state";
-import placeDataCache from "@/lib/PlaceDataCache";
+import placeDataCache, { CountryUsersType } from "@/lib/PlaceDataCache";
 
 type MapItem = {
   cityId: string;

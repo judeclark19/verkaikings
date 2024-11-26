@@ -87,7 +87,7 @@ const Dashboard = observer(() => {
             gridArea: "todaysBirthdays"
           }}
         >
-          <Typography variant="h3">Today's Birthdays</Typography>
+          <Typography variant="h3">Today&apos;s Birthdays</Typography>
           <BirthdayCardList users={todaysBirthdays} emptyMessage="None today" />
         </Paper>
         <Paper
