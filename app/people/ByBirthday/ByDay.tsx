@@ -1,7 +1,7 @@
 import { List, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import peopleState from "../People.state";
 import UserListItem from "../UserListItem";
+import placeDataCache from "@/lib/PlaceDataCache";
 
 const ByDay = observer(({ day, month }: { day: string; month: string }) => {
   return (
@@ -19,7 +19,7 @@ const ByDay = observer(({ day, month }: { day: string; month: string }) => {
           bgcolor: "background.paper"
         }}
       >
-        {peopleState.usersByBirthday[month][day].map((user) => (
+        {placeDataCache.usersByBirthday[month][day].map((user) => (
           <UserListItem key={user.username} user={user} />
         ))}
       </List>

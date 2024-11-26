@@ -3,14 +3,13 @@
 import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
-import peopleState from "./People.state";
 import placeDataCache from "@/lib/PlaceDataCache";
 
 const ByName = observer(() => {
   return (
     <div>
       <Typography variant="h1">List of People alphabetically</Typography>
-      {peopleState.isFetched ? (
+      {placeDataCache.users && placeDataCache.isInitialized ? (
         <List
           sx={{
             width: "100%",

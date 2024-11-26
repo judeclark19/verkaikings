@@ -1,3 +1,4 @@
+import Dashboard from "@/components/Dashboard/Dashboard";
 import WelcomeMessage from "@/components/WelcomeMessage";
 import { decodeToken } from "@/lib/serverUtils";
 import { Box, Typography } from "@mui/material";
@@ -43,6 +44,7 @@ export default function Home() {
         isLoggedIn={!!decodedToken}
         email={decodedToken ? decodedToken.email : null}
       />
+      {decodedToken && <Dashboard />}
     </div>
   );
 }

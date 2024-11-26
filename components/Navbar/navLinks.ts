@@ -5,6 +5,7 @@ import CakeIcon from "@mui/icons-material/Cake";
 // import PieChartIcon from "@mui/icons-material/PieChart";
 import PlaceIcon from "@mui/icons-material/Place";
 import MapIcon from "@mui/icons-material/Map";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 export type NavLinkType = {
   title: string;
@@ -62,6 +63,13 @@ export const navLinks: NavLinkType[] = [
         href: "/people?viewBy=map",
         paramValue: "map",
         icon: MapIcon,
+        protected: true
+      },
+      {
+        title: "Stories",
+        href: "/people?viewBy=story",
+        paramValue: "map",
+        icon: MenuBookIcon,
         protected: true
       }
     ]

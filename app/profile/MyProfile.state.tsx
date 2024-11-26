@@ -1,6 +1,6 @@
 import placeDataCache from "@/lib/PlaceDataCache";
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 class MyProfileState {
   isFetched = false;
@@ -23,7 +23,6 @@ class MyProfileState {
     this.setUser(user);
     this.setUserId(userId);
     this.setPlaceId(user.cityId);
-    console.log("init my profile state", toJS(placeDataCache));
     this.setCityName(placeDataCache.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryAbbr);
