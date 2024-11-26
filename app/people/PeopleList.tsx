@@ -2,51 +2,53 @@
 
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import peopleState, { PeopleViews } from "./People.state";
 import {
   Button,
   Box,
   Typography,
   ButtonGroup,
-  CircularProgress
+  CircularProgress,
+  FormControl,
+  Select,
+  MenuItem,
+  FormHelperText
 } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";
 import UserMap from "./UserMap/UserMap.UI";
-import placeDataCache from "@/lib/PlaceDataCache";
+import ByStory from "./ByStory";
+
+export enum PeopleViews {
+  NAME = "name",
+  BIRTHDAY = "birthday",
+  LOCATION = "location",
+  MAP = "map",
+  STORY = "story"
+}
 
 const PeopleList = observer(() => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const initialize = async () => {
-      if (!placeDataCache.isInitialized) {
-        await placeDataCache.waitForInitialization(); // Wait for PlaceDataCache to initialize
-      }
-      setLoading(false); // Set loading to false after initialization
-    };
-
-    initialize();
-  }, []);
+  const [viewingBy, setViewingBy] = useState<PeopleViews>(PeopleViews.NAME);
 
   useEffect(() => {
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
     if (!Object.values(PeopleViews).includes(viewByParam as PeopleViews)) {
       viewByParam = PeopleViews.NAME;
     }
-    peopleState.init(viewByParam as PeopleViews);
+    setViewingBy(viewByParam as PeopleViews);
+    setLoading(false); // Set loading to false after initialization
   }, []);
 
   useEffect(() => {
-    router.replace(`?viewBy=${peopleState.viewingBy.toLowerCase()}`);
-  }, [peopleState.viewingBy, router]);
+    router.replace(`?viewBy=${viewingBy.toLowerCase()}`);
+  }, [viewingBy]);
 
   const handleViewChange = (view: PeopleViews) => {
-    peopleState.setViewingBy(view);
+    setViewingBy(view);
   };
 
   if (loading) {
@@ -81,24 +83,50 @@ const PeopleList = observer(() => {
           {Object.values(PeopleViews).map((view) => (
             <Button
               key={view}
-              onClick={() => handleViewChange(view)}
+              onClick={() => setViewingBy(view)}
               sx={{
                 backgroundColor:
-                  peopleState.viewingBy === view
-                    ? "primary.dark"
-                    : "primary.main"
+                  viewingBy === view ? "primary.dark" : "primary.main"
               }}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}
             </Button>
           ))}
         </ButtonGroup>
+
+        <FormControl
+          fullWidth
+          sx={{
+            maxWidth: 300,
+            marginBottom: 2,
+            display: {
+              xs: "flex",
+              md: "none"
+            }
+          }}
+        >
+          <Select
+            labelId="view-by-select-label"
+            value={viewingBy}
+            onChange={(event) =>
+              handleViewChange(event.target.value as PeopleViews)
+            }
+          >
+            {Object.values(PeopleViews).map((view) => (
+              <MenuItem key={view} value={view}>
+                {view.charAt(0).toUpperCase() + view.slice(1)}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>Select view</FormHelperText>
+        </FormControl>
       </Box>
 
-      {peopleState.viewingBy === "name" && <ByName />}
-      {peopleState.viewingBy === "location" && <ByLocation />}
-      {peopleState.viewingBy === "birthday" && <ByBirthday />}
-      {peopleState.viewingBy === "map" && <UserMap />}
+      {viewingBy === "name" && <ByName />}
+      {viewingBy === "location" && <ByLocation />}
+      {viewingBy === "birthday" && <ByBirthday />}
+      {viewingBy === "map" && <UserMap />}
+      {viewingBy === "story" && <ByStory />}
     </div>
   );
 });

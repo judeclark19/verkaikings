@@ -13,7 +13,7 @@ import { db } from "@/lib/firebase";
 import { Avatar, Box, Typography } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import ProfileSkeleton from "../ProfileSkeleton";
-import { checkIfBirthdayToday, formatBirthday } from "@/lib/clientUtils";
+import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import Link from "next/link";
 import placeDataCache from "@/lib/PlaceDataCache";
@@ -118,7 +118,7 @@ const UserProfile = ({
 
       {user.birthday && (
         <Typography component="p">
-          Birthday: {user.birthday} {formatBirthday(user.birthday)}{" "}
+          Birthday: {user.birthday} {formatFullBirthday(user.birthday)}{" "}
           {checkIfBirthdayToday(user.birthday) && "🎂"}
         </Typography>
       )}

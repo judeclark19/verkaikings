@@ -1,7 +1,6 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import { CountryUsersType } from "../People.state";
-import placeDataCache from "@/lib/PlaceDataCache";
+import placeDataCache, { CountryUsersType } from "@/lib/PlaceDataCache";
 
 type MapItem = {
   cityId: string;
@@ -60,28 +59,27 @@ class UserMapState {
         console.log("creating marker from cache:", cachedPlace);
         // Create marker from cached data
         this.createMarker(map, cachedPlace, mapItem);
-        return;
-      }
-
-      // Fetch details only if not cached
-      service.getDetails(
-        { placeId: mapItem.cityId },
-        (
-          place: google.maps.places.PlaceResult | null,
-          status: google.maps.places.PlacesServiceStatus
-        ) => {
-          if (
-            status === google.maps.places.PlacesServiceStatus.OK &&
-            place?.geometry?.location
-          ) {
-            placeDataCache.cityNames[mapItem.cityId] = place.name || "";
-            placeDataCache.saveToLocalStorage(); // Save updated cache
-            this.createMarker(map, place, mapItem);
-          } else {
-            console.error("Place details could not be retrieved:", status);
+      } else {
+        // Fetch details only if not cached
+        service.getDetails(
+          { placeId: mapItem.cityId },
+          (
+            place: google.maps.places.PlaceResult | null,
+            status: google.maps.places.PlacesServiceStatus
+          ) => {
+            if (
+              status === google.maps.places.PlacesServiceStatus.OK &&
+              place?.geometry?.location
+            ) {
+              placeDataCache.cityNames[mapItem.cityId] = place.name || "";
+              placeDataCache.saveToLocalStorage(); // Save updated cache
+              this.createMarker(map, place, mapItem);
+            } else {
+              console.error("Place details could not be retrieved:", status);
+            }
           }
-        }
-      );
+        );
+      }
     });
 
     this.isInitialized = true;
