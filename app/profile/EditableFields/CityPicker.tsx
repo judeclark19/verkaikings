@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -34,9 +34,7 @@ const CityPicker = observer(
             place.address_components
           ) {
             myProfileState.setCityName(
-              placeDataCache.formatCityAndStatefromAddress(
-                place.address_components
-              )
+              appState.formatCityAndStatefromAddress(place.address_components)
             );
             myProfileState.setPlaceId(place.place_id);
             const countryComponent = place.address_components.find(
@@ -89,13 +87,13 @@ const CityPicker = observer(
       setLoading(true);
 
       // check if city is in cache
-      if (!placeDataCache.cityNames[myProfileState.placeId!]) {
-        await placeDataCache.fetchCityDetails(myProfileState.placeId!);
+      if (!appState.cityNames[myProfileState.placeId!]) {
+        await appState.fetchCityDetails(myProfileState.placeId!);
       }
 
       // check if country is in cache
-      if (country && !placeDataCache.countryNames[country]) {
-        placeDataCache.addCountryToList(country);
+      if (country && !appState.countryNames[country]) {
+        appState.addCountryToList(country);
       }
 
       async function fetchUsers() {
@@ -109,7 +107,7 @@ const CityPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            placeDataCache.setUsers(users);
+            appState.setUsers(users);
           });
 
           // check if country was changed, if so update myProfileStae.countryName

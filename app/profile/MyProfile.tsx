@@ -7,12 +7,12 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
 import Instagram from "./EditableFields/Instagram";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import ProfilePic from "./EditableFields/ProfilePic";
 
 const MyProfile = observer(() => {
   if (
-    !placeDataCache.isInitialized ||
+    !appState.isInitialized ||
     !myProfileState.isFetched ||
     !myProfileState.user
   ) {

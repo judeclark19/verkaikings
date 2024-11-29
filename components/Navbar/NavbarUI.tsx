@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -17,40 +17,19 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { navLinks } from "./navLinks";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
 import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
-import placeDataCache from "@/lib/PlaceDataCache";
-import { doc, getDoc } from "firebase/firestore";
 
 const NavbarUI = observer(
-  ({ isLoggedIn, userId }: { isLoggedIn: boolean; userId?: string }) => {
+  ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
-
-    useEffect(() => {
-      if (!userId || !placeDataCache.isInitialized) return;
-
-      const fetchUser = async () => {
-        try {
-          const userDocRef = doc(db, "users", userId);
-          const userDoc = await getDoc(userDocRef);
-
-          if (userDoc.exists()) {
-            myProfileState.init(userDoc.data(), userId);
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      };
-
-      fetchUser();
-    }, [userId, placeDataCache.isInitialized]);
 
     const handleDrawerToggle = () => {
       setMobileOpen(!mobileOpen);
@@ -61,6 +40,7 @@ const NavbarUI = observer(
         await signOut(auth); // Log out the user
         // Remove the authToken from cookies
         Cookies.remove("authToken");
+        myProfileState.signOut(); // Reset the user profile state
 
         // Force server-side navigation to ensure middleware checks the cookie
         window.location.href = "/"; // Triggers full page load

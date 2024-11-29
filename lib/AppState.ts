@@ -1,4 +1,5 @@
 import UserMapState from "@/app/people/UserMap/UserMap.state";
+import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 
@@ -7,9 +8,10 @@ export type CountryUsersType = {
   cities: Record<string, DocumentData[]>;
 };
 
-class PlaceDataCache {
+class AppState {
   isInitialized = false;
   users: DocumentData[] = [];
+  loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
@@ -22,8 +24,8 @@ class PlaceDataCache {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[]) {
-    console.log("PlaceDataCache init called");
+  async init(users: DocumentData[], userId: string) {
+    console.log("AppState init called");
     if (this.isInitialized) {
       return;
     }
@@ -34,8 +36,9 @@ class PlaceDataCache {
     }
 
     this.initPromise = (async () => {
-      this.loadFromLocalStorage();
       this.users = users;
+      this.loggedInUser = users.find((user) => user.id === userId) || null;
+      this.loadFromLocalStorage();
 
       // Fetch city names and details
       const cityIds = users.map((user) => user.cityId);
@@ -59,8 +62,8 @@ class PlaceDataCache {
       this.initUsersByCountry();
       this.saveToLocalStorage();
       this.initUsersByBirthday();
+      myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);
-      console.log("PlaceDataCache initialized");
     })();
 
     await this.initPromise;
@@ -272,5 +275,5 @@ class PlaceDataCache {
   }
 }
 
-const placeDataCache = new PlaceDataCache();
-export default placeDataCache;
+const appState = new AppState();
+export default appState;

@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import LayoutProviders from "@/lib/LayoutProviders"; // client side stuff
 import Navbar from "@/components/Navbar";
 import Script from "next/script"; // Import Script
-import { getTokenFromCookie } from "@/lib/serverUtils";
+import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,6 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const token = getTokenFromCookie();
+  const decodedToken = decodeToken();
   return (
     <html>
       <head>
@@ -31,7 +32,10 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        <LayoutProviders isLoggedIn={!!token}>
+        <LayoutProviders
+          isLoggedIn={!!decodedToken}
+          userId={decodedToken?.user_id}
+        >
           <Navbar />
           <main
             style={{

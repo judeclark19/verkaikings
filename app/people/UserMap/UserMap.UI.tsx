@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 import { Skeleton, Typography } from "@mui/material";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -12,18 +12,18 @@ const UserMap = observer(() => {
     if (!mapRef.current) return; // Ensure mapRef is ready
 
     async function initialize() {
-      if (!placeDataCache.isInitialized) {
-        const users = await getDocs(collection(db, "users"));
-        placeDataCache.init(users.docs.map((doc) => doc.data()));
-      }
+      // if (!appState.isInitialized) {
+      //   const users = await getDocs(collection(db, "users"));
+      //   appState.init(users.docs.map((doc) => doc.data()));
+      // }
 
       if (window.google) {
         // Initialize the map
-        placeDataCache.userMap?.initializeMap(mapRef.current as HTMLElement);
+        appState.userMap?.initializeMap(mapRef.current as HTMLElement);
       } else {
         // Attach an event listener to wait for the Google Maps library to load
         const onGoogleLoad = () =>
-          placeDataCache.userMap?.initializeMap(mapRef.current as HTMLElement);
+          appState.userMap?.initializeMap(mapRef.current as HTMLElement);
 
         window.addEventListener("load", onGoogleLoad);
         return () => window.removeEventListener("load", onGoogleLoad);

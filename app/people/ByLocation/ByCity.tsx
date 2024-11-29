@@ -1,13 +1,13 @@
 import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "../UserListItem";
 import { observer } from "mobx-react-lite";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const ByCity = observer(
   ({ countryAbbr, cityId }: { countryAbbr: string; cityId: string }) => {
     return (
       <>
-        {placeDataCache.isInitialized ? (
+        {appState.isInitialized ? (
           <div
             key={cityId}
             style={{
@@ -17,8 +17,8 @@ const ByCity = observer(
             <Typography variant="h3">
               {cityId === "No city listed" ? (
                 "No city listed"
-              ) : placeDataCache.cityNames[cityId] ? (
-                placeDataCache.cityNames[cityId]
+              ) : appState.cityNames[cityId] ? (
+                appState.cityNames[cityId]
               ) : (
                 <Skeleton />
               )}
@@ -30,7 +30,7 @@ const ByCity = observer(
                 bgcolor: "background.paper"
               }}
             >
-              {placeDataCache.usersByCountry[countryAbbr].cities[cityId].map(
+              {appState.usersByCountry[countryAbbr].cities[cityId].map(
                 (user) => {
                   return <UserListItem key={user.username} user={user} />;
                 }

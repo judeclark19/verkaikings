@@ -16,7 +16,7 @@ import ProfileSkeleton from "../ProfileSkeleton";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import Link from "next/link";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const UserProfile = ({
   decodedToken
@@ -108,11 +108,11 @@ const UserProfile = ({
       <Typography component="p">Email: {user.email}</Typography>
       <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
       <Typography component="p">
-        Country: {placeDataCache.countryNames[user.countryAbbr]}
+        Country: {appState.countryNames[user.countryAbbr]}
       </Typography>
       {user.cityId && (
         <Typography component="p">
-          City: {placeDataCache.cityNames[user.cityId]}
+          City: {appState.cityNames[user.cityId]}
         </Typography>
       )}
 

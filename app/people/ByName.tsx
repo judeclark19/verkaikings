@@ -3,13 +3,13 @@
 import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const ByName = observer(() => {
   return (
     <div>
       <Typography variant="h1">List of People alphabetically</Typography>
-      {placeDataCache.users && placeDataCache.isInitialized ? (
+      {appState.users && appState.isInitialized ? (
         <List
           sx={{
             width: "100%",
@@ -17,7 +17,7 @@ const ByName = observer(() => {
             bgcolor: "background.paper"
           }}
         >
-          {placeDataCache.users
+          {appState.users
             .slice()
             .sort(
               // Sort users alphabetically by username

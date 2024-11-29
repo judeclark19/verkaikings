@@ -1,6 +1,6 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import placeDataCache, { CountryUsersType } from "@/lib/PlaceDataCache";
+import appState, { CountryUsersType } from "@/lib/AppState";
 
 type MapItem = {
   cityId: string;
@@ -54,7 +54,7 @@ class UserMapState {
 
     this.mapItems.forEach((mapItem) => {
       // Check cache first
-      const cachedPlace = placeDataCache.cityDetails[mapItem.cityId];
+      const cachedPlace = appState.cityDetails[mapItem.cityId];
       if (cachedPlace) {
         console.log("creating marker from cache:", cachedPlace);
         // Create marker from cached data
@@ -71,8 +71,8 @@ class UserMapState {
               status === google.maps.places.PlacesServiceStatus.OK &&
               place?.geometry?.location
             ) {
-              placeDataCache.cityNames[mapItem.cityId] = place.name || "";
-              placeDataCache.saveToLocalStorage(); // Save updated cache
+              appState.cityNames[mapItem.cityId] = place.name || "";
+              appState.saveToLocalStorage(); // Save updated cache
               this.createMarker(map, place, mapItem);
             } else {
               console.error("Place details could not be retrieved:", status);
@@ -97,8 +97,8 @@ class UserMapState {
     });
 
     const contentString = `<div class="info-window">
-        <h2>${placeDataCache.cityNames[place.place_id!]}, ${
-      placeDataCache.countryNames[mapItem.countryAbbr]
+        <h2>${appState.cityNames[place.place_id!]}, ${
+      appState.countryNames[mapItem.countryAbbr]
     }</h2>
         <ul>
         ${mapItem.users

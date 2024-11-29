@@ -3,7 +3,7 @@
 import { Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import ByDay from "./ByDay";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const ByBirthday = observer(() => {
   function getMonthName(monthNumber: number, locale: string) {
@@ -14,10 +14,10 @@ const ByBirthday = observer(() => {
   return (
     <>
       <Typography variant="h1">List of Birthdays</Typography>
-      {placeDataCache.isInitialized &&
-      Object.keys(placeDataCache.usersByBirthday).length > 0 ? (
+      {appState.isInitialized &&
+      Object.keys(appState.usersByBirthday).length > 0 ? (
         <>
-          {Object.keys(placeDataCache.usersByBirthday)
+          {Object.keys(appState.usersByBirthday)
             .sort((a, b) => parseInt(a) - parseInt(b))
             .map((month) => (
               <div key={month}>
@@ -25,7 +25,7 @@ const ByBirthday = observer(() => {
                   {getMonthName(parseInt(month), navigator.language || "nl")}
                 </Typography>
                 <div>
-                  {Object.keys(placeDataCache.usersByBirthday[month])
+                  {Object.keys(appState.usersByBirthday[month])
                     .sort((a, b) => parseInt(a) - parseInt(b))
                     .map((day) => (
                       <ByDay key={day} day={day} month={month} />

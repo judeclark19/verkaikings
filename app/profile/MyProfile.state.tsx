@@ -1,4 +1,4 @@
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
@@ -18,12 +18,12 @@ class MyProfileState {
   }
 
   async init(user: DocumentData, userId: string) {
-    await placeDataCache.waitForInitialization(); // Ensure PlaceDataCache is ready
+    await appState.waitForInitialization(); // Ensure appState is ready
 
     this.setUser(user);
     this.setUserId(userId);
     this.setPlaceId(user.cityId);
-    this.setCityName(placeDataCache.cityNames[user.cityId]);
+    this.setCityName(appState.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryAbbr);
     this.setInstagram(user.instagram);
@@ -60,11 +60,11 @@ class MyProfileState {
       return "";
     }
 
-    if (!placeDataCache.countryNames[countryAbbr]) {
-      placeDataCache.addCountryToList(countryAbbr);
+    if (!appState.countryNames[countryAbbr]) {
+      appState.addCountryToList(countryAbbr);
     }
 
-    this.countryName = placeDataCache.countryNames[countryAbbr];
+    this.countryName = appState.countryNames[countryAbbr];
   }
 
   setInstagram(instagram: string | null) {
@@ -73,6 +73,18 @@ class MyProfileState {
 
   setMyWillemijnStory(myWillemijnStory: string | null) {
     this.myWillemijnStory = myWillemijnStory;
+  }
+
+  signOut() {
+    this.setUser(null);
+    this.setUserId(null);
+    this.setPlaceId(null);
+    this.setCityName(null);
+    this.setCountryAbbr(null);
+    this.setCountryName(null);
+    this.setInstagram(null);
+    this.setMyWillemijnStory(null);
+    this.setIsFetched(false);
   }
 }
 
