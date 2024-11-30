@@ -6,7 +6,7 @@ function SaveBtn({ loading }: { loading: boolean }) {
     <Fab
       type="submit"
       color="secondary"
-      size="medium"
+      size="small"
       aria-label="save"
       sx={{
         flexShrink: 0

@@ -74,11 +74,13 @@ const ProfilePic = observer(() => {
       <Avatar
         src={myProfileState.user?.profilePicture || ""}
         alt={`${myProfileState.user?.firstName} ${myProfileState.user?.lastName}`}
+        variant="square"
         sx={{
-          width: 150,
-          height: 150,
+          width: 200,
+          height: 200,
           fontSize: 40,
-          bgcolor: "primary.main"
+          bgcolor: "primary.main",
+          borderRadius: 2
         }}
       >
         {!myProfileState.user?.profilePicture &&
@@ -102,6 +104,7 @@ const ProfilePic = observer(() => {
             aria-label="upload picture"
             component="label"
             disabled={loading}
+            size="small"
           >
             {loading ? (
               <CircularProgress size={24} sx={{ color: "white" }} />

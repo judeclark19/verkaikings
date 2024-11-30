@@ -5,6 +5,7 @@ import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import EditBtn from "./EditBtn";
+import CakeIcon from "@mui/icons-material/Cake";
 
 const DateOfBirth = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -18,9 +19,14 @@ const DateOfBirth = observer(() => {
 
   return (
     <>
-      {isEditing ? (
-        <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
-      ) : (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          justifyContent: "space-between"
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -28,16 +34,29 @@ const DateOfBirth = observer(() => {
             gap: "1rem"
           }}
         >
-          <Typography component="p">
-            Birthday:{" "}
-            {myProfileState.user.birthday
-              ? birthdayText(myProfileState.user.birthday)
-              : ""}{" "}
-            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
-          </Typography>
-          <EditBtn setIsEditing={setIsEditing} />
+          <CakeIcon />
+          {isEditing ? (
+            <div>
+              <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
+            </div>
+          ) : (
+            <Typography
+              component="p"
+              sx={{
+                color: myProfileState.user.birthday
+                  ? "inherit"
+                  : "text.secondary"
+              }}
+            >
+              {myProfileState.user.birthday
+                ? birthdayText(myProfileState.user.birthday)
+                : "(Enter your date of birth)"}{" "}
+              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+            </Typography>
+          )}
         </div>
-      )}
+        {!isEditing && <EditBtn setIsEditing={setIsEditing} />}
+      </div>
     </>
   );
 });

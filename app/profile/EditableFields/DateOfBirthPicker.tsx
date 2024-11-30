@@ -29,7 +29,6 @@ const DatePickerForm = observer(
         birthday: value ? value.format("YYYY-MM-DD") : null
       })
         .then(() => {
-          // TODO: visual feedback
           console.log("User's birthday updated successfully");
           setLoading(false);
           setIsEditing(false);
@@ -51,7 +50,8 @@ const DatePickerForm = observer(
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "1rem"
+          gap: "1rem",
+          justifyContent: "space-between"
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>

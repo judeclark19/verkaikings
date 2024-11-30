@@ -134,7 +134,7 @@ const NavbarUI = observer(
                         href={link.href}
                         sx={getNavLinkStyle(link.href)}
                       >
-                        {link.title === "Profile" && myProfileState.user ? (
+                        {link.title === "My Profile" && myProfileState.user ? (
                           <>
                             <Avatar
                               src={myProfileState.user.profilePicture || ""}

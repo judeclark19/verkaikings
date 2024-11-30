@@ -26,7 +26,7 @@ const MyWillemijnStory = observer(() => {
 
     setLoading(true);
     updateDoc(userDoc, {
-      myWillemijnStory: myProfileState.myWillemijnStory
+      myWillemijnStory: myProfileState.myWillemijnStory || ""
     })
       .then(() => {
         setTemp(myProfileState.myWillemijnStory || "");

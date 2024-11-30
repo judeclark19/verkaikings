@@ -33,8 +33,8 @@ const DrawerLink = observer(
             minWidth: "40px"
           }}
         >
-          {link.icon && link.title !== "Profile" && <link.icon />}
-          {link.title === "Profile" && myProfileState.user && (
+          {link.icon && link.title !== "My Profile" && <link.icon />}
+          {link.title === "My Profile" && myProfileState.user && (
             <Avatar
               src={myProfileState.user.profilePicture || ""}
               alt={`${myProfileState.user.firstName} ${myProfileState.user.lastName}`}

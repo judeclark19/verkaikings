@@ -14,6 +14,22 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 const nextConfig = {
   compiler: {
     styledComponents: true
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.svg$/, // Match all `.svg` files
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            svgo: false, // Disable SVGO optimizations
+            titleProp: true, // Pass title as a prop
+            ref: true // Allow forward refs
+          }
+        }
+      ]
+    });
+    return config;
   }
 };
 
