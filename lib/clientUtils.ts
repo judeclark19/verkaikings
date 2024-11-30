@@ -1,3 +1,5 @@
+import { PhoneNumberUtil } from "google-libphonenumber";
+
 export function formatFullBirthday(input: string) {
   // Parse the input string into a Date object
   const date = new Date(`${input}T00:00:00`);
@@ -101,4 +103,15 @@ export function checkIfBirthdaySoon(birthday: string) {
       birthdayThisYear.getMonth() + 1 === todayMonth
     )
   );
+}
+
+const phoneUtil = PhoneNumberUtil.getInstance();
+
+export function isPhoneValid(phone: string) {
+  try {
+    return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
+  } catch (error) {
+    console.error("Error validating phone number:", error);
+    return false;
+  }
 }

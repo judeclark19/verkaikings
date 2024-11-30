@@ -25,7 +25,6 @@ class AppState {
   }
 
   async init(users: DocumentData[], userId: string) {
-    console.log("AppState init called");
     if (this.isInitialized) {
       return;
     }

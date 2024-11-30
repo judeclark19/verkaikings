@@ -1,8 +1,18 @@
 import { Inter } from "next/font/google";
 import LayoutProviders from "@/lib/LayoutProviders"; // client side stuff
 import Navbar from "@/components/Navbar";
-import Script from "next/script"; // Import Script
+import Script from "next/script";
+import { Metadata } from "next";
 import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
+
+export const metadata: Metadata = {
+  title: "Willemijn's World Website",
+  icons: {
+    icon: ["/favicon.ico"],
+    apple: ["/apple-touch-icon.png"],
+    shortcut: ["/apple-touch-icon.png"]
+  }
+};
 
 const inter = Inter({
   subsets: ["latin"],
