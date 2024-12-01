@@ -14,8 +14,7 @@ import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "@/app/profile/components/ProfileSkeleton";
-import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
+import { ProfileSkeleton, ReadOnlyContactItem } from "../components";
 import {
   AccountCircle as AccountCircleIcon,
   Cake as CakeIcon,
@@ -262,17 +261,21 @@ const UserProfile = ({
           </Box>
 
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
-          <Typography variant="h2">My Willemijn Story</Typography>
-          <Paper>
-            <Typography
-              sx={{
-                minHeight: "125px",
-                padding: "15px 13px"
-              }}
-            >
-              {user.myWillemijnStory}
-            </Typography>
-          </Paper>
+          {user.myWillemijnStory && (
+            <>
+              <Typography variant="h2">My Willemijn Story</Typography>
+              <Paper>
+                <Typography
+                  sx={{
+                    minHeight: "125px",
+                    padding: "15px 13px"
+                  }}
+                >
+                  {user.myWillemijnStory}
+                </Typography>
+              </Paper>
+            </>
+          )}
         </Box>
       </Box>
     </>

@@ -6,7 +6,8 @@ import EditBtn from "./EditBtn";
 import SaveBtn from "./SaveBtn";
 import MyWillemijnStory from "./MyWillemijnStory";
 import Pronouns from "./Pronouns";
-
+import Username from "./Username";
+import SocialsList from "./Socials/SocialsList";
 export {
   City,
   Country,
@@ -15,5 +16,7 @@ export {
   SaveBtn,
   MyWillemijnStory,
   ProfilePic,
-  Pronouns
+  Pronouns,
+  Username,
+  SocialsList
 };

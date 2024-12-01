@@ -17,7 +17,8 @@ import {
   Box,
   CircularProgress,
   Link,
-  Skeleton
+  Skeleton,
+  Alert
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
@@ -226,14 +227,14 @@ const SignupForm = () => {
                 </Button>
               </form>
               {error && (
-                <Typography
+                <Alert
                   sx={{
                     mt: 2
                   }}
-                  color="error"
+                  severity="error"
                 >
                   {error}
-                </Typography>
+                </Alert>
               )}
             </>
           )}
@@ -299,7 +300,7 @@ const SignupForm = () => {
                   sx={{ mt: 2 }}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : "Sign Up"}
+                  {checking ? <CircularProgress size={24} /> : "Sign Up"}
                 </Button>
               </form>
               {error && <Typography color="error">{error}</Typography>}

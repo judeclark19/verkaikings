@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { observer } from "mobx-react-lite";
+import PasswordResetModal from "./PasswordResetModal";
 
 const LoginForm = observer(() => {
   const [email, setEmail] = useState("");
@@ -41,7 +42,7 @@ const LoginForm = observer(() => {
       Cookies.set("authToken", token, { expires: 1 });
 
       // Force server-side navigation to ensure middleware checks the cookie
-      window.location.href = "/profile"; // Triggers full page load
+      window.location.href = "/"; // Triggers full page load
     } catch (err: unknown) {
       // Check if err is a Firebase error with a message
       if (err instanceof Error) {
@@ -103,20 +104,12 @@ const LoginForm = observer(() => {
 
       <Typography
         sx={{
-          mt: 4
+          my: 4
         }}
       >
         Don&apos;t have an account? <Link href="/signup">Sign up</Link>
       </Typography>
-      <Typography
-        sx={{
-          mt: 4,
-          textAlign: "center"
-        }}
-      >
-        Forgot Password? Contact the webmaster Jude (+17703801397) on WhatsApp
-        to request a password reset.
-      </Typography>
+      <PasswordResetModal email={email} />
     </Box>
   );
 });
