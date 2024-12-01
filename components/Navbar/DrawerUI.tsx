@@ -157,14 +157,15 @@ function DrawerUI({
         >
           <ListItemIcon
             sx={{
-              color: "background.default"
+              color: "background.default",
+              minWidth: "40px"
             }}
           >
             {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
           </ListItemIcon>
 
           <ListItemText
-            primary={isLoggedIn ? "Log Out" : "Log In"}
+            primary={isLoggedIn ? "LOG OUT" : "LOG IN"}
             primaryTypographyProps={{
               fontWeight: isActive("/login") ? "700" : "400"
             }}
@@ -187,14 +188,15 @@ function DrawerUI({
           >
             <ListItemIcon
               sx={{
-                color: "background.default"
+                color: "background.default",
+                minWidth: "40px"
               }}
             >
               <AppRegistration />
             </ListItemIcon>
 
             <ListItemText
-              primary="Sign Up"
+              primary="SIGN UP"
               primaryTypographyProps={{
                 fontWeight: isActive("/signup") ? "700" : "400"
               }}

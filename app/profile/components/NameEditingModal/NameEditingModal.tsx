@@ -16,7 +16,8 @@ const style = {
   boxShadow: 24,
   pt: 2,
   px: 4,
-  pb: 3
+  pb: 3,
+  width: 400
 };
 
 const NameEditingModal = observer(() => {

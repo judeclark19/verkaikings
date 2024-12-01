@@ -98,7 +98,8 @@ const MyWillemijnStory = observer(() => {
           <div
             style={{
               display: "flex",
-              justifyContent: "flex-end"
+              justifyContent: "flex-end",
+              paddingRight: "24px"
             }}
           >
             <EditBtn setIsEditing={setIsEditing} />

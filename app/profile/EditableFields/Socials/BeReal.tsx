@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { TextField, Typography } from "@mui/material";
-import myProfileState from "../MyProfile.state";
+import myProfileState from "../../MyProfile.state";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import SaveBtn from "./SaveBtn";
-import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
-import EditBtn from "./EditBtn";
+import BeRealIcon from "../../../../public/images/icons8-bereal-24.svg";
+import { EditBtn, SaveBtn } from "../index";
 
 const BeReal = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);

@@ -5,11 +5,8 @@ import {
   City,
   Country,
   DateOfBirth,
-  Instagram,
   MyWillemijnStory,
   ProfilePic,
-  Duolingo,
-  BeReal,
   Pronouns
 } from "./EditableFields";
 import { observer } from "mobx-react-lite";
@@ -17,8 +14,6 @@ import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
 import ProfileSkeleton from "./components/ProfileSkeleton";
 import ReadOnlyContactItem from "./components/ReadOnlyContactItem";
-import { Email as EmailIcon } from "@mui/icons-material";
-
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import NameEditingModal from "./components/NameEditingModal/NameEditingModal";
@@ -26,6 +21,7 @@ import Username from "./EditableFields/Username";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import SocialsList from "./EditableFields/Socials/SocialsList";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -66,7 +62,10 @@ const MyProfile = observer(() => {
             md: "row"
           },
           justifyContent: "center",
-          gap: 3
+          gap: {
+            xs: 0,
+            md: 3
+          }
         }}
       >
         {/* SIDEBAR */}
@@ -81,7 +80,6 @@ const MyProfile = observer(() => {
           }}
         >
           <ProfilePic />
-          <br />
           <Box
             sx={{
               display: {
@@ -106,23 +104,17 @@ const MyProfile = observer(() => {
             </Typography>
             <NameEditingModal />
           </Box>
-          <Paper
-            elevation={3}
+          <Box
             sx={{
-              padding: 3
+              display: {
+                xs: "none",
+                md: "block"
+              },
+              mt: 3
             }}
           >
-            <Typography variant="h3" sx={{ textAlign: "center", marginTop: 0 }}>
-              Socials
-            </Typography>
-            <ReadOnlyContactItem
-              value={myProfileState.user.email}
-              icon={<EmailIcon />}
-            />
-            <Instagram />
-            <Duolingo />
-            <BeReal />
-          </Paper>
+            <SocialsList />
+          </Box>
         </Box>
         {/* MAIN CONTENT */}
         <Box
@@ -152,33 +144,48 @@ const MyProfile = observer(() => {
             </Typography>
             <NameEditingModal />
           </Box>
-          <Box
-            sx={{
-              display: "grid",
-              columnGap: 6,
-              rowGap: 0
-            }}
-            gridTemplateColumns={{
-              xs: "repeat(auto-fit, 100%)",
-              sm: "repeat(auto-fit, 300px)"
-            }}
-            justifyContent={{
-              xs: "center",
-              md: "start"
-            }}
-          >
-            <Username />
-            <ReadOnlyContactItem
-              value={myProfileState.user.phoneNumber}
-              icon={<FaWhatsapp size={24} />}
-            />
-            <DateOfBirth />
-            <Pronouns />
-            <City />
-            <Country />
-          </Box>
+          <Paper elevation={6} sx={{ px: 3 }}>
+            <Box
+              sx={{
+                display: "grid",
+                columnGap: 6,
+                rowGap: 0,
+                gridTemplateColumns: {
+                  xs: "repeat(auto-fit, 100%)",
+                  md: "repeat(auto-fit, 300px)"
+                },
+                justifyContent: {
+                  xs: "center",
+                  md: "start"
+                }
+              }}
+            >
+              <Username />
+              <ReadOnlyContactItem
+                value={myProfileState.user.phoneNumber}
+                icon={<FaWhatsapp size={24} />}
+              />
+              <DateOfBirth />
+              <Pronouns />
+              <City />
+              <Country />
+            </Box>
+          </Paper>
 
           <Divider />
+
+          <Box
+            sx={{
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
+            }}
+          >
+            <SocialsList />
+          </Box>
+
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <MyWillemijnStory />
 
