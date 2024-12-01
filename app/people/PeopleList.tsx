@@ -79,14 +79,24 @@ const PeopleList = observer(() => {
         <Typography variant="h3" sx={{ marginBottom: "2rem" }}>
           View people by:
         </Typography>
-        <ButtonGroup variant="contained" aria-label="Basic button group">
+        <ButtonGroup
+          variant="contained"
+          aria-label="Basic button group"
+          sx={{
+            display: {
+              xs: "none",
+              md: "flex"
+            }
+          }}
+        >
           {Object.values(PeopleViews).map((view) => (
             <Button
               key={view}
               onClick={() => setViewingBy(view)}
               sx={{
                 backgroundColor:
-                  viewingBy === view ? "primary.dark" : "primary.main"
+                  viewingBy === view ? "primary.main" : "primary.dark",
+                fontWeight: viewingBy === view ? "700" : "400"
               }}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}

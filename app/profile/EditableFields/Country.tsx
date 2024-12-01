@@ -5,6 +5,7 @@ import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
 import EditBtn from "./EditBtn";
 import { Public as PublicIcon } from "@mui/icons-material";
+import { getEmojiFlag } from "countries-list";
 
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -31,7 +32,11 @@ const Country = observer(() => {
           height: "100%"
         }}
       >
-        <PublicIcon />
+        {myProfileState.user!.countryAbbr ? (
+          <>{getEmojiFlag(myProfileState.user!.countryAbbr.toUpperCase())}</>
+        ) : (
+          <PublicIcon />
+        )}
 
         {isEditing ? (
           <CountryPicker setIsEditing={setIsEditing} />

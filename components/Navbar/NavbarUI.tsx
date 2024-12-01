@@ -53,10 +53,10 @@ const NavbarUI = observer(
 
     const getNavLinkStyle = (link: string) => {
       return {
-        fontWeight: isActive(link) ? "700" : "400",
-        backgroundColor: isActive(link) ? "primary.dark" : "transparent",
+        fontWeight: isActive(link) ? "700" : "500",
+        backgroundColor: isActive(link) ? "primary.main" : "transparent",
         "&:hover": {
-          textDecoration: "underline"
+          backgroundColor: "primary.main"
         }
       };
     };
@@ -66,7 +66,7 @@ const NavbarUI = observer(
         <AppBar
           position="static"
           sx={{
-            backgroundColor: "primary.main",
+            backgroundColor: "primary.dark",
             color: "background.default"
           }}
         >
@@ -121,7 +121,8 @@ const NavbarUI = observer(
                           orientation="vertical"
                           flexItem
                           sx={{
-                            borderColor: "background.default"
+                            borderColor: "background.default",
+                            margin: "0 8px"
                           }}
                         />
                       </Fragment>
@@ -167,7 +168,8 @@ const NavbarUI = observer(
                         orientation="vertical"
                         flexItem
                         sx={{
-                          borderColor: "background.default"
+                          borderColor: "background.default",
+                          margin: "0 8px"
                         }}
                       />
                     </Fragment>
@@ -218,7 +220,7 @@ const NavbarUI = observer(
                 boxSizing: "border-box",
                 width: 240,
 
-                backgroundColor: "primary.main",
+                backgroundColor: "primary.dark",
                 color: "background.default"
               }
             }}

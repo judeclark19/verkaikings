@@ -93,10 +93,10 @@ class AppState {
           localStorage.setItem("pdcLastUpdated", Date.now().toString());
         }
 
-        const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
         if (
           Date.now() - parseInt(localStorage.getItem("pdcLastUpdated")!, 10) <=
-          oneMonthInMs
+          threeMonthsInMs
         ) {
           this.cityNames = parsedCache.cityNames || {};
           this.cityDetails = parsedCache.cityDetails || {};

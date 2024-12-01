@@ -14,13 +14,16 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { AppRegistration } from "@mui/icons-material";
 import { styled } from "styled-components";
+import { lime } from "@mui/material/colors";
 
 const ListStyle = styled(List)`
   a,
   .navLink {
     cursor: pointer;
+    text-decoration: none;
     &:hover {
-      text-decoration: underline;
+      /* text-decoration: underline; */
+      background-color: "primary.main";
     }
   }
 `;
@@ -125,7 +128,7 @@ function DrawerUI({
                             isActive(link.href) &&
                             searchParams.get(link.paramKey!) ===
                               submenuLink.paramValue
-                              ? "primary.dark"
+                              ? "primary.main"
                               : "transparent"
                         }}
                       >
@@ -143,7 +146,13 @@ function DrawerUI({
           onClick={isLoggedIn ? handleLogout : () => router.push("/login")}
           sx={{
             fontWeight: "inherit",
-            backgroundColor: isActive("/login") ? "primary.dark" : "transparent"
+            backgroundColor: isActive("/login")
+              ? "primary.main"
+              : "transparent",
+            transition: "background-color 0.3s ease",
+            "&:hover": {
+              backgroundColor: "primary.main"
+            }
           }}
           className="navLink"
         >

@@ -14,7 +14,8 @@ const DateOfBirth = observer(() => {
   }
 
   const birthdayText = (birthday: string) => {
-    return `${birthday} / ${formatFullBirthday(birthday)}`;
+    // return `${birthday} / ${formatFullBirthday(birthday)}`;
+    return formatFullBirthday(birthday);
   };
 
   return (
@@ -25,7 +26,6 @@ const DateOfBirth = observer(() => {
           alignItems: "center",
           gap: "1rem",
           justifyContent: "space-between"
-          // height: "76px"
         }}
       >
         <div

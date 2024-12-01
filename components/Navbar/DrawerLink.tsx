@@ -24,7 +24,11 @@ const DrawerLink = observer(
         component={Link}
         href={link.href}
         sx={{
-          backgroundColor: isActive(link.href) ? "primary.dark" : "transparent"
+          backgroundColor: isActive(link.href) ? "primary.main" : "transparent",
+          transition: "background-color 0.3s ease",
+          "&:hover": {
+            backgroundColor: "primary.main"
+          }
         }}
       >
         <ListItemIcon

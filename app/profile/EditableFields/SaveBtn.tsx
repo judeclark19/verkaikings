@@ -12,7 +12,11 @@ function SaveBtn({ loading }: { loading: boolean }) {
         flexShrink: 0
       }}
     >
-      {loading ? <CircularProgress size={24} /> : <SaveIcon />}
+      {loading ? (
+        <CircularProgress color="secondary" size={24} />
+      ) : (
+        <SaveIcon />
+      )}
     </Fab>
   );
 }

@@ -63,7 +63,7 @@ const Instagram = observer(() => {
           }}
         >
           <TextField
-            label="Enter your Instagram username"
+            label="Instagram username"
             variant="outlined"
             fullWidth
             value={myProfileState.instagram}
@@ -107,7 +107,7 @@ const Instagram = observer(() => {
                 flexGrow: 1
               }}
             >
-              (Enter your IG)
+              (Instagram)
             </Typography>
           )}
 

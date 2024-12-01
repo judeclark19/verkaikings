@@ -1,7 +1,6 @@
 "use client";
 
 import { Box, Divider, Paper, Typography } from "@mui/material";
-import ProfileSkeleton from "./ProfileSkeleton";
 import {
   City,
   Country,
@@ -17,15 +16,14 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
 import SandboxSkeleton from "../sandbox/SandboxSkeleton";
-import ContactItem from "../sandbox/ContactItem";
-import ReadOnlyContactItem from "../sandbox/ReadOnlyContactItem";
+import ReadOnlyContactItem from "./ReadOnlyContactItem";
 import {
   Email as EmailIcon,
   AccountCircle as AccountCircleIcon
 } from "@mui/icons-material";
 
-import { FaTransgender, FaWhatsapp } from "react-icons/fa";
-import { getEmojiFlag } from "countries-list";
+import { FaWhatsapp } from "react-icons/fa";
+import { checkIfBirthdayToday } from "@/lib/clientUtils";
 
 const MyProfile = observer(() => {
   if (
@@ -73,9 +71,7 @@ const MyProfile = observer(() => {
             }}
           >
             {myProfileState.user.firstName} {myProfileState.user.lastName} {""}
-            <span>
-              {getEmojiFlag(myProfileState.user.countryAbbr.toUpperCase())}
-            </span>
+            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
           </Typography>
           <Paper
             elevation={3}
@@ -90,14 +86,9 @@ const MyProfile = observer(() => {
               value={myProfileState.user.email}
               icon={<EmailIcon />}
             />
-            {/* <ContactItem
-              initialValue="instagram"
-              icon={<FaInstagram size={24} />}
-            /> */}
             <Instagram />
             <Duolingo />
             <BeReal />
-            {/* <ContactItem initialValue="bereal" icon={<BeRealIcon />} /> */}
           </Paper>
         </Box>
         {/* MAIN CONTENT */}
@@ -119,9 +110,7 @@ const MyProfile = observer(() => {
             }}
           >
             {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
-            <span>
-              {getEmojiFlag(myProfileState.user.countryAbbr.toUpperCase())}
-            </span>
+            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
           </Typography>
           <Box
             sx={{
@@ -147,10 +136,6 @@ const MyProfile = observer(() => {
               icon={<FaWhatsapp size={24} />}
             />
             <DateOfBirth />
-            {/* <ContactItem
-              initialValue="pronouns"
-              icon={<FaTransgender size={24} />}
-            /> */}
             <Pronouns />
             <City />
             <Country />

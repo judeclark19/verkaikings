@@ -67,7 +67,7 @@ const BeReal = observer(() => {
           }}
         >
           <TextField
-            label="Enter your BeReal username"
+            label="BeReal username"
             variant="outlined"
             fullWidth
             value={myProfileState.beReal}
@@ -98,7 +98,7 @@ const BeReal = observer(() => {
               flexGrow: 1
             }}
           >
-            {myProfileState.beReal || "(Enter your BeReal username)"}
+            {myProfileState.beReal || "(BeReal)"}
           </Typography>
 
           <EditBtn setIsEditing={setIsEditing} />

@@ -68,7 +68,7 @@ const Duolingo = observer(() => {
           }}
         >
           <TextField
-            label="Enter your Duolingo username"
+            label="Duolingo username"
             variant="outlined"
             fullWidth
             value={myProfileState.duolingo}
@@ -112,7 +112,7 @@ const Duolingo = observer(() => {
                 flexGrow: 1
               }}
             >
-              (Enter your Duolingo username)
+              (Duolingo)
             </Typography>
           )}
 
