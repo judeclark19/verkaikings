@@ -3,7 +3,7 @@ import LayoutProviders from "@/lib/LayoutProviders"; // client side stuff
 import Navbar from "@/components/Navbar";
 import Script from "next/script";
 import { Metadata } from "next";
-import { decodeToken, getTokenFromCookie } from "@/lib/serverUtils";
+import { decodeToken } from "@/lib/serverUtils";
 
 export const metadata: Metadata = {
   title: "Willemijn's World Website",
@@ -25,7 +25,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const token = getTokenFromCookie();
   const decodedToken = decodeToken();
   return (
     <html>

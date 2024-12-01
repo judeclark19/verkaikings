@@ -1,19 +1,9 @@
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
-import {
-  Fab,
-  FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
-  TextField,
-  Typography
-} from "@mui/material";
+import { Fab, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { FormEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import myProfileState from "../../MyProfile.state";
 import NameEditingForm from "./NameEditingForm";
 
 const style = {
@@ -62,7 +52,7 @@ const NameEditingModal = observer(() => {
           <Typography variant="h2">Edit Name</Typography>
           <Typography>
             Your username is derived from your name using the format
-            "First_Last".
+            &ldquo;First_Last&rdquo;.
           </Typography>
           <NameEditingForm closeModal={handleClose} />
         </Box>

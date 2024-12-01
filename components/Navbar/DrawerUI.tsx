@@ -14,7 +14,6 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { AppRegistration } from "@mui/icons-material";
 import { styled } from "styled-components";
-import { lime } from "@mui/material/colors";
 
 const ListStyle = styled(List)`
   a,
