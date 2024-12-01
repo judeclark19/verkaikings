@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import { useState } from "react";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, Paper, TextField, Typography } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditBtn, SaveBtn } from ".";
@@ -26,7 +26,7 @@ const MyWillemijnStory = observer(() => {
 
     setLoading(true);
     updateDoc(userDoc, {
-      myWillemijnStory: myProfileState.myWillemijnStory
+      myWillemijnStory: myProfileState.myWillemijnStory || ""
     })
       .then(() => {
         setTemp(myProfileState.myWillemijnStory || "");
@@ -44,6 +44,9 @@ const MyWillemijnStory = observer(() => {
   return (
     <>
       <Typography variant="h2">My Willemijn Story</Typography>
+      <Typography variant="h4">
+        How did you first become a fan of Willemijn?
+      </Typography>
       {isEditing ? (
         <Box
           component="form"
@@ -51,13 +54,10 @@ const MyWillemijnStory = observer(() => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 2,
-            maxWidth: "500px"
+            gap: 2
+            // maxWidth: "500px"
           }}
         >
-          <Typography variant="caption">
-            How did you first become a fan of Willemijn?
-          </Typography>
           <TextField
             label="My Willemijn Story"
             multiline
@@ -67,28 +67,43 @@ const MyWillemijnStory = observer(() => {
             onChange={(e) => myProfileState.setMyWillemijnStory(e.target.value)}
             variant="outlined"
           />
-          {/* <Button
-            variant="outlined"
-            onClick={() => {
-              myProfileState.setMyWillemijnStory(temp);
-              setIsEditing(false);
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end"
             }}
           >
-            Cancel
-          </Button> */}
-          <SaveBtn loading={loading} />
+            <SaveBtn loading={loading} />
+          </div>
         </Box>
       ) : (
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
-            alignItems: "center",
-            gap: "1rem"
+            flexDirection: "column",
+            gap: 2
           }}
         >
-          <p>{myProfileState.myWillemijnStory}</p>
-          <EditBtn setIsEditing={setIsEditing} />
-        </div>
+          <Paper>
+            <Typography
+              sx={{
+                minHeight: "125px",
+                padding: "16px 14px"
+              }}
+            >
+              {myProfileState.myWillemijnStory}
+            </Typography>
+          </Paper>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end"
+            }}
+          >
+            <EditBtn setIsEditing={setIsEditing} />
+          </div>
+        </Box>
       )}
     </>
   );

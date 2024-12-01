@@ -1,4 +1,5 @@
 import UserMapState from "@/app/people/UserMap/UserMap.state";
+import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 
@@ -7,9 +8,10 @@ export type CountryUsersType = {
   cities: Record<string, DocumentData[]>;
 };
 
-class PlaceDataCache {
+class AppState {
   isInitialized = false;
   users: DocumentData[] = [];
+  loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
@@ -22,8 +24,7 @@ class PlaceDataCache {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[]) {
-    console.log("PlaceDataCache init called");
+  async init(users: DocumentData[], userId: string) {
     if (this.isInitialized) {
       return;
     }
@@ -34,8 +35,9 @@ class PlaceDataCache {
     }
 
     this.initPromise = (async () => {
-      this.loadFromLocalStorage();
       this.users = users;
+      this.loggedInUser = users.find((user) => user.id === userId) || null;
+      this.loadFromLocalStorage();
 
       // Fetch city names and details
       const cityIds = users.map((user) => user.cityId);
@@ -59,8 +61,8 @@ class PlaceDataCache {
       this.initUsersByCountry();
       this.saveToLocalStorage();
       this.initUsersByBirthday();
+      myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);
-      console.log("PlaceDataCache initialized");
     })();
 
     await this.initPromise;
@@ -91,10 +93,10 @@ class PlaceDataCache {
           localStorage.setItem("pdcLastUpdated", Date.now().toString());
         }
 
-        const oneMonthInMs = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
         if (
           Date.now() - parseInt(localStorage.getItem("pdcLastUpdated")!, 10) <=
-          oneMonthInMs
+          threeMonthsInMs
         ) {
           this.cityNames = parsedCache.cityNames || {};
           this.cityDetails = parsedCache.cityDetails || {};
@@ -272,5 +274,5 @@ class PlaceDataCache {
   }
 }
 
-const placeDataCache = new PlaceDataCache();
-export default placeDataCache;
+const appState = new AppState();
+export default appState;

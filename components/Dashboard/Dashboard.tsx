@@ -5,7 +5,7 @@ import {
   checkIfBirthdaySoon,
   checkIfBirthdayToday
 } from "@/lib/clientUtils";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { Box, Button, Link, Paper, Typography } from "@mui/material";
 import { DocumentData } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
@@ -25,7 +25,7 @@ const Dashboard = observer(() => {
     const today: DocumentData[] = [];
     const upcoming: DocumentData[] = [];
 
-    placeDataCache.users
+    appState.users
       .filter((user) => user.birthday)
       .forEach((user) => {
         if (checkIfBirthdayToday(user.birthday)) {
@@ -40,7 +40,7 @@ const Dashboard = observer(() => {
     setRecentBirthdays(recent);
     setTodaysBirthdays(today);
     setUpcomingBirthdays(upcoming);
-  }, [placeDataCache.users]);
+  }, [appState.users]);
 
   return (
     <div>

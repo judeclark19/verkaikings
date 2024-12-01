@@ -1,22 +1,22 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { Skeleton, Typography } from "@mui/material";
 import ByCity from "./ByCity";
 
 const ByLocation = observer(() => {
-  const countries = Object.keys(placeDataCache.usersByCountry);
+  const countries = Object.keys(appState.usersByCountry);
 
   return (
     <>
       <Typography variant="h1">List of users by country</Typography>
-      {placeDataCache.isInitialized ? (
+      {appState.isInitialized ? (
         <div>
           {countries.map((countryAbbr) => {
             // putting "No city listed" at the end of the list
             const cityIds = Object.keys(
-              placeDataCache.usersByCountry[countryAbbr].cities
+              appState.usersByCountry[countryAbbr].cities
             );
             const sortedCityIds = cityIds.filter(
               (id) => id !== "No city listed"
@@ -27,7 +27,7 @@ const ByLocation = observer(() => {
             const orderedCityIds = [...sortedCityIds, ...noCityListedId];
 
             const countryName =
-              placeDataCache.usersByCountry[countryAbbr].countryName;
+              appState.usersByCountry[countryAbbr].countryName;
 
             return (
               <div key={countryAbbr}>

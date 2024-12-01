@@ -8,14 +8,16 @@ import darkTheme from "@/styles/theme";
 import { useEffect } from "react";
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
-import placeDataCache from "./PlaceDataCache";
+import appState from "./AppState";
 
 export default function LayoutProviders({
   children,
-  isLoggedIn
+  isLoggedIn,
+  userId
 }: {
   children: React.ReactNode;
   isLoggedIn: boolean;
+  userId?: string;
 }) {
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
@@ -30,9 +32,9 @@ export default function LayoutProviders({
     }
 
     if (isLoggedIn) {
-      if (!placeDataCache.isInitialized) {
+      if (!appState.isInitialized) {
         fetchUsers().then((users) => {
-          placeDataCache.init(users);
+          appState.init(users, userId!);
         });
       }
 
@@ -43,7 +45,7 @@ export default function LayoutProviders({
           ...doc.data()
         }));
 
-        placeDataCache.setUsers(updatedUsers); // Update PlaceDataCache
+        appState.setUsers(updatedUsers); // Update appState
       });
     }
 

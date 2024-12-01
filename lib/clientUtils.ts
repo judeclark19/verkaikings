@@ -1,9 +1,11 @@
+import { PhoneNumberUtil } from "google-libphonenumber";
+
 export function formatFullBirthday(input: string) {
   // Parse the input string into a Date object
   const date = new Date(`${input}T00:00:00`);
 
-  // Detect the user's locale or default to "nl"
-  const userLocale = navigator.language || "nl";
+  // Detect the user's locale or default to "en"
+  const userLocale = navigator.language || "en";
 
   // Format the date using toLocaleDateString with the detected locale
   return date
@@ -19,8 +21,8 @@ export function formatBirthday2digit(input: string) {
   // Parse the input string into a Date object
   const date = new Date(`${input}T00:00:00`);
 
-  // Detect the user's locale or default to "nl"
-  const userLocale = navigator.language || "nl";
+  // Detect the user's locale or default to "en"
+  const userLocale = navigator.language || "en";
 
   // Format the date using toLocaleDateString with the detected locale
   return date
@@ -101,4 +103,15 @@ export function checkIfBirthdaySoon(birthday: string) {
       birthdayThisYear.getMonth() + 1 === todayMonth
     )
   );
+}
+
+const phoneUtil = PhoneNumberUtil.getInstance();
+
+export function isPhoneValid(phone: string) {
+  try {
+    return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
+  } catch (error) {
+    console.error("Error validating phone number:", error);
+    return false;
+  }
 }

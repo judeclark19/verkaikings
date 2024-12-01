@@ -100,12 +100,21 @@ const LoginForm = observer(() => {
         </Button>
       </form>
       {error && <Typography color="error">{error}</Typography>}
+
       <Typography
         sx={{
           mt: 4
         }}
       >
         Don&apos;t have an account? <Link href="/signup">Sign up</Link>
+      </Typography>
+      <Typography
+        sx={{
+          mt: 4
+        }}
+      >
+        Forgot Password? Contact the webmaster Jude (+17703801397) on WhatsApp
+        to request a password reset.
       </Typography>
     </Box>
   );

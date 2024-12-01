@@ -1,4 +1,4 @@
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
@@ -10,7 +10,11 @@ class MyProfileState {
   cityName: string | null = null;
   countryAbbr: string | null = null;
   countryName: string | null = null;
+  email: string | null = null;
   instagram: string | null = null;
+  duolingo: string | null = null;
+  beReal: string | null = null;
+  pronouns: string | null = null;
   myWillemijnStory: string | null = null;
 
   constructor() {
@@ -18,15 +22,19 @@ class MyProfileState {
   }
 
   async init(user: DocumentData, userId: string) {
-    await placeDataCache.waitForInitialization(); // Ensure PlaceDataCache is ready
+    await appState.waitForInitialization(); // Ensure appState is ready
 
     this.setUser(user);
     this.setUserId(userId);
     this.setPlaceId(user.cityId);
-    this.setCityName(placeDataCache.cityNames[user.cityId]);
+    this.setCityName(appState.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryAbbr);
+    this.setEmail(user.email);
     this.setInstagram(user.instagram);
+    this.setDuolingo(user.duolingo);
+    this.setBeReal(user.beReal);
+    this.setPronouns(user.pronouns);
     this.setMyWillemijnStory(user.myWillemijnStory);
     this.setIsFetched(true);
   }
@@ -60,19 +68,51 @@ class MyProfileState {
       return "";
     }
 
-    if (!placeDataCache.countryNames[countryAbbr]) {
-      placeDataCache.addCountryToList(countryAbbr);
+    if (!appState.countryNames[countryAbbr]) {
+      appState.addCountryToList(countryAbbr);
     }
 
-    this.countryName = placeDataCache.countryNames[countryAbbr];
+    this.countryName = appState.countryNames[countryAbbr];
+  }
+
+  setEmail(email: string | null) {
+    this.email = email;
   }
 
   setInstagram(instagram: string | null) {
     this.instagram = instagram;
   }
 
+  setDuolingo(duolingo: string | null) {
+    this.duolingo = duolingo;
+  }
+
+  setBeReal(beReal: string | null) {
+    this.beReal = beReal;
+  }
+
+  setPronouns(pronouns: string | null) {
+    this.pronouns = pronouns;
+  }
+
   setMyWillemijnStory(myWillemijnStory: string | null) {
     this.myWillemijnStory = myWillemijnStory;
+  }
+
+  signOut() {
+    this.setUser(null);
+    this.setUserId(null);
+    this.setPlaceId(null);
+    this.setCityName(null);
+    this.setCountryAbbr(null);
+    this.setCountryName(null);
+    this.setInstagram(null);
+    this.setEmail(null);
+    this.setDuolingo(null);
+    this.setBeReal(null);
+    this.setPronouns(null);
+    this.setMyWillemijnStory(null);
+    this.setIsFetched(false);
   }
 }
 

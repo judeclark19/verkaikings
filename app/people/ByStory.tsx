@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import UserListItem from "./UserListItem";
 
 const ByStory = observer(() => {
@@ -8,16 +8,15 @@ const ByStory = observer(() => {
     <div>
       <Typography variant="h1">Willemijn Stories</Typography>
 
-      {placeDataCache.users && placeDataCache.isInitialized ? (
+      {appState.users && appState.isInitialized ? (
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
             gap: 2
           }}
         >
-          {placeDataCache.users
+          {appState.users
             .filter((user) => user.myWillemijnStory)
             .map((user) => (
               <Card sx={{ width: 600, maxWidth: "100%" }} key={user.username}>

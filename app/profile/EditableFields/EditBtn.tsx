@@ -8,7 +8,7 @@ function EditBtn({
 }) {
   return (
     <Fab
-      size="medium"
+      size="small"
       color="secondary"
       aria-label="edit"
       onClick={() => {

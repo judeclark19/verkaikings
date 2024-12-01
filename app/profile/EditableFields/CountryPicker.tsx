@@ -13,7 +13,7 @@ import { observer } from "mobx-react-lite";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -61,7 +61,7 @@ const CountryPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            placeDataCache.setUsers(users);
+            appState.setUsers(users);
           });
 
           console.log("Country updated");
@@ -78,14 +78,19 @@ const CountryPicker = observer(
     };
 
     return (
-      <form onSubmit={handleSubmit}>
+      <form
+        style={{
+          width: "100%",
+          height: "87px"
+        }}
+        onSubmit={handleSubmit}
+      >
         <FormControl fullWidth variant="outlined" margin="normal">
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
-              maxWidth: "300px"
+              gap: "1rem"
             }}
           >
             <InputLabel id="country-picker-select-label">Country</InputLabel>

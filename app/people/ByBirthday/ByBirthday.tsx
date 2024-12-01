@@ -2,38 +2,29 @@
 
 import { Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import ByDay from "./ByDay";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
+import ByMonth from "./ByMonth";
 
 const ByBirthday = observer(() => {
-  function getMonthName(monthNumber: number, locale: string) {
-    const date = new Date(2022, monthNumber - 1); // Use any non-leap year; January is 0
-    return date.toLocaleString(locale, { month: "long" });
-  }
-
   return (
     <>
       <Typography variant="h1">List of Birthdays</Typography>
-      {placeDataCache.isInitialized &&
-      Object.keys(placeDataCache.usersByBirthday).length > 0 ? (
-        <>
-          {Object.keys(placeDataCache.usersByBirthday)
+      {appState.isInitialized &&
+      Object.keys(appState.usersByBirthday).length > 0 ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+
+            gap: "1rem"
+          }}
+        >
+          {Object.keys(appState.usersByBirthday)
             .sort((a, b) => parseInt(a) - parseInt(b))
             .map((month) => (
-              <div key={month}>
-                <Typography variant="h2">
-                  {getMonthName(parseInt(month), navigator.language || "nl")}
-                </Typography>
-                <div>
-                  {Object.keys(placeDataCache.usersByBirthday[month])
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map((day) => (
-                      <ByDay key={day} day={day} month={month} />
-                    ))}
-                </div>
-              </div>
+              <ByMonth key={month} month={month} />
             ))}
-        </>
+        </div>
       ) : (
         <Skeleton
           variant="rectangular"

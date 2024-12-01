@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Box, Skeleton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import placeDataCache from "@/lib/PlaceDataCache";
+import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
 import { DocumentData } from "firebase/firestore";
 import UserListItem from "@/app/people/UserListItem";
@@ -12,13 +12,13 @@ const WelcomeMessage = observer(
     const [loggedInUser, setLoggedInUser] = useState<DocumentData | null>(null);
 
     useEffect(() => {
-      placeDataCache.waitForInitialization();
+      appState.waitForInitialization();
 
       const userToSet =
-        placeDataCache.users.find((user) => user.email === email) || null;
+        appState.users.find((user) => user.email === email) || null;
 
       setLoggedInUser(userToSet);
-    }, [placeDataCache.isInitialized]);
+    }, [appState.isInitialized]);
 
     if (isLoggedIn)
       return (
