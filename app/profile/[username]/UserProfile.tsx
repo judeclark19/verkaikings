@@ -14,8 +14,7 @@ import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "@/app/profile/components/ProfileSkeleton";
-import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
+import { ProfileSkeleton, ReadOnlyContactItem } from "../components";
 import {
   AccountCircle as AccountCircleIcon,
   Cake as CakeIcon,

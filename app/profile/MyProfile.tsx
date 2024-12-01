@@ -8,21 +8,23 @@ import {
   MyWillemijnStory,
   ProfilePic,
   Pronouns,
-  Username
+  Username,
+  SocialsList
 } from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "./components/ProfileSkeleton";
-import ReadOnlyContactItem from "./components/ReadOnlyContactItem";
+import {
+  ProfileSkeleton,
+  ReadOnlyContactItem,
+  NameEditingModal,
+  PasswordChangeModal
+} from "./components";
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
-import NameEditingModal from "./components/NameEditingModal/NameEditingModal";
+import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import SocialsList from "./EditableFields/Socials/SocialsList";
-import PasswordChangeModal from "./components/PasswordChangeModal";
 
 const MyProfile = observer(() => {
   useEffect(() => {

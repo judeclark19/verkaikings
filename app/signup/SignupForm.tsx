@@ -27,7 +27,6 @@ import {
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
 import { DocumentData } from "firebase-admin/firestore";
-import { send } from "process";
 
 const SignupForm = () => {
   const [signupStage, setSignupStage] = useState<1 | 2>(1);
@@ -109,8 +108,6 @@ const SignupForm = () => {
         password
       );
       const user = userCredential.user;
-
-      await sendEmailVerification(user);
 
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
@@ -234,16 +231,14 @@ const SignupForm = () => {
                 </Button>
               </form>
               {error && (
-                // <Typography
-                //   sx={{
-                //     mt: 2
-                //   }}
-                //   color="error"
-                // >
-                //   {error}
-                //   </Typography>
-
-                <Alert severity="error">{error}</Alert>
+                <Alert
+                  sx={{
+                    mt: 2
+                  }}
+                  severity="error"
+                >
+                  {error}
+                </Alert>
               )}
             </>
           )}
@@ -309,7 +304,7 @@ const SignupForm = () => {
                   sx={{ mt: 2 }}
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : "Sign Up"}
+                  {checking ? <CircularProgress size={24} /> : "Sign Up"}
                 </Button>
               </form>
               {error && <Typography color="error">{error}</Typography>}
