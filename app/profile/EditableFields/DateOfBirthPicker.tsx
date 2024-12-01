@@ -58,7 +58,8 @@ const DatePickerForm = observer(
           display: "flex",
           alignItems: "center",
           gap: "1rem",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          flexGrow: 1
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -66,6 +67,7 @@ const DatePickerForm = observer(
             label={label}
             value={value}
             onChange={(newValue) => setValue(newValue)}
+            sx={{ width: "100%" }}
           />
         </LocalizationProvider>
         <SaveBtn loading={loading} />

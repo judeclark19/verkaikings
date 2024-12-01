@@ -25,14 +25,16 @@ const DateOfBirth = observer(() => {
           display: "flex",
           alignItems: "center",
           gap: "1rem",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          height: "76px"
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
+            width: "100%"
           }}
         >
           <CakeIcon />

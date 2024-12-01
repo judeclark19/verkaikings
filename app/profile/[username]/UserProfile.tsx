@@ -27,6 +27,7 @@ import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
 import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
 import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import { getEmojiFlag } from "countries-list";
+import SocialsList from "./SocialsList";
 
 const UserProfile = ({
   decodedToken
@@ -97,7 +98,10 @@ const UserProfile = ({
             md: "row"
           },
           justifyContent: "center",
-          gap: 3
+          gap: {
+            xs: 0,
+            md: 3
+          }
         }}
       >
         {/* SIDEBAR */}
@@ -128,7 +132,6 @@ const UserProfile = ({
             {!user.profilePicture &&
               `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}
           </Avatar>
-          <br />
           <Typography
             variant="h1"
             display={{
@@ -143,59 +146,18 @@ const UserProfile = ({
             {checkIfBirthdayToday(user.birthday) && "🎂"}
           </Typography>
 
-          {(user.instagram || user.duolingo || user.beReal) && (
-            <Paper
-              elevation={3}
-              sx={{
-                padding: 3
-              }}
-            >
-              <Typography
-                variant="h3"
-                sx={{ textAlign: "center", marginTop: 0 }}
-              >
-                Socials
-              </Typography>
-              <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} />
-
-              {user.instagram && (
-                <ReadOnlyContactItem
-                  value={user.instagram}
-                  icon={<InstagramIcon />}
-                  link={`https://instagram.com/${user.instagram}`}
-                />
-              )}
-
-              {user.duolingo && (
-                <ReadOnlyContactItem
-                  value={user.duolingo}
-                  icon={
-                    <DuolingoIcon
-                      size={24}
-                      style={{
-                        flexShrink: 0
-                      }}
-                    />
-                  }
-                  link={`https://www.duolingo.com/profile/${user.duolingo}`}
-                />
-              )}
-
-              {user.beReal && (
-                <ReadOnlyContactItem
-                  value={user.beReal}
-                  icon={
-                    <BeRealIcon
-                      size={24}
-                      style={{
-                        flexShrink: 0
-                      }}
-                    />
-                  }
-                />
-              )}
-            </Paper>
-          )}
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block"
+              }
+            }}
+          >
+            {(user.instagram || user.duolingo || user.beReal) && (
+              <SocialsList user={user} />
+            )}
+          </Box>
         </Box>
         {/* MAIN CONTENT */}
         <Box
@@ -218,76 +180,91 @@ const UserProfile = ({
             {user.firstName} {user.lastName}{" "}
             {checkIfBirthdayToday(user.birthday) && "🎂"}
           </Typography>
+          <Paper elevation={6} sx={{ px: 3 }}>
+            <Box
+              sx={{
+                display: "grid",
+                columnGap: 6,
+                rowGap: 0
+              }}
+              gridTemplateColumns={{
+                xs: "repeat(auto-fit, 100%)",
+                sm: "repeat(auto-fit, 300px)"
+              }}
+              justifyContent={{
+                xs: "center",
+                md: "start"
+              }}
+            >
+              <ReadOnlyContactItem
+                value={user.username}
+                icon={<AccountCircleIcon />}
+              />
+              <ReadOnlyContactItem
+                value={user.phoneNumber}
+                icon={<FaWhatsapp size={24} />}
+              />
+              {user.birthday && (
+                <ReadOnlyContactItem
+                  value={formatFullBirthday(user.birthday)}
+                  icon={<CakeIcon />}
+                />
+              )}
+              {user.pronouns && (
+                <ReadOnlyContactItem
+                  value={user.pronouns}
+                  icon={
+                    <FaTransgender
+                      size={24}
+                      style={{
+                        flexShrink: 0
+                      }}
+                    />
+                  }
+                />
+              )}
+
+              {user.cityId && (
+                <ReadOnlyContactItem
+                  value={appState.cityNames[user.cityId]}
+                  icon={
+                    <FaCity
+                      size={24}
+                      style={{
+                        flexShrink: 0
+                      }}
+                    />
+                  }
+                />
+              )}
+
+              <ReadOnlyContactItem
+                value={appState.countryNames[user.countryAbbr]}
+                icon={
+                  appState.countryNames[user.countryAbbr] ? (
+                    <>{getEmojiFlag(user.countryAbbr.toUpperCase())}</>
+                  ) : (
+                    <PublicIcon />
+                  )
+                }
+              />
+            </Box>
+          </Paper>
+
           <Box
             sx={{
-              display: "grid",
-              columnGap: 6,
-              rowGap: 0
-            }}
-            gridTemplateColumns={{
-              xs: "repeat(auto-fit, 100%)",
-              sm: "repeat(auto-fit, 300px)"
-            }}
-            justifyContent={{
-              xs: "center",
-              md: "start"
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
             }}
           >
-            <ReadOnlyContactItem
-              value={user.username}
-              icon={<AccountCircleIcon />}
-            />
-            <ReadOnlyContactItem
-              value={user.phoneNumber}
-              icon={<FaWhatsapp size={24} />}
-            />
-            {user.birthday && (
-              <ReadOnlyContactItem
-                value={formatFullBirthday(user.birthday)}
-                icon={<CakeIcon />}
-              />
+            {(user.instagram || user.duolingo || user.beReal) && (
+              <SocialsList user={user} />
             )}
-            {user.pronouns && (
-              <ReadOnlyContactItem
-                value={user.pronouns}
-                icon={
-                  <FaTransgender
-                    size={24}
-                    style={{
-                      flexShrink: 0
-                    }}
-                  />
-                }
-              />
-            )}
-
-            {user.cityId && (
-              <ReadOnlyContactItem
-                value={appState.cityNames[user.cityId]}
-                icon={
-                  <FaCity
-                    size={24}
-                    style={{
-                      flexShrink: 0
-                    }}
-                  />
-                }
-              />
-            )}
-
-            <ReadOnlyContactItem
-              value={appState.countryNames[user.countryAbbr]}
-              icon={
-                appState.countryNames[user.countryAbbr] ? (
-                  <>{getEmojiFlag(user.countryAbbr.toUpperCase())}</>
-                ) : (
-                  <PublicIcon />
-                )
-              }
-            />
           </Box>
 
-          <Divider />
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <Typography variant="h2">My Willemijn Story</Typography>
           <Paper>

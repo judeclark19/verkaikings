@@ -1,25 +1,24 @@
 import { useState } from "react";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import { TextField, Typography } from "@mui/material";
-import myProfileState from "../MyProfile.state";
+import myProfileState from "../../MyProfile.state";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
-import SaveBtn from "./SaveBtn";
-import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
-import EditBtn from "./EditBtn";
+import { EditBtn, SaveBtn } from "../index";
 
-const Duolingo = observer(() => {
+const Instagram = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [temp, setTemp] = useState(
-    myProfileState.duolingo ? myProfileState.duolingo.slice() : ""
+    myProfileState.instagram ? myProfileState.instagram.slice() : ""
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (myProfileState.duolingo === temp) {
+    if (myProfileState.instagram === temp) {
       setIsEditing(false);
       return;
     }
@@ -28,14 +27,14 @@ const Duolingo = observer(() => {
     setLoading(true);
 
     updateDoc(userDoc, {
-      duolingo: myProfileState.duolingo
+      instagram: myProfileState.instagram
     })
       .then(() => {
-        setTemp(myProfileState.duolingo || "");
-        console.log("Duolingo updated successfully");
+        setTemp(myProfileState.instagram || "");
+        console.log("Instagram updated successfully");
       })
       .catch((error) => {
-        console.error("Error updating Duolingo: ", error);
+        console.error("Error updating Instagram: ", error);
       })
       .finally(() => {
         setLoading(false);
@@ -52,12 +51,7 @@ const Duolingo = observer(() => {
         gap: "1rem"
       }}
     >
-      <DuolingoIcon
-        size={24}
-        style={{
-          flexShrink: 0
-        }}
-      />
+      <InstagramIcon />
       {isEditing ? (
         <form
           onSubmit={handleSubmit}
@@ -68,12 +62,12 @@ const Duolingo = observer(() => {
           }}
         >
           <TextField
-            label="Duolingo username"
+            label="Instagram username"
             variant="outlined"
             fullWidth
-            value={myProfileState.duolingo}
+            value={myProfileState.instagram}
             onChange={(e) => {
-              myProfileState.setDuolingo(e.target.value);
+              myProfileState.setInstagram(e.target.value);
             }}
             slotProps={{
               inputLabel: {
@@ -92,9 +86,9 @@ const Duolingo = observer(() => {
             flexGrow: 1
           }}
         >
-          {myProfileState.duolingo ? (
+          {myProfileState.instagram ? (
             <Link
-              href={`https://www.duolingo.com/profile/${myProfileState.duolingo}`}
+              href={`https://www.instagram.com/${myProfileState.instagram}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -102,17 +96,17 @@ const Duolingo = observer(() => {
                 flexGrow: 1
               }}
             >
-              <Typography component="p">{myProfileState.duolingo}</Typography>
+              <Typography component="p">{myProfileState.instagram}</Typography>
             </Link>
           ) : (
             <Typography
               component="p"
               sx={{
-                color: myProfileState.duolingo ? "inherit" : "text.secondary",
+                color: myProfileState.instagram ? "inherit" : "text.secondary",
                 flexGrow: 1
               }}
             >
-              (Duolingo)
+              (Instagram)
             </Typography>
           )}
 
@@ -123,4 +117,4 @@ const Duolingo = observer(() => {
   );
 });
 
-export default Duolingo;
+export default Instagram;
