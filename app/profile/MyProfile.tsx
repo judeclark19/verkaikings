@@ -15,7 +15,7 @@ import {
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
-import SandboxSkeleton from "../sandbox/SandboxSkeleton";
+import ProfileSkeleton from "./ProfileSkeleton";
 import ReadOnlyContactItem from "./ReadOnlyContactItem";
 import {
   Email as EmailIcon,
@@ -31,7 +31,7 @@ const MyProfile = observer(() => {
     !myProfileState.isFetched ||
     !myProfileState.user
   ) {
-    return <SandboxSkeleton />;
+    return <ProfileSkeleton />;
   }
 
   return (

@@ -5,7 +5,7 @@ import ProfilePic from "../profile/EditableFields/ProfilePic";
 import EditIcon from "@mui/icons-material/Edit";
 import ContactItem from "./ContactItem";
 import { useEffect, useState } from "react";
-import SandboxSkeleton from "./SandboxSkeleton";
+import ProfileSkeleton from "../profile/ProfileSkeleton";
 
 function Sandbox() {
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ function Sandbox() {
     }, 3000);
   }, []);
 
-  if (loading) return <SandboxSkeleton />;
+  if (loading) return <ProfileSkeleton />;
 
   return (
     <Box

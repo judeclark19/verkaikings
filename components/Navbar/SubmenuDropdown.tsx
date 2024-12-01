@@ -50,7 +50,11 @@ export default function SubmenuDropdown({
             : "transparent",
 
           "&:hover": {
-            textDecoration: "underline"
+            backgroundColor: "primary.main"
+          },
+
+          "&[aria-expanded='true']": {
+            backgroundColor: "primary.main"
           }
         }}
         endIcon={

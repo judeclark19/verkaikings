@@ -190,7 +190,8 @@ const NavbarUI = observer(
                     orientation="vertical"
                     flexItem
                     sx={{
-                      borderColor: "background.default"
+                      borderColor: "background.default",
+                      margin: "0 8px"
                     }}
                   />
                   <Button

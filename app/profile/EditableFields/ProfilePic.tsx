@@ -79,7 +79,7 @@ const ProfilePic = observer(() => {
           width: 200,
           height: 200,
           fontSize: 40,
-          bgcolor: "primary.main",
+          bgcolor: "secondary.main",
           borderRadius: 2
         }}
       >
