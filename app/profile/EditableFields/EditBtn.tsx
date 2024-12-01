@@ -9,7 +9,7 @@ function EditBtn({
   return (
     <Fab
       size="small"
-      color="secondary"
+      color="primary"
       aria-label="edit"
       onClick={() => {
         setIsEditing(true);

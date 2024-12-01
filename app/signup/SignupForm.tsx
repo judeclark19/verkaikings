@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile
+} from "firebase/auth";
 import {
   collection,
   doc,
@@ -17,11 +21,13 @@ import {
   Box,
   CircularProgress,
   Link,
-  Skeleton
+  Skeleton,
+  Alert
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
 import { DocumentData } from "firebase-admin/firestore";
+import { send } from "process";
 
 const SignupForm = () => {
   const [signupStage, setSignupStage] = useState<1 | 2>(1);
@@ -103,6 +109,8 @@ const SignupForm = () => {
         password
       );
       const user = userCredential.user;
+
+      await sendEmailVerification(user);
 
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
@@ -226,14 +234,16 @@ const SignupForm = () => {
                 </Button>
               </form>
               {error && (
-                <Typography
-                  sx={{
-                    mt: 2
-                  }}
-                  color="error"
-                >
-                  {error}
-                </Typography>
+                // <Typography
+                //   sx={{
+                //     mt: 2
+                //   }}
+                //   color="error"
+                // >
+                //   {error}
+                //   </Typography>
+
+                <Alert severity="error">{error}</Alert>
               )}
             </>
           )}

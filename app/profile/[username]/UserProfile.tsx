@@ -262,17 +262,21 @@ const UserProfile = ({
           </Box>
 
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
-          <Typography variant="h2">My Willemijn Story</Typography>
-          <Paper>
-            <Typography
-              sx={{
-                minHeight: "125px",
-                padding: "15px 13px"
-              }}
-            >
-              {user.myWillemijnStory}
-            </Typography>
-          </Paper>
+          {user.myWillemijnStory && (
+            <>
+              <Typography variant="h2">My Willemijn Story</Typography>
+              <Paper>
+                <Typography
+                  sx={{
+                    minHeight: "125px",
+                    padding: "15px 13px"
+                  }}
+                >
+                  {user.myWillemijnStory}
+                </Typography>
+              </Paper>
+            </>
+          )}
         </Box>
       </Box>
     </>

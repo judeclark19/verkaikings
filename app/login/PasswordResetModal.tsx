@@ -1,9 +1,13 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
+import {
+  Box,
+  Button,
+  Typography,
+  Modal,
+  CircularProgress,
+  TextField,
+  Alert
+} from "@mui/material";
 import { useState } from "react";
-import { CircularProgress, TextField, Alert } from "@mui/material";
 import { auth } from "@/lib/firebase"; // Adjust path to your Firebase setup
 import { sendPasswordResetEmail } from "firebase/auth";
 
@@ -42,6 +46,11 @@ export default function PasswordResetModal({ email }: { email: string }) {
     try {
       await sendPasswordResetEmail(auth, inputEmail);
       setSuccess(`Password reset link sent to ${inputEmail}`);
+
+      setTimeout(() => {
+        setSuccess(null);
+        handleClose();
+      }, 3000);
     } catch (err: any) {
       setError(err.message || "Failed to send password reset email.");
     } finally {
