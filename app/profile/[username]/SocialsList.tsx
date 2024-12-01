@@ -4,10 +4,7 @@ import React from "react";
 import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
   Email as EmailIcon,
-  AccountCircle as AccountCircleIcon,
-  Instagram as InstagramIcon,
-  Cake as CakeIcon,
-  Public as PublicIcon
+  Instagram as InstagramIcon
 } from "@mui/icons-material";
 import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
 import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";

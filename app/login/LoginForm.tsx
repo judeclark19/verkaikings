@@ -110,7 +110,8 @@ const LoginForm = observer(() => {
       </Typography>
       <Typography
         sx={{
-          mt: 4
+          mt: 4,
+          textAlign: "center"
         }}
       >
         Forgot Password? Contact the webmaster Jude (+17703801397) on WhatsApp

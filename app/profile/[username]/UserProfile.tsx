@@ -10,21 +10,17 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Avatar, Box, Divider, Paper, Typography } from "@mui/material";
+import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
 import ProfileSkeleton from "@/app/profile/components/ProfileSkeleton";
 import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
-  Email as EmailIcon,
   AccountCircle as AccountCircleIcon,
-  Instagram as InstagramIcon,
   Cake as CakeIcon,
   Public as PublicIcon
 } from "@mui/icons-material";
-import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
-import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
 import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import { getEmojiFlag } from "countries-list";
 import SocialsList from "./SocialsList";

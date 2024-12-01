@@ -14,8 +14,6 @@ import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
 import ProfileSkeleton from "./components/ProfileSkeleton";
 import ReadOnlyContactItem from "./components/ReadOnlyContactItem";
-import { Email as EmailIcon } from "@mui/icons-material";
-
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import NameEditingModal from "./components/NameEditingModal/NameEditingModal";
