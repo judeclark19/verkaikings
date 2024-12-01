@@ -1,12 +1,13 @@
-import PieChartIcon from "@mui/icons-material/PieChart";
-import { Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 
 function ReadOnlyContactItem({
   value,
-  icon
+  icon,
+  link
 }: {
   value: string;
   icon?: React.ReactNode;
+  link?: string;
 }) {
   return (
     <div
@@ -25,7 +26,7 @@ function ReadOnlyContactItem({
           width: "100%"
         }}
       >
-        {icon ? icon : <PieChartIcon />}
+        {icon}
 
         <div
           style={{
@@ -41,7 +42,7 @@ function ReadOnlyContactItem({
               wordBreak: "break-all"
             }}
           >
-            {value}
+            {link ? <Link href={link}>{value}</Link> : <>{value}</>}
           </Typography>
         </div>
       </div>

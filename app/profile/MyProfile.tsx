@@ -15,17 +15,39 @@ import {
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "./ProfileSkeleton";
-import ReadOnlyContactItem from "./ReadOnlyContactItem";
-import {
-  Email as EmailIcon,
-  AccountCircle as AccountCircleIcon
-} from "@mui/icons-material";
+import ProfileSkeleton from "./components/ProfileSkeleton";
+import ReadOnlyContactItem from "./components/ReadOnlyContactItem";
+import { Email as EmailIcon } from "@mui/icons-material";
 
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
+import NameEditingModal from "./components/NameEditingModal/NameEditingModal";
+import Username from "./EditableFields/Username";
+import { useEffect } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const MyProfile = observer(() => {
+  useEffect(() => {
+    // Ensure we have a userId to subscribe to
+    const userId = myProfileState.userId; // Assume userId is stored in your state
+    if (!userId) return;
+
+    // Firestore subscription to user document
+    const userDocRef = doc(db, "users", userId);
+    const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        // Update MobX state with user data
+        myProfileState.setUser(docSnapshot.data());
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   if (
     !appState.isInitialized ||
     !myProfileState.isFetched ||
@@ -54,25 +76,36 @@ const MyProfile = observer(() => {
             flexShrink: 0,
             width: {
               xs: "100%",
-              md: "300px"
+              md: "360px"
             }
           }}
         >
           <ProfilePic />
           <br />
-          <Typography
-            variant="h1"
-            display={{
-              xs: "block",
-              md: "none"
-            }}
+          <Box
             sx={{
-              textAlign: "center"
+              display: {
+                xs: "flex",
+                md: "none"
+              },
+              alignItems: "center",
+              justifyContent: "center",
+              columnGap: 3,
+              flexWrap: "wrap"
             }}
           >
-            {myProfileState.user.firstName} {myProfileState.user.lastName} {""}
-            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
-          </Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                textAlign: "center"
+              }}
+            >
+              {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
+              {""}
+              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+            </Typography>
+            <NameEditingModal />
+          </Box>
           <Paper
             elevation={3}
             sx={{
@@ -102,20 +135,27 @@ const MyProfile = observer(() => {
           }}
         >
           {/* FIRST SECTION - CONTACT DETAILS */}
-          <Typography
-            variant="h1"
-            display={{
-              xs: "none",
-              md: "block"
+
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "flex"
+              },
+              alignItems: "center",
+              columnGap: 4
             }}
           >
-            {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
-            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
-          </Typography>
+            <Typography variant="h1">
+              {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
+              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+            </Typography>
+            <NameEditingModal />
+          </Box>
           <Box
             sx={{
               display: "grid",
-              columnGap: 2,
+              columnGap: 6,
               rowGap: 0
             }}
             gridTemplateColumns={{
@@ -127,10 +167,7 @@ const MyProfile = observer(() => {
               md: "start"
             }}
           >
-            <ReadOnlyContactItem
-              value={myProfileState.user.username}
-              icon={<AccountCircleIcon />}
-            />
+            <Username />
             <ReadOnlyContactItem
               value={myProfileState.user.phoneNumber}
               icon={<FaWhatsapp size={24} />}
@@ -144,6 +181,15 @@ const MyProfile = observer(() => {
           <Divider />
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <MyWillemijnStory />
+
+          {/* THIRD SECTION - SUPPORT*/}
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h2">Email and password</Typography>
+            <Typography>
+              If you need to change your email or password, please contact the
+              webmaster Jude (+17703801397) on WhatsApp.
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </>

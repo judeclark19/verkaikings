@@ -14,8 +14,8 @@ import { Avatar, Box, Divider, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "@/app/profile/ProfileSkeleton";
-import ReadOnlyContactItem from "../ReadOnlyContactItem";
+import ProfileSkeleton from "@/app/profile/components/ProfileSkeleton";
+import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
   Email as EmailIcon,
   AccountCircle as AccountCircleIcon,
@@ -142,52 +142,60 @@ const UserProfile = ({
             {user.firstName} {user.lastName} {""}
             {checkIfBirthdayToday(user.birthday) && "🎂"}
           </Typography>
-          <Paper
-            elevation={3}
-            sx={{
-              padding: 3
-            }}
-          >
-            <Typography variant="h3" sx={{ textAlign: "center", marginTop: 0 }}>
-              Socials
-            </Typography>
-            <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} />
 
-            {user.instagram && (
-              <ReadOnlyContactItem
-                value={user.instagram}
-                icon={<InstagramIcon />}
-              />
-            )}
+          {(user.instagram || user.duolingo || user.beReal) && (
+            <Paper
+              elevation={3}
+              sx={{
+                padding: 3
+              }}
+            >
+              <Typography
+                variant="h3"
+                sx={{ textAlign: "center", marginTop: 0 }}
+              >
+                Socials
+              </Typography>
+              <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} />
 
-            {user.duolingo && (
-              <ReadOnlyContactItem
-                value={user.duolingo}
-                icon={
-                  <DuolingoIcon
-                    size={24}
-                    style={{
-                      flexShrink: 0
-                    }}
-                  />
-                }
-              />
-            )}
+              {user.instagram && (
+                <ReadOnlyContactItem
+                  value={user.instagram}
+                  icon={<InstagramIcon />}
+                  link={`https://instagram.com/${user.instagram}`}
+                />
+              )}
 
-            {user.beReal && (
-              <ReadOnlyContactItem
-                value={user.beReal}
-                icon={
-                  <BeRealIcon
-                    size={24}
-                    style={{
-                      flexShrink: 0
-                    }}
-                  />
-                }
-              />
-            )}
-          </Paper>
+              {user.duolingo && (
+                <ReadOnlyContactItem
+                  value={user.duolingo}
+                  icon={
+                    <DuolingoIcon
+                      size={24}
+                      style={{
+                        flexShrink: 0
+                      }}
+                    />
+                  }
+                  link={`https://www.duolingo.com/profile/${user.duolingo}`}
+                />
+              )}
+
+              {user.beReal && (
+                <ReadOnlyContactItem
+                  value={user.beReal}
+                  icon={
+                    <BeRealIcon
+                      size={24}
+                      style={{
+                        flexShrink: 0
+                      }}
+                    />
+                  }
+                />
+              )}
+            </Paper>
+          )}
         </Box>
         {/* MAIN CONTENT */}
         <Box
@@ -213,7 +221,7 @@ const UserProfile = ({
           <Box
             sx={{
               display: "grid",
-              columnGap: 2,
+              columnGap: 6,
               rowGap: 0
             }}
             gridTemplateColumns={{

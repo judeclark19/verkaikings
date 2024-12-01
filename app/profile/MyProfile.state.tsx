@@ -10,6 +10,7 @@ class MyProfileState {
   cityName: string | null = null;
   countryAbbr: string | null = null;
   countryName: string | null = null;
+  email: string | null = null;
   instagram: string | null = null;
   duolingo: string | null = null;
   beReal: string | null = null;
@@ -29,6 +30,7 @@ class MyProfileState {
     this.setCityName(appState.cityNames[user.cityId]);
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryAbbr);
+    this.setEmail(user.email);
     this.setInstagram(user.instagram);
     this.setDuolingo(user.duolingo);
     this.setBeReal(user.beReal);
@@ -73,6 +75,10 @@ class MyProfileState {
     this.countryName = appState.countryNames[countryAbbr];
   }
 
+  setEmail(email: string | null) {
+    this.email = email;
+  }
+
   setInstagram(instagram: string | null) {
     this.instagram = instagram;
   }
@@ -101,6 +107,7 @@ class MyProfileState {
     this.setCountryAbbr(null);
     this.setCountryName(null);
     this.setInstagram(null);
+    this.setEmail(null);
     this.setDuolingo(null);
     this.setBeReal(null);
     this.setPronouns(null);

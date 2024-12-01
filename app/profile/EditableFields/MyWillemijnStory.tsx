@@ -88,7 +88,7 @@ const MyWillemijnStory = observer(() => {
             <Typography
               sx={{
                 minHeight: "125px",
-                padding: "15px 13px"
+                padding: "16px 14px"
               }}
             >
               {myProfileState.myWillemijnStory}
