@@ -24,7 +24,11 @@ const DrawerLink = observer(
         component={Link}
         href={link.href}
         sx={{
-          backgroundColor: isActive(link.href) ? "primary.dark" : "transparent"
+          backgroundColor: isActive(link.href) ? "primary.main" : "transparent",
+          transition: "background-color 0.3s ease",
+          "&:hover": {
+            backgroundColor: "primary.main"
+          }
         }}
       >
         <ListItemIcon
@@ -33,8 +37,8 @@ const DrawerLink = observer(
             minWidth: "40px"
           }}
         >
-          {link.icon && link.title !== "Profile" && <link.icon />}
-          {link.title === "Profile" && myProfileState.user && (
+          {link.icon && link.title !== "My Profile" && <link.icon />}
+          {link.title === "My Profile" && myProfileState.user && (
             <Avatar
               src={myProfileState.user.profilePicture || ""}
               alt={`${myProfileState.user.firstName} ${myProfileState.user.lastName}`}

@@ -12,14 +12,7 @@ function BirthdayCardList({
   emptyMessage: string;
 }) {
   return (
-    <List
-      sx={{
-        width: "fit-content",
-        maxWidth: 360,
-        margin: "auto",
-        bgcolor: "background.paper"
-      }}
-    >
+    <>
       {users.length === 0 && (
         <Typography
           sx={{
@@ -29,33 +22,42 @@ function BirthdayCardList({
           {emptyMessage}
         </Typography>
       )}
-      {users.length > 0 &&
-        users
-          .sort(
-            // Sort users alphabetically by username
-            (a, b) => a.username.localeCompare(b.username)
-          )
-          .map((user) => (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center"
-              }}
-              key={user.username}
-            >
-              <UserListItem user={user} />
-              <div
-                style={{
-                  whiteSpace: "nowrap",
-                  paddingRight: "1rem"
+      <List
+        sx={{
+          width: "fit-content",
+          maxWidth: 360,
+          margin: "auto",
+          bgcolor: "background.paper"
+        }}
+      >
+        {users.length > 0 &&
+          users
+            .sort(
+              // Sort users alphabetically by username
+              (a, b) => a.username.localeCompare(b.username)
+            )
+            .map((user) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center"
                 }}
+                key={user.username}
               >
-                {" "}
-                - {formatBirthday2digit(user.birthday)}
-              </div>
-            </Box>
-          ))}
-    </List>
+                <UserListItem user={user} />
+                <div
+                  style={{
+                    whiteSpace: "nowrap",
+                    paddingRight: "1rem"
+                  }}
+                >
+                  {" "}
+                  - {formatBirthday2digit(user.birthday)}
+                </div>
+              </Box>
+            ))}
+      </List>
+    </>
   );
 }
 

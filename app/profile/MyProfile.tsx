@@ -1,14 +1,29 @@
 "use client";
 
-import { Typography } from "@mui/material";
-import ProfileSkeleton from "./ProfileSkeleton";
-import { City, Country, DateOfBirth } from "./EditableFields";
+import { Box, Divider, Paper, Typography } from "@mui/material";
+import {
+  City,
+  Country,
+  DateOfBirth,
+  Instagram,
+  MyWillemijnStory,
+  ProfilePic,
+  Duolingo,
+  BeReal,
+  Pronouns
+} from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
-import MyWillemijnStory from "./EditableFields/MyWillemijnStory";
-import Instagram from "./EditableFields/Instagram";
 import appState from "@/lib/AppState";
-import ProfilePic from "./EditableFields/ProfilePic";
+import ProfileSkeleton from "./ProfileSkeleton";
+import ReadOnlyContactItem from "./ReadOnlyContactItem";
+import {
+  Email as EmailIcon,
+  AccountCircle as AccountCircleIcon
+} from "@mui/icons-material";
+
+import { FaWhatsapp } from "react-icons/fa";
+import { checkIfBirthdayToday } from "@/lib/clientUtils";
 
 const MyProfile = observer(() => {
   if (
@@ -20,27 +35,118 @@ const MyProfile = observer(() => {
   }
 
   return (
-    <div>
-      <Typography variant="h1">
-        My Profile: {myProfileState.user.username}
-      </Typography>
-      <ProfilePic />
-      <Typography component="p">
-        First Name: {myProfileState.user.firstName}
-      </Typography>
-      <Typography component="p">
-        Last Name: {myProfileState.user.lastName}
-      </Typography>
-      <Typography component="p">Email: {myProfileState.user.email}</Typography>
-      <Typography component="p">
-        WhatsApp phone: {myProfileState.user.phoneNumber}
-      </Typography>
-      <Country />
-      <City />
-      <DateOfBirth />
-      <Instagram />
-      <MyWillemijnStory />
-    </div>
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: {
+            xs: "column",
+            md: "row"
+          },
+          justifyContent: "center",
+          gap: 3
+        }}
+      >
+        {/* SIDEBAR */}
+        <Box
+          sx={{
+            maxWidth: "100%",
+            flexShrink: 0,
+            width: {
+              xs: "100%",
+              md: "300px"
+            }
+          }}
+        >
+          <ProfilePic />
+          <br />
+          <Typography
+            variant="h1"
+            display={{
+              xs: "block",
+              md: "none"
+            }}
+            sx={{
+              textAlign: "center"
+            }}
+          >
+            {myProfileState.user.firstName} {myProfileState.user.lastName} {""}
+            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+          </Typography>
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 3
+            }}
+          >
+            <Typography variant="h3" sx={{ textAlign: "center", marginTop: 0 }}>
+              Socials
+            </Typography>
+            <ReadOnlyContactItem
+              value={myProfileState.user.email}
+              icon={<EmailIcon />}
+            />
+            <Instagram />
+            <Duolingo />
+            <BeReal />
+          </Paper>
+        </Box>
+        {/* MAIN CONTENT */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            maxWidth: {
+              xs: "100%",
+              md: "800px"
+            }
+          }}
+        >
+          {/* FIRST SECTION - CONTACT DETAILS */}
+          <Typography
+            variant="h1"
+            display={{
+              xs: "none",
+              md: "block"
+            }}
+          >
+            {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
+            {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              columnGap: 2,
+              rowGap: 0
+            }}
+            gridTemplateColumns={{
+              xs: "repeat(auto-fit, 100%)",
+              sm: "repeat(auto-fit, 300px)"
+            }}
+            justifyContent={{
+              xs: "center",
+              md: "start"
+            }}
+          >
+            <ReadOnlyContactItem
+              value={myProfileState.user.username}
+              icon={<AccountCircleIcon />}
+            />
+            <ReadOnlyContactItem
+              value={myProfileState.user.phoneNumber}
+              icon={<FaWhatsapp size={24} />}
+            />
+            <DateOfBirth />
+            <Pronouns />
+            <City />
+            <Country />
+          </Box>
+
+          <Divider />
+          {/* SECOND SECTION - MY WILLEMIJN STORY */}
+          <MyWillemijnStory />
+        </Box>
+      </Box>
+    </>
   );
 });
 

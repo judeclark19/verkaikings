@@ -6,14 +6,14 @@ function SaveBtn({ loading }: { loading: boolean }) {
     <Fab
       type="submit"
       color="secondary"
-      size="medium"
+      size="small"
       aria-label="save"
       sx={{
         flexShrink: 0
       }}
     >
       {loading ? (
-        <CircularProgress size={24} sx={{ color: "white" }} />
+        <CircularProgress color="secondary" size={24} />
       ) : (
         <SaveIcon />
       )}

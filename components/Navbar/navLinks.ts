@@ -2,7 +2,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CakeIcon from "@mui/icons-material/Cake";
-// import PieChartIcon from "@mui/icons-material/PieChart";
 import PlaceIcon from "@mui/icons-material/Place";
 import MapIcon from "@mui/icons-material/Map";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -25,7 +24,7 @@ export const navLinks: NavLinkType[] = [
     icon: HomeIcon
   },
   {
-    title: "Profile",
+    title: "My Profile",
     href: "/profile",
     protected: true,
     icon: AccountCircleIcon

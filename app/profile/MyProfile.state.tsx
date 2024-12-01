@@ -11,6 +11,9 @@ class MyProfileState {
   countryAbbr: string | null = null;
   countryName: string | null = null;
   instagram: string | null = null;
+  duolingo: string | null = null;
+  beReal: string | null = null;
+  pronouns: string | null = null;
   myWillemijnStory: string | null = null;
 
   constructor() {
@@ -27,6 +30,9 @@ class MyProfileState {
     this.setCountryAbbr(user.countryAbbr);
     this.setCountryName(user.countryAbbr);
     this.setInstagram(user.instagram);
+    this.setDuolingo(user.duolingo);
+    this.setBeReal(user.beReal);
+    this.setPronouns(user.pronouns);
     this.setMyWillemijnStory(user.myWillemijnStory);
     this.setIsFetched(true);
   }
@@ -71,6 +77,18 @@ class MyProfileState {
     this.instagram = instagram;
   }
 
+  setDuolingo(duolingo: string | null) {
+    this.duolingo = duolingo;
+  }
+
+  setBeReal(beReal: string | null) {
+    this.beReal = beReal;
+  }
+
+  setPronouns(pronouns: string | null) {
+    this.pronouns = pronouns;
+  }
+
   setMyWillemijnStory(myWillemijnStory: string | null) {
     this.myWillemijnStory = myWillemijnStory;
   }
@@ -83,6 +101,9 @@ class MyProfileState {
     this.setCountryAbbr(null);
     this.setCountryName(null);
     this.setInstagram(null);
+    this.setDuolingo(null);
+    this.setBeReal(null);
+    this.setPronouns(null);
     this.setMyWillemijnStory(null);
     this.setIsFetched(false);
   }

@@ -10,13 +10,23 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Avatar, Box, Typography } from "@mui/material";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import ProfileSkeleton from "../ProfileSkeleton";
+import { Avatar, Box, Divider, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
-import Link from "next/link";
 import appState from "@/lib/AppState";
+import ProfileSkeleton from "@/app/profile/ProfileSkeleton";
+import ReadOnlyContactItem from "../ReadOnlyContactItem";
+import {
+  Email as EmailIcon,
+  AccountCircle as AccountCircleIcon,
+  Instagram as InstagramIcon,
+  Cake as CakeIcon,
+  Public as PublicIcon
+} from "@mui/icons-material";
+import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
+import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
+import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
+import { getEmojiFlag } from "countries-list";
 
 const UserProfile = ({
   decodedToken
@@ -78,75 +88,213 @@ const UserProfile = ({
   }
 
   return (
-    <div>
+    <>
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          gap: 2,
-          mt: 4
+          flexDirection: {
+            xs: "column",
+            md: "row"
+          },
+          justifyContent: "center",
+          gap: 3
         }}
       >
-        <Avatar
-          src={user.profilePicture || ""}
-          alt={`${user.firstName} ${user.lastName}`}
+        {/* SIDEBAR */}
+        <Box
           sx={{
-            width: 150,
-            height: 150,
-            fontSize: 40,
-            bgcolor: "primary.main"
+            maxWidth: "100%",
+            flexShrink: 0,
+            width: {
+              xs: "100%",
+              md: "300px"
+            },
+            mt: 4
           }}
         >
-          {!user.profilePicture &&
-            `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}
-        </Avatar>
-        <Typography variant="h1">User Profile: {user.username}</Typography>
-      </Box>
-
-      <Typography component="p">First Name: {user.firstName}</Typography>
-      <Typography component="p">Last Name: {user.lastName}</Typography>
-      <Typography component="p">Email: {user.email}</Typography>
-      <Typography component="p">WhatsApp phone: {user.phoneNumber}</Typography>
-      <Typography component="p">
-        Country: {appState.countryNames[user.countryAbbr]}
-      </Typography>
-      {user.cityId && (
-        <Typography component="p">
-          City: {appState.cityNames[user.cityId]}
-        </Typography>
-      )}
-
-      {user.birthday && (
-        <Typography component="p">
-          Birthday: {user.birthday} {formatFullBirthday(user.birthday)}{" "}
-          {checkIfBirthdayToday(user.birthday) && "🎂"}
-        </Typography>
-      )}
-
-      {user.instagram && (
-        <>
-          <Link
-            href={`https://www.instagram.com/${user.instagram}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: "inherit",
-              display: "flex",
-              gap: "0.5rem"
+          <Avatar
+            src={user.profilePicture || ""}
+            alt={`${user.firstName} ${user.lastName}`}
+            variant="square"
+            sx={{
+              width: 200,
+              height: 200,
+              fontSize: 40,
+              bgcolor: "secondary.main",
+              margin: "auto",
+              borderRadius: 2
             }}
           >
-            <InstagramIcon /> {user.instagram}
-          </Link>
-        </>
-      )}
+            {!user.profilePicture &&
+              `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}
+          </Avatar>
+          <br />
+          <Typography
+            variant="h1"
+            display={{
+              xs: "block",
+              md: "none"
+            }}
+            sx={{
+              textAlign: "center"
+            }}
+          >
+            {user.firstName} {user.lastName} {""}
+            {checkIfBirthdayToday(user.birthday) && "🎂"}
+          </Typography>
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 3
+            }}
+          >
+            <Typography variant="h3" sx={{ textAlign: "center", marginTop: 0 }}>
+              Socials
+            </Typography>
+            <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} />
 
-      {user.myWillemijnStory && (
-        <>
+            {user.instagram && (
+              <ReadOnlyContactItem
+                value={user.instagram}
+                icon={<InstagramIcon />}
+              />
+            )}
+
+            {user.duolingo && (
+              <ReadOnlyContactItem
+                value={user.duolingo}
+                icon={
+                  <DuolingoIcon
+                    size={24}
+                    style={{
+                      flexShrink: 0
+                    }}
+                  />
+                }
+              />
+            )}
+
+            {user.beReal && (
+              <ReadOnlyContactItem
+                value={user.beReal}
+                icon={
+                  <BeRealIcon
+                    size={24}
+                    style={{
+                      flexShrink: 0
+                    }}
+                  />
+                }
+              />
+            )}
+          </Paper>
+        </Box>
+        {/* MAIN CONTENT */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            maxWidth: {
+              xs: "100%",
+              md: "800px"
+            }
+          }}
+        >
+          {/* FIRST SECTION - CONTACT DETAILS */}
+          <Typography
+            variant="h1"
+            display={{
+              xs: "none",
+              md: "block"
+            }}
+          >
+            {user.firstName} {user.lastName}{" "}
+            {checkIfBirthdayToday(user.birthday) && "🎂"}
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              columnGap: 2,
+              rowGap: 0
+            }}
+            gridTemplateColumns={{
+              xs: "repeat(auto-fit, 100%)",
+              sm: "repeat(auto-fit, 300px)"
+            }}
+            justifyContent={{
+              xs: "center",
+              md: "start"
+            }}
+          >
+            <ReadOnlyContactItem
+              value={user.username}
+              icon={<AccountCircleIcon />}
+            />
+            <ReadOnlyContactItem
+              value={user.phoneNumber}
+              icon={<FaWhatsapp size={24} />}
+            />
+            {user.birthday && (
+              <ReadOnlyContactItem
+                value={formatFullBirthday(user.birthday)}
+                icon={<CakeIcon />}
+              />
+            )}
+            {user.pronouns && (
+              <ReadOnlyContactItem
+                value={user.pronouns}
+                icon={
+                  <FaTransgender
+                    size={24}
+                    style={{
+                      flexShrink: 0
+                    }}
+                  />
+                }
+              />
+            )}
+
+            {user.cityId && (
+              <ReadOnlyContactItem
+                value={appState.cityNames[user.cityId]}
+                icon={
+                  <FaCity
+                    size={24}
+                    style={{
+                      flexShrink: 0
+                    }}
+                  />
+                }
+              />
+            )}
+
+            <ReadOnlyContactItem
+              value={appState.countryNames[user.countryAbbr]}
+              icon={
+                appState.countryNames[user.countryAbbr] ? (
+                  <>{getEmojiFlag(user.countryAbbr.toUpperCase())}</>
+                ) : (
+                  <PublicIcon />
+                )
+              }
+            />
+          </Box>
+
+          <Divider />
+          {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <Typography variant="h2">My Willemijn Story</Typography>
-          <Typography component="p">{user.myWillemijnStory}</Typography>
-        </>
-      )}
-    </div>
+          <Paper>
+            <Typography
+              sx={{
+                minHeight: "125px",
+                padding: "15px 13px"
+              }}
+            >
+              {user.myWillemijnStory}
+            </Typography>
+          </Paper>
+        </Box>
+      </Box>
+    </>
   );
 };
 

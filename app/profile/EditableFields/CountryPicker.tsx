@@ -78,14 +78,19 @@ const CountryPicker = observer(
     };
 
     return (
-      <form onSubmit={handleSubmit}>
+      <form
+        style={{
+          width: "100%",
+          height: "87px"
+        }}
+        onSubmit={handleSubmit}
+      >
         <FormControl fullWidth variant="outlined" margin="normal">
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
-              maxWidth: "300px"
+              gap: "1rem"
             }}
           >
             <InputLabel id="country-picker-select-label">Country</InputLabel>

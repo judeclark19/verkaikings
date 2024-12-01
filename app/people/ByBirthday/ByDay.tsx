@@ -5,12 +5,7 @@ import appState from "@/lib/AppState";
 
 const ByDay = observer(({ day, month }: { day: string; month: string }) => {
   return (
-    <div
-      key={day}
-      style={{
-        marginLeft: "2rem"
-      }}
-    >
+    <div key={day}>
       <Typography variant="h3">{day}</Typography>
       <List
         sx={{

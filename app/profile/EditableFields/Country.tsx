@@ -4,6 +4,8 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
 import EditBtn from "./EditBtn";
+import { Public as PublicIcon } from "@mui/icons-material";
+import { getEmojiFlag } from "countries-list";
 
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -12,24 +14,46 @@ const Country = observer(() => {
     return <Skeleton />;
   }
   return (
-    <>
-      {isEditing ? (
-        <CountryPicker setIsEditing={setIsEditing} />
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem"
-          }}
-        >
-          <Typography component="p">
-            Country: {myProfileState.countryName || ""}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        justifyContent: "space-between",
+        height: "76px"
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          width: "100%",
+          height: "100%"
+        }}
+      >
+        {myProfileState.user!.countryAbbr ? (
+          <>{getEmojiFlag(myProfileState.user!.countryAbbr.toUpperCase())}</>
+        ) : (
+          <PublicIcon />
+        )}
+
+        {isEditing ? (
+          <CountryPicker setIsEditing={setIsEditing} />
+        ) : (
+          <Typography
+            component="p"
+            sx={{
+              color: myProfileState.countryName ? "inherit" : "text.secondary"
+            }}
+          >
+            {myProfileState.countryName || "(Choose your country)"}
           </Typography>
-          <EditBtn setIsEditing={setIsEditing} />
-        </div>
-      )}
-    </>
+        )}
+      </div>
+
+      {!isEditing && <EditBtn setIsEditing={setIsEditing} />}
+    </div>
   );
 });
 

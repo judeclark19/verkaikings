@@ -13,7 +13,6 @@ const ByStory = observer(() => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
             gap: 2
           }}
         >
