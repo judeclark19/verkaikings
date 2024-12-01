@@ -46,12 +46,14 @@ const NameEditingModal = observer(() => {
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
+        aria-labelledby="name-editing-modal-title"
+        aria-describedby="name-editing-modal-description"
       >
-        <Box sx={{ ...style }}>
-          <Typography variant="h2">Edit Name</Typography>
-          <Typography>
+        <Box sx={style}>
+          <Typography id="name-editing-modal-title" variant="h2">
+            Edit Name
+          </Typography>
+          <Typography id="name-editing-modal-description">
             Your username is derived from your name using the format
             &ldquo;First_Last&rdquo;.
           </Typography>

@@ -7,21 +7,24 @@ import {
   DateOfBirth,
   MyWillemijnStory,
   ProfilePic,
-  Pronouns
+  Pronouns,
+  Username,
+  SocialsList
 } from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import appState from "@/lib/AppState";
-import ProfileSkeleton from "./components/ProfileSkeleton";
-import ReadOnlyContactItem from "./components/ReadOnlyContactItem";
+import {
+  ProfileSkeleton,
+  ReadOnlyContactItem,
+  NameEditingModal,
+  PasswordChangeModal
+} from "./components";
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
-import NameEditingModal from "./components/NameEditingModal/NameEditingModal";
-import Username from "./EditableFields/Username";
+import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import SocialsList from "./EditableFields/Socials/SocialsList";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -190,13 +193,7 @@ const MyProfile = observer(() => {
           <MyWillemijnStory />
 
           {/* THIRD SECTION - SUPPORT*/}
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h2">Email and password</Typography>
-            <Typography>
-              If you need to change your email or password, please contact the
-              webmaster Jude (+17703801397) on WhatsApp.
-            </Typography>
-          </Box>
+          <PasswordChangeModal />
         </Box>
       </Box>
     </>
