@@ -1,6 +1,4 @@
 import { Paper, Typography } from "@mui/material";
-import React from "react";
-import ReadOnlyContactItem from "../../components/ReadOnlyContactItem";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../../MyProfile.state";
 import { Email as EmailIcon } from "@mui/icons-material";

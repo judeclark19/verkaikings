@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import {
   collection,
   doc,

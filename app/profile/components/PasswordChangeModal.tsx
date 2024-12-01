@@ -67,8 +67,12 @@ export default function PasswordChangeModal() {
         setSuccess(null);
         handleClose();
       }, 3000);
-    } catch (err: any) {
-      setError(err.message || "Failed to update password.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to update password.");
+      }
     } finally {
       setLoading(false);
     }

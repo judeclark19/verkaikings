@@ -193,7 +193,16 @@ const MyProfile = observer(() => {
           <MyWillemijnStory />
 
           {/* THIRD SECTION - SUPPORT*/}
-          <PasswordChangeModal />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mt: 3
+            }}
+          >
+            <PasswordChangeModal />
+          </Box>
         </Box>
       </Box>
     </>

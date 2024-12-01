@@ -51,8 +51,12 @@ export default function PasswordResetModal({ email }: { email: string }) {
         setSuccess(null);
         handleClose();
       }, 3000);
-    } catch (err: any) {
-      setError(err.message || "Failed to send password reset email.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to send password reset email.");
+      }
     } finally {
       setLoading(false);
     }
