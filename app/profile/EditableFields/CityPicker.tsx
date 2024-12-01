@@ -135,7 +135,9 @@ const CityPicker = observer(
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "1rem"
+          gap: "1rem",
+          justifyContent: "space-between",
+          width: "100%"
         }}
       >
         <TextField
@@ -147,7 +149,11 @@ const CityPicker = observer(
           onChange={(e) => {
             myProfileState.setCityName(e.target.value);
           }}
-          sx={{ margin: "10px 0", width: "300px", maxWidth: "100%" }}
+          slotProps={{
+            inputLabel: {
+              shrink: true
+            }
+          }}
         />
         <SaveBtn loading={loading} />
       </form>

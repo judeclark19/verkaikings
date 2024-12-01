@@ -25,6 +25,7 @@ const DateOfBirth = observer(() => {
           alignItems: "center",
           gap: "1rem",
           justifyContent: "space-between"
+          // height: "76px"
         }}
       >
         <div
@@ -36,9 +37,7 @@ const DateOfBirth = observer(() => {
         >
           <CakeIcon />
           {isEditing ? (
-            <div>
-              <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
-            </div>
+            <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
           ) : (
             <Typography
               component="p"

@@ -23,6 +23,13 @@ const DatePickerForm = observer(
     const [loading, setLoading] = useState(false);
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
+
+      if (value && !value.isValid()) {
+        setLoading(false);
+        setIsEditing(false);
+        return;
+      }
+
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
       updateDoc(userDoc, {

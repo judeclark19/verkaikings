@@ -1,11 +1,14 @@
+import ProfilePic from "./ProfilePic";
 import City from "./City";
 import Country from "./Country";
 import DateOfBirth from "./DateOfBirth";
 import EditBtn from "./EditBtn";
 import SaveBtn from "./SaveBtn";
 import Instagram from "./Instagram";
+import Duolingo from "./Duolingo";
+import BeReal from "./BeReal";
 import MyWillemijnStory from "./MyWillemijnStory";
-import ProfilePic from "./ProfilePic";
+import Pronouns from "./Pronouns";
 
 export {
   City,
@@ -15,5 +18,8 @@ export {
   SaveBtn,
   Instagram,
   MyWillemijnStory,
-  ProfilePic
+  ProfilePic,
+  Duolingo,
+  BeReal,
+  Pronouns
 };

@@ -4,29 +4,52 @@ import { Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import EditBtn from "./EditBtn";
+import { FaCity } from "react-icons/fa";
 
 const City = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   return (
-    <>
-      {isEditing ? (
-        <CityPicker setIsEditing={setIsEditing} />
-      ) : (
-        <div
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        justifyContent: "space-between",
+        height: "76px"
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          flexGrow: 1
+        }}
+      >
+        <FaCity
+          size={24}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem"
+            flexShrink: 0
           }}
-        >
-          <Typography component="p">
-            City: {myProfileState.cityName || ""}
+        />
+
+        {isEditing ? (
+          <CityPicker setIsEditing={setIsEditing} />
+        ) : (
+          <Typography
+            component="p"
+            sx={{
+              color: myProfileState.cityName ? "inherit" : "text.secondary"
+            }}
+          >
+            {myProfileState.cityName || "(Enter your city)"}
           </Typography>
-          <EditBtn setIsEditing={setIsEditing} />
-        </div>
-      )}
-    </>
+        )}
+      </div>
+
+      {!isEditing && <EditBtn setIsEditing={setIsEditing} />}
+    </div>
   );
 });
 

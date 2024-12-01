@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, Fab, Paper, Typography } from "@mui/material";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 import ProfileSkeleton from "./ProfileSkeleton";
 import {
   City,
@@ -8,7 +8,10 @@ import {
   DateOfBirth,
   Instagram,
   MyWillemijnStory,
-  ProfilePic
+  ProfilePic,
+  Duolingo,
+  BeReal,
+  Pronouns
 } from "./EditableFields";
 import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
@@ -17,18 +20,11 @@ import SandboxSkeleton from "../sandbox/SandboxSkeleton";
 import ContactItem from "../sandbox/ContactItem";
 import ReadOnlyContactItem from "../sandbox/ReadOnlyContactItem";
 import {
-  Edit as EditIcon,
   Email as EmailIcon,
-  AccountCircle as AccountCircleIcon,
-  Phone as PhoneIcon,
-  Wc as WcIcon,
-  LocationCity as LocationCityIcon,
-  Public as PublicIcon
+  AccountCircle as AccountCircleIcon
 } from "@mui/icons-material";
 
-import { FaInstagram } from "react-icons/fa";
-import BeRealIcon from "../../public/images/icons8-bereal-24.svg";
-import DuolingoIcon from "../../public/images/icons8-duolingo-24.svg";
+import { FaTransgender, FaWhatsapp } from "react-icons/fa";
 import { getEmojiFlag } from "countries-list";
 
 const MyProfile = observer(() => {
@@ -94,16 +90,14 @@ const MyProfile = observer(() => {
               value={myProfileState.user.email}
               icon={<EmailIcon />}
             />
-            <ContactItem
+            {/* <ContactItem
               initialValue="instagram"
               icon={<FaInstagram size={24} />}
-            />
-            <ContactItem
-              initialValue="duolingo"
-              icon={<DuolingoIcon size={24} />}
-            />
-
-            <ContactItem initialValue="bereal" icon={<BeRealIcon />} />
+            /> */}
+            <Instagram />
+            <Duolingo />
+            <BeReal />
+            {/* <ContactItem initialValue="bereal" icon={<BeRealIcon />} /> */}
           </Paper>
         </Box>
         {/* MAIN CONTENT */}
@@ -150,75 +144,23 @@ const MyProfile = observer(() => {
             />
             <ReadOnlyContactItem
               value={myProfileState.user.phoneNumber}
-              icon={<PhoneIcon />}
+              icon={<FaWhatsapp size={24} />}
             />
             <DateOfBirth />
-            <ContactItem initialValue="pronouns" icon={<WcIcon />} />
-            <ContactItem initialValue="city" icon={<LocationCityIcon />} />
-            <ContactItem initialValue="country" icon={<PublicIcon />} />
+            {/* <ContactItem
+              initialValue="pronouns"
+              icon={<FaTransgender size={24} />}
+            /> */}
+            <Pronouns />
+            <City />
+            <Country />
           </Box>
 
           <Divider />
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
-          <Box>
-            <Typography variant="h2">My Willemijn Story</Typography>
-            <Typography component="p">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-              libero voluptate dignissimos minus. Quos, dolor quisquam possimus
-              et vero illo illum aspernatur excepturi sapiente incidunt enim
-              hic! Vitae ea inventore eligendi ut numquam nesciunt, veritatis
-              quisquam velit tenetur laborum sed, voluptate repudiandae
-              distinctio minima quo corporis possimus amet iure enim!
-            </Typography>
-            <Box
-              sx={{
-                marginTop: 1,
-                display: "flex",
-                justifyContent: "flex-end"
-              }}
-            >
-              <Fab
-                size="medium"
-                color="primary"
-                aria-label="edit"
-                onClick={() => {
-                  //   setIsEditing(true);
-                }}
-              >
-                <EditIcon />
-              </Fab>
-            </Box>
-          </Box>
+          <MyWillemijnStory />
         </Box>
       </Box>
-
-      <div
-        style={{
-          backgroundColor: "#555"
-        }}
-      >
-        <Typography variant="h1">
-          My Profile: {myProfileState.user.username}
-        </Typography>
-        <ProfilePic />
-        <Typography component="p">
-          First Name: {myProfileState.user.firstName}
-        </Typography>
-        <Typography component="p">
-          Last Name: {myProfileState.user.lastName}
-        </Typography>
-        <Typography component="p">
-          Email: {myProfileState.user.email}
-        </Typography>
-        <Typography component="p">
-          WhatsApp phone: {myProfileState.user.phoneNumber}
-        </Typography>
-        <Country />
-        <City />
-        <DateOfBirth />
-        <Instagram />
-        <MyWillemijnStory />
-      </div>
     </>
   );
 });

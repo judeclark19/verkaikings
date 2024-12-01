@@ -1,25 +1,24 @@
 import { useState } from "react";
-import InstagramIcon from "@mui/icons-material/Instagram";
 import { TextField, Typography } from "@mui/material";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Link from "next/link";
 import SaveBtn from "./SaveBtn";
+import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
 import EditBtn from "./EditBtn";
 
-const Instagram = observer(() => {
+const BeReal = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [temp, setTemp] = useState(
-    myProfileState.instagram ? myProfileState.instagram.slice() : ""
+    myProfileState.beReal ? myProfileState.beReal.slice() : ""
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (myProfileState.instagram === temp) {
+    if (myProfileState.beReal === temp) {
       setIsEditing(false);
       return;
     }
@@ -28,14 +27,14 @@ const Instagram = observer(() => {
     setLoading(true);
 
     updateDoc(userDoc, {
-      instagram: myProfileState.instagram
+      beReal: myProfileState.beReal || null
     })
       .then(() => {
-        setTemp(myProfileState.instagram || "");
-        console.log("Instagram updated successfully");
+        setTemp(myProfileState.beReal || "");
+        console.log("BeReal updated successfully");
       })
       .catch((error) => {
-        console.error("Error updating Instagram: ", error);
+        console.error("Error updating BeReal: ", error);
       })
       .finally(() => {
         setLoading(false);
@@ -52,7 +51,12 @@ const Instagram = observer(() => {
         gap: "1rem"
       }}
     >
-      <InstagramIcon />
+      <BeRealIcon
+        size={24}
+        style={{
+          flexShrink: 0
+        }}
+      />
       {isEditing ? (
         <form
           onSubmit={handleSubmit}
@@ -63,12 +67,12 @@ const Instagram = observer(() => {
           }}
         >
           <TextField
-            label="Enter your Instagram username"
+            label="Enter your BeReal username"
             variant="outlined"
             fullWidth
-            value={myProfileState.instagram}
+            value={myProfileState.beReal}
             onChange={(e) => {
-              myProfileState.setInstagram(e.target.value);
+              myProfileState.setBeReal(e.target.value);
             }}
             slotProps={{
               inputLabel: {
@@ -87,29 +91,15 @@ const Instagram = observer(() => {
             flexGrow: 1
           }}
         >
-          {myProfileState.instagram ? (
-            <Link
-              href={`https://www.instagram.com/${myProfileState.instagram}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "inherit",
-                flexGrow: 1
-              }}
-            >
-              <Typography component="p">{myProfileState.instagram}</Typography>
-            </Link>
-          ) : (
-            <Typography
-              component="p"
-              sx={{
-                color: myProfileState.instagram ? "inherit" : "text.secondary",
-                flexGrow: 1
-              }}
-            >
-              (Enter your IG)
-            </Typography>
-          )}
+          <Typography
+            component="p"
+            sx={{
+              color: myProfileState.beReal ? "inherit" : "text.secondary",
+              flexGrow: 1
+            }}
+          >
+            {myProfileState.beReal || "(Enter your BeReal username)"}
+          </Typography>
 
           <EditBtn setIsEditing={setIsEditing} />
         </div>
@@ -118,4 +108,4 @@ const Instagram = observer(() => {
   );
 });
 
-export default Instagram;
+export default BeReal;

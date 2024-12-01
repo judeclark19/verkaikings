@@ -1,25 +1,24 @@
 import { useState } from "react";
-import InstagramIcon from "@mui/icons-material/Instagram";
 import { TextField, Typography } from "@mui/material";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Link from "next/link";
 import SaveBtn from "./SaveBtn";
+import { FaTransgender } from "react-icons/fa";
 import EditBtn from "./EditBtn";
 
-const Instagram = observer(() => {
+const Pronouns = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [temp, setTemp] = useState(
-    myProfileState.instagram ? myProfileState.instagram.slice() : ""
+    myProfileState.pronouns ? myProfileState.pronouns.slice() : ""
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (myProfileState.instagram === temp) {
+    if (myProfileState.pronouns === temp) {
       setIsEditing(false);
       return;
     }
@@ -28,14 +27,14 @@ const Instagram = observer(() => {
     setLoading(true);
 
     updateDoc(userDoc, {
-      instagram: myProfileState.instagram
+      pronouns: myProfileState.pronouns || null
     })
       .then(() => {
-        setTemp(myProfileState.instagram || "");
-        console.log("Instagram updated successfully");
+        setTemp(myProfileState.pronouns || "");
+        console.log("Pronouns updated successfully");
       })
       .catch((error) => {
-        console.error("Error updating Instagram: ", error);
+        console.error("Error updating Pronouns: ", error);
       })
       .finally(() => {
         setLoading(false);
@@ -52,23 +51,29 @@ const Instagram = observer(() => {
         gap: "1rem"
       }}
     >
-      <InstagramIcon />
+      <FaTransgender
+        size={24}
+        style={{
+          flexShrink: 0
+        }}
+      />
       {isEditing ? (
         <form
           onSubmit={handleSubmit}
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
+            flexGrow: 1
           }}
         >
           <TextField
-            label="Enter your Instagram username"
+            label="Enter your Pronouns username"
             variant="outlined"
             fullWidth
-            value={myProfileState.instagram}
+            value={myProfileState.pronouns || ""}
             onChange={(e) => {
-              myProfileState.setInstagram(e.target.value);
+              myProfileState.setPronouns(e.target.value);
             }}
             slotProps={{
               inputLabel: {
@@ -87,29 +92,15 @@ const Instagram = observer(() => {
             flexGrow: 1
           }}
         >
-          {myProfileState.instagram ? (
-            <Link
-              href={`https://www.instagram.com/${myProfileState.instagram}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "inherit",
-                flexGrow: 1
-              }}
-            >
-              <Typography component="p">{myProfileState.instagram}</Typography>
-            </Link>
-          ) : (
-            <Typography
-              component="p"
-              sx={{
-                color: myProfileState.instagram ? "inherit" : "text.secondary",
-                flexGrow: 1
-              }}
-            >
-              (Enter your IG)
-            </Typography>
-          )}
+          <Typography
+            component="p"
+            sx={{
+              color: myProfileState.pronouns ? "inherit" : "text.secondary",
+              flexGrow: 1
+            }}
+          >
+            {myProfileState.pronouns || "(Enter your pronouns)"}
+          </Typography>
 
           <EditBtn setIsEditing={setIsEditing} />
         </div>
@@ -118,4 +109,4 @@ const Instagram = observer(() => {
   );
 });
 
-export default Instagram;
+export default Pronouns;
