@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  FormControl,
-  Input,
-  InputLabel,
-  TextField
-} from "@mui/material";
+import { Box, Button, CircularProgress, TextField } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import myProfileState from "../../MyProfile.state";
@@ -87,10 +79,14 @@ const NameEditingForm = observer(
           onChange={(e) => setLastName(e.target.value)}
         />
 
-        <FormControl disabled variant="standard">
-          <InputLabel htmlFor="username-preview">Resulting username</InputLabel>
-          <Input id="username-preview" value={username} />
-        </FormControl>
+        <TextField
+          id="username-preview"
+          label="Resulting username"
+          value={username}
+          variant="standard"
+          disabled
+        />
+
         <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
           <Button
             type="button"

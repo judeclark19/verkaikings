@@ -2,13 +2,14 @@ import { Box, Card, CardContent, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import UserListItem from "./UserListItem";
+import userList from "@/lib/UserList";
 
 const ByStory = observer(() => {
   return (
     <div>
       <Typography variant="h1">Willemijn Stories</Typography>
 
-      {appState.users && appState.isInitialized ? (
+      {userList.users && appState.isInitialized ? (
         <Box
           sx={{
             display: "flex",
@@ -16,7 +17,7 @@ const ByStory = observer(() => {
             gap: 2
           }}
         >
-          {appState.users
+          {userList.filteredUsers
             .filter((user) => user.myWillemijnStory)
             .map((user) => (
               <Card sx={{ width: 600, maxWidth: "100%" }} key={user.username}>
