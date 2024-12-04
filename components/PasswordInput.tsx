@@ -1,11 +1,5 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import {
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput
-} from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 
 function PasswordInput({
@@ -36,33 +30,36 @@ function PasswordInput({
   };
 
   return (
-    <FormControl variant="outlined" fullWidth>
-      <InputLabel htmlFor={autoComplete}>{label}*</InputLabel>
-      <OutlinedInput
-        id={autoComplete}
-        type={showPassword ? "text" : "password"}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        required
-        autoComplete={autoComplete}
-        endAdornment={
-          <InputAdornment position="end">
-            <IconButton
-              aria-label={
-                showPassword ? "hide the password" : "display the password"
-              }
-              onClick={handleClickShowPassword}
-              onMouseDown={handleMouseDownPassword}
-              onMouseUp={handleMouseUpPassword}
-              edge="end"
-            >
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          </InputAdornment>
+    <TextField
+      id={autoComplete}
+      type={showPassword ? "text" : "password"}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      required
+      autoComplete={autoComplete}
+      variant="outlined"
+      fullWidth
+      label={label}
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={
+                  showPassword ? "hide the password" : "display the password"
+                }
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                onMouseUp={handleMouseUpPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
         }
-        label={label}
-      />
-    </FormControl>
+      }}
+    />
   );
 }
 

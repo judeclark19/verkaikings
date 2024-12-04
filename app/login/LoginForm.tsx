@@ -9,7 +9,8 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Link
+  Link,
+  Alert
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { observer } from "mobx-react-lite";
@@ -89,6 +90,7 @@ const LoginForm = observer(() => {
           required
           autoComplete="email"
         />
+
         <PasswordInput
           value={password}
           setValue={setPassword}
@@ -106,7 +108,18 @@ const LoginForm = observer(() => {
           {loading ? <CircularProgress size={24} /> : "Login"}
         </Button>
       </Box>
-      {error && <Typography color="error">{error}</Typography>}
+      {error && (
+        <Alert
+          sx={{
+            mt: 2,
+            width: "100%",
+            maxWidth: "400px"
+          }}
+          severity="error"
+        >
+          {error}
+        </Alert>
+      )}
 
       <Typography
         sx={{
