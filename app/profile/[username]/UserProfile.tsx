@@ -121,7 +121,8 @@ const UserProfile = ({
               fontSize: 40,
               bgcolor: "secondary.main",
               margin: "auto",
-              borderRadius: 2
+              borderRadius: 2,
+              mb: 4
             }}
           >
             {!user.profilePicture &&
@@ -198,6 +199,7 @@ const UserProfile = ({
               <ReadOnlyContactItem
                 value={user.phoneNumber}
                 icon={<FaWhatsapp size={24} />}
+                link={`https://wa.me/${user.phoneNumber}`}
               />
               {user.birthday && (
                 <ReadOnlyContactItem
