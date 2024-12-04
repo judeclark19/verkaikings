@@ -6,26 +6,35 @@ export class UserList {
   users: DocumentData[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
   usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
+  filteredUsers: DocumentData[] = [];
+  query = "";
+  debounceTimeout: NodeJS.Timeout | null = null;
 
   constructor() {
-    console.log("UserList constructor");
     makeAutoObservable(this);
   }
 
   init(users: DocumentData[]) {
-    console.log("UserList init", toJS(users));
     this.users = users;
+    this.filteredUsers = users;
   }
 
   setUsers(users: DocumentData[]) {
+    if (!users) return;
     this.users = users;
-    this.getUsersByCountry();
-    this.getUsersByBirthday();
+    this.setUsersByCountry(users);
+    this.setUsersByBirthday(users);
   }
 
-  getUsersByCountry() {
+  setFilteredUsers(users: DocumentData[]) {
+    this.filteredUsers = users;
+    this.setUsersByCountry(users);
+    this.setUsersByBirthday(users);
+  }
+
+  setUsersByCountry(users: DocumentData[]) {
     this.usersByCountry = {};
-    this.users.forEach((user) => {
+    users.forEach((user) => {
       const countryAbbr = user.countryAbbr;
       let cityId = user.cityId;
 
@@ -48,11 +57,11 @@ export class UserList {
     appState.initUserMap();
   }
 
-  getUsersByBirthday() {
+  setUsersByBirthday(users: DocumentData[]) {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
 
-    this.users.forEach((user) => {
+    users.forEach((user) => {
       if (!user.birthday) return;
       const { birthday } = user;
       const month = birthday.split("-")[1];
@@ -77,6 +86,55 @@ export class UserList {
         this.usersByBirthday[month][day].push(user);
       }
     });
+  }
+
+  setQuery(query: string) {
+    this.query = query;
+    // this.filterUsersByQuery(query);
+  }
+
+  filterUsersByQuery(query: string, includeStory?: boolean) {
+    const fieldsToSearch = [
+      "firstName",
+      "lastName",
+      "username",
+      "email",
+      "phoneNumber"
+    ];
+
+    if (includeStory) {
+      fieldsToSearch.push("myWillemijnStory");
+    }
+
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    this.debounceTimeout = setTimeout(() => {
+      const lowerCaseQuery = query.toLowerCase();
+
+      if (!lowerCaseQuery.trim()) {
+        this.setFilteredUsers(this.users);
+        return;
+      }
+
+      const result = this.users.filter((user) => {
+        // Check individual fields
+        const matchesField = fieldsToSearch.some((key) =>
+          String(user[key]).toLowerCase().includes(lowerCaseQuery)
+        );
+
+        // Check combined firstName + lastName
+        const fullName = `${user.firstName || ""} ${
+          user.lastName || ""
+        }`.trim();
+        const matchesFullName = fullName.toLowerCase().includes(lowerCaseQuery);
+
+        return matchesField || matchesFullName;
+      });
+
+      this.setFilteredUsers(result);
+    }, 300); // 300ms debounce
   }
 }
 

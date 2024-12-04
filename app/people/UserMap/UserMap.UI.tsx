@@ -1,7 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
-import { Skeleton, Typography } from "@mui/material";
+import { Alert, Skeleton, Typography } from "@mui/material";
 import appState from "@/lib/AppState";
+import userList from "@/lib/UserList";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -29,9 +30,39 @@ const UserMap = observer(() => {
   return (
     <>
       <Typography variant="h1">Map of Verkaikings</Typography>
+      <div
+        style={{
+          position: "relative"
+        }}
+      >
+        <div
+          id="map"
+          ref={mapRef}
+          style={{
+            width: "100%",
+            height: "600px"
+          }}
+        >
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+        </div>
 
-      <div id="map" ref={mapRef} style={{ width: "100%", height: "600px" }}>
-        <Skeleton variant="rectangular" width="100%" height="100%" />
+        {appState.isInitialized && userList.filteredUsers.length === 0 && (
+          <Alert
+            severity="info"
+            sx={{
+              position: "absolute",
+              top: 0,
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000
+            }}
+          >
+            No users to show based on the query &ldquo;{userList.query}&rdquo;.
+          </Alert>
+        )}
       </div>
     </>
   );

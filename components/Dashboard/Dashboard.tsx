@@ -5,13 +5,13 @@ import {
   checkIfBirthdaySoon,
   checkIfBirthdayToday
 } from "@/lib/clientUtils";
-import appState from "@/lib/AppState";
 import { Box, Button, Link, Paper, Typography } from "@mui/material";
 import { DocumentData } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
+import userList from "@/lib/UserList";
 
 const Dashboard = observer(() => {
   const [recentBirthdays, setRecentBirthdays] = useState<DocumentData[]>([]);
@@ -25,7 +25,7 @@ const Dashboard = observer(() => {
     const today: DocumentData[] = [];
     const upcoming: DocumentData[] = [];
 
-    appState.users
+    userList.users
       .filter((user) => user.birthday)
       .forEach((user) => {
         if (checkIfBirthdayToday(user.birthday)) {
@@ -40,7 +40,7 @@ const Dashboard = observer(() => {
     setRecentBirthdays(recent);
     setTodaysBirthdays(today);
     setUpcomingBirthdays(upcoming);
-  }, [appState.users]);
+  }, [userList.users]);
 
   return (
     <div>

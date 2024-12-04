@@ -62,8 +62,8 @@ class AppState {
         ) as string;
       }
 
-      this.userList.getUsersByCountry();
-      this.userList.getUsersByBirthday();
+      this.userList.setUsersByCountry(users);
+      this.userList.setUsersByBirthday(users);
       this.saveToLocalStorage();
       myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);

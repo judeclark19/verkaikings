@@ -1,6 +1,6 @@
 "use client";
 
-import { List, Skeleton, Typography } from "@mui/material";
+import { Alert, List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
@@ -9,25 +9,32 @@ import userList from "@/lib/UserList";
 import { toJS } from "mobx";
 
 const ByName = observer(() => {
-  const [filteredUsers, setFilteredUsers] = useState(userList.users.slice());
-
-  useEffect(() => {
-    console.log("useffect", toJS(userList.users));
-    setFilteredUsers(userList.users.slice());
-  }, [userList.users]);
-
   return (
     <div>
       <Typography variant="h1">List of People alphabetically</Typography>
-      {userList.users && appState.isInitialized ? (
+
+      {appState.isInitialized && userList.filteredUsers.length === 0 && (
+        <Alert
+          sx={{
+            mt: 2
+          }}
+          severity="info"
+        >
+          No users found with the search query: &ldquo;{userList.query}&rdquo;.
+        </Alert>
+      )}
+
+      {userList.users.length && appState.isInitialized ? (
         <List
           sx={{
             width: "100%",
             maxWidth: 360,
-            bgcolor: "background.paper"
+            bgcolor: "background.paper",
+            display: userList.filteredUsers.length ? "block" : "none"
           }}
         >
-          {filteredUsers
+          {userList.filteredUsers
+            .slice()
             .sort(
               // Sort users alphabetically by username
               (a, b) => a.username.localeCompare(b.username)
