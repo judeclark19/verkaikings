@@ -13,7 +13,6 @@ import { observer } from "mobx-react-lite";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
-import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 
 const CountryPicker = observer(

@@ -4,9 +4,7 @@ import { Alert, List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
-import { useEffect, useState } from "react";
 import userList from "@/lib/UserList";
-import { toJS } from "mobx";
 
 const ByName = observer(() => {
   return (

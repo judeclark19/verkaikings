@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
-import { CircularProgress, TextField, Alert } from "@mui/material";
+import { CircularProgress, Alert } from "@mui/material";
 import { auth } from "@/lib/firebase"; // Adjust path to your Firebase setup
 import {
   updatePassword,

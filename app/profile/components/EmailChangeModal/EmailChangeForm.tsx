@@ -73,7 +73,7 @@ const EmailChangeForm = observer(
 
         setSuccess("Email updated successfully.");
         setTimeout(() => {
-          handleClose();
+          closeModal();
           setError(null);
           setSuccess(null);
         }, 2000);

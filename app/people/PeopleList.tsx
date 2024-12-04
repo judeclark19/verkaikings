@@ -13,8 +13,7 @@ import {
   MenuItem,
   FormHelperText,
   TextField,
-  InputAdornment,
-  Alert
+  InputAdornment
 } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
@@ -24,7 +23,6 @@ import UserMap from "./UserMap/UserMap.UI";
 import ByStory from "./ByStory";
 import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
-import appState from "@/lib/AppState";
 
 export enum PeopleViews {
   NAME = "name",
@@ -149,11 +147,8 @@ const PeopleList = observer(() => {
           placeholder={searchPlaceholderText}
           value={userList.query}
           onChange={(e) => {
-            userList.setQuery(e.target.value),
-              userList.filterUsersByQuery(
-                e.target.value,
-                viewingBy === "story"
-              );
+            userList.setQuery(e.target.value);
+            userList.filterUsersByQuery(e.target.value, viewingBy === "story");
           }}
           slotProps={{
             input: {

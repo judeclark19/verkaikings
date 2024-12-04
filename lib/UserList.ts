@@ -1,5 +1,5 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import appState, { CountryUsersType } from "./AppState";
 
 export class UserList {

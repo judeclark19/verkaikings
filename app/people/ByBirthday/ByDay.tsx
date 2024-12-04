@@ -1,7 +1,6 @@
 import { List, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import UserListItem from "../UserListItem";
-import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 
 const ByDay = observer(({ day, month }: { day: string; month: string }) => {
