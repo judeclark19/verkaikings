@@ -2,6 +2,7 @@ import UserMapState from "@/app/people/UserMap/UserMap.state";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
+import userList, { UserList } from "./UserList";
 
 export type CountryUsersType = {
   countryName: string;
@@ -10,13 +11,14 @@ export type CountryUsersType = {
 
 class AppState {
   isInitialized = false;
-  users: DocumentData[] = [];
+  // users: DocumentData[] = [];
+  userList: UserList = userList;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
-  usersByCountry: Record<string, CountryUsersType> = {};
-  usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
+  // usersByCountry: Record<string, CountryUsersType> = {};
+  // usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
   userMap: UserMapState | null = null;
   initPromise: Promise<void> | null = null;
 
@@ -35,7 +37,9 @@ class AppState {
     }
 
     this.initPromise = (async () => {
-      this.users = users;
+      // this.users = users;
+      this.userList = userList;
+      this.userList.init(users);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       this.loadFromLocalStorage();
 
@@ -58,9 +62,9 @@ class AppState {
         ) as string;
       }
 
-      this.initUsersByCountry();
+      this.userList.getUsersByCountry();
+      this.userList.getUsersByBirthday();
       this.saveToLocalStorage();
-      this.initUsersByBirthday();
       myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);
     })();
@@ -75,11 +79,6 @@ class AppState {
   async waitForInitialization() {
     if (this.isInitialized) return;
     if (this.initPromise) await this.initPromise;
-  }
-
-  setUsers(users: DocumentData[]) {
-    this.users = users;
-    this.initUsersByCountry();
   }
 
   loadFromLocalStorage() {
@@ -154,66 +153,10 @@ class AppState {
     return displayNames.of(isoCode.toUpperCase());
   }
 
-  initUsersByCountry() {
-    this.usersByCountry = {};
-    this.users.forEach((user) => {
-      const countryAbbr = user.countryAbbr;
-      let cityId = user.cityId;
-
-      if (!cityId) cityId = "No city listed";
-
-      if (!this.usersByCountry[countryAbbr]) {
-        this.usersByCountry[countryAbbr] = {
-          countryName: this.countryNames[countryAbbr] || "",
-          cities: {
-            [cityId]: [user]
-          }
-        };
-      } else if (!this.usersByCountry[countryAbbr].cities[cityId]) {
-        this.usersByCountry[countryAbbr].cities[cityId] = [user];
-      } else {
-        this.usersByCountry[countryAbbr].cities[cityId].push(user);
-      }
-    });
-
-    this.initUserMap();
-  }
-
-  initUsersByBirthday() {
-    // INIT USERS BY BIRTHDAY
-    this.usersByBirthday = {};
-
-    this.users.forEach((user) => {
-      if (!user.birthday) return;
-      const { birthday } = user;
-      const month = birthday.split("-")[1];
-      const day = birthday.split("-")[2];
-
-      if (!this.usersByBirthday[month]) {
-        // init month object
-        this.usersByBirthday[month] = {
-          [day]: [user]
-        };
-      } else if (
-        this.usersByBirthday[month] &&
-        !this.usersByBirthday[month][day]
-      ) {
-        // init day object
-        this.usersByBirthday[month][day] = [user];
-      } else if (
-        this.usersByBirthday[month] &&
-        this.usersByBirthday[month][day]
-      ) {
-        // add user to day
-        this.usersByBirthday[month][day].push(user);
-      }
-    });
-  }
-
   initUserMap() {
     this.userMap = new UserMapState(
-      this.users,
-      this.usersByCountry,
+      this.userList.users,
+      this.userList.usersByCountry,
       this.cityNames
     );
   }

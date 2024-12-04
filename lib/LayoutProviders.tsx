@@ -45,7 +45,7 @@ export default function LayoutProviders({
           ...doc.data()
         }));
 
-        appState.setUsers(updatedUsers); // Update appState
+        appState.userList.setUsers(updatedUsers); // Update appState
       });
     }
 

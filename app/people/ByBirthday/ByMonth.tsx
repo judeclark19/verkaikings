@@ -2,6 +2,7 @@ import appState from "@/lib/AppState";
 import { Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import ByDay from "./ByDay";
+import userList from "@/lib/UserList";
 
 const ByMonth = observer(({ month }: { month: string }) => {
   function getMonthName(monthNumber: number, locale: string) {
@@ -27,7 +28,7 @@ const ByMonth = observer(({ month }: { month: string }) => {
         {getMonthName(parseInt(month), navigator.language || "en")}
       </Typography>
       <div>
-        {Object.keys(appState.usersByBirthday[month])
+        {Object.keys(userList.usersByBirthday[month])
           .sort((a, b) => parseInt(a) - parseInt(b))
           .map((day) => (
             <ByDay key={day} day={day} month={month} />

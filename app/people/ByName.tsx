@@ -4,12 +4,22 @@ import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "./UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
+import { useEffect, useState } from "react";
+import userList from "@/lib/UserList";
+import { toJS } from "mobx";
 
 const ByName = observer(() => {
+  const [filteredUsers, setFilteredUsers] = useState(userList.users.slice());
+
+  useEffect(() => {
+    console.log("useffect", toJS(userList.users));
+    setFilteredUsers(userList.users.slice());
+  }, [userList.users]);
+
   return (
     <div>
       <Typography variant="h1">List of People alphabetically</Typography>
-      {appState.users && appState.isInitialized ? (
+      {userList.users && appState.isInitialized ? (
         <List
           sx={{
             width: "100%",
@@ -17,8 +27,7 @@ const ByName = observer(() => {
             bgcolor: "background.paper"
           }}
         >
-          {appState.users
-            .slice()
+          {filteredUsers
             .sort(
               // Sort users alphabetically by username
               (a, b) => a.username.localeCompare(b.username)
