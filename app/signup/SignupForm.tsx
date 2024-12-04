@@ -23,6 +23,7 @@ import {
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
 import { DocumentData } from "firebase-admin/firestore";
+import PasswordInput from "@/components/PasswordInput";
 
 const SignupForm = () => {
   const [signupStage, setSignupStage] = useState<1 | 2>(1);
@@ -240,7 +241,8 @@ const SignupForm = () => {
           )}
           {signupStage === 2 && (
             <>
-              <form
+              <Box
+                component="form"
                 onSubmit={handleSignUp}
                 style={{ width: "100%", maxWidth: "400px" }}
               >
@@ -280,29 +282,33 @@ const SignupForm = () => {
                   disabled
                   onChange={() => {}}
                   disabledCountry={phoneData.country.iso2}
+                  sx={{
+                    mt: 2,
+                    mb: 3,
+                    width: "100%"
+                  }}
                 />
-                <TextField
+
+                <PasswordInput
                   label="Password"
-                  type="password"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  setValue={setPassword}
                   autoComplete="new-password"
                 />
+
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
                   fullWidth
-                  sx={{ mt: 2 }}
                   disabled={loading}
+                  sx={{
+                    mt: 3
+                  }}
                 >
                   {checking ? <CircularProgress size={24} /> : "Sign Up"}
                 </Button>
-              </form>
+              </Box>
               {error && <Typography color="error">{error}</Typography>}
             </>
           )}

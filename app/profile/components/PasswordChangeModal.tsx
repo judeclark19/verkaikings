@@ -10,6 +10,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential
 } from "firebase/auth";
+import PasswordInput from "@/components/PasswordInput";
 
 const style = {
   position: "absolute",
@@ -101,35 +102,31 @@ export default function PasswordChangeModal() {
             Enter your current password and a new password to update.
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              mt: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 3
+            }}
+          >
             {error && <Alert severity="error">{error}</Alert>}
             {success && <Alert severity="success">{success}</Alert>}
 
-            <TextField
+            <PasswordInput
               label="Current Password"
-              type="password"
-              variant="outlined"
-              fullWidth
-              margin="normal"
               value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
+              setValue={setCurrentPassword}
               autoComplete="current-password"
             />
 
-            <TextField
+            <PasswordInput
               label="New Password"
-              type="password"
-              variant="outlined"
-              fullWidth
-              margin="normal"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
+              setValue={setNewPassword}
               autoComplete="new-password"
-              sx={{
-                mb: 2
-              }}
             />
 
             <Box

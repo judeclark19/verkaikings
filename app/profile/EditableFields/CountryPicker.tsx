@@ -57,7 +57,6 @@ const CountryPicker = observer(
 
       updateDoc(userDoc, {
         countryAbbr: myProfileState.countryAbbr,
-        countryName: myProfileState.countryName,
         cityId: null
       })
         .then(() => {

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../../MyProfile.state";
 import { Email as EmailIcon } from "@mui/icons-material";
 import { Instagram, Duolingo, BeReal } from "./index";
-import EmailChangeModal from "../../components/EmailChangeModal";
+import EmailChangeModal from "../../components/EmailChangeModal/EmailChangeModal";
 
 const SocialsList = observer(() => {
   return (
