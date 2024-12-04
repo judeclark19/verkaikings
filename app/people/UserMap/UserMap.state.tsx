@@ -1,6 +1,7 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import appState, { CountryUsersType } from "@/lib/AppState";
+import appState from "@/lib/AppState";
+import userList from "@/lib/UserList";
 
 type MapItem = {
   cityId: string;
@@ -9,26 +10,25 @@ type MapItem = {
 };
 
 class UserMapState {
-  users: DocumentData[] = [];
-  usersByCountry: Record<string, CountryUsersType> = {};
+  usersWithCity: DocumentData[] = [];
   isInitialized = false;
   mapItems: MapItem[] = [];
   cityNames: Record<string, string> = {};
-  openInfoWindow: google.maps.InfoWindow | null = null; // Track the open InfoWindow
+  openInfoWindow: google.maps.InfoWindow | null = null;
+  markers = new Map<string, google.maps.marker.AdvancedMarkerElement>();
+  infoWindows = new Map<string, google.maps.InfoWindow>();
+  map: google.maps.Map | null = null;
 
-  constructor(
-    users: DocumentData[],
-    usersByCountry: Record<string, CountryUsersType>,
-    cityNames: Record<string, string>
-  ) {
+  constructor(users: DocumentData[], cityNames: Record<string, string>) {
     makeAutoObservable(this);
-    this.users = users.filter((user) => user.cityId);
-    this.usersByCountry = usersByCountry;
+    this.usersWithCity = users.filter((user) => user.cityId);
     this.cityNames = cityNames;
 
+    console.log("user map constructor");
+
     // INIT MAP ITEMS
-    Object.keys(this.usersByCountry).forEach((country) => {
-      const countryObject = this.usersByCountry[country];
+    Object.keys(userList.usersByCountry).forEach((country) => {
+      const countryObject = userList.usersByCountry[country];
       Object.keys(countryObject.cities).forEach((city) => {
         if (city !== "No city listed") {
           this.mapItems.push({
@@ -42,26 +42,27 @@ class UserMapState {
   }
 
   initializeMap(mapContainer: HTMLElement) {
+    if (this.map) {
+      console.log("Map is already initialized.");
+      return;
+    }
+
     if (!window.google) return;
     console.log("Initializing map...");
 
-    const map = new window.google.maps.Map(mapContainer, {
+    this.map = new window.google.maps.Map(mapContainer, {
       center: { lat: 20, lng: 0 },
       zoom: 2,
       mapId: process.env.NEXT_PUBLIC_USERMAP_ID
     });
 
-    const service = new window.google.maps.places.PlacesService(map);
+    const service = new window.google.maps.places.PlacesService(this.map);
 
     this.mapItems.forEach((mapItem) => {
-      // Check cache first
       const cachedPlace = appState.cityDetails[mapItem.cityId];
       if (cachedPlace) {
-        console.log("creating marker from cache:", cachedPlace);
-        // Create marker from cached data
-        this.createMarker(map, cachedPlace, mapItem);
+        this.createMarker(cachedPlace, mapItem);
       } else {
-        // Fetch details only if not cached
         service.getDetails(
           { placeId: mapItem.cityId },
           (
@@ -73,8 +74,8 @@ class UserMapState {
               place?.geometry?.location
             ) {
               appState.cityNames[mapItem.cityId] = place.name || "";
-              appState.saveToLocalStorage(); // Save updated cache
-              this.createMarker(map, place, mapItem);
+              appState.saveToLocalStorage();
+              this.createMarker(place, mapItem);
             } else {
               console.error("Place details could not be retrieved:", status);
             }
@@ -86,50 +87,78 @@ class UserMapState {
     this.isInitialized = true;
   }
 
-  createMarker(
-    map: google.maps.Map,
-    place: google.maps.places.PlaceResult,
-    mapItem: MapItem
-  ) {
+  createMarker(place: google.maps.places.PlaceResult, mapItem: MapItem) {
     const marker = new google.maps.marker.AdvancedMarkerElement({
-      map,
+      map: this.map,
       position: place.geometry?.location,
       title: place.name
     });
 
-    const contentString = `<div class="info-window">
-        <h2>${appState.cityNames[place.place_id!]}, ${
-      appState.countryNames[mapItem.countryAbbr]
-    }</h2>
-        <ul>
-        ${mapItem.users
-          .map(
-            (user) =>
-              `<li>
-                <a href="/profile/${user.username}">
-                  <button>
-                  ${user.firstName} ${user.lastName}
-                  </button>
-                </a>
-              </li>`
-          )
-          .join("")}
-        </ul>
-        </div>`;
+    this.markers.set(mapItem.cityId, marker);
 
     const infoWindow = new google.maps.InfoWindow({
-      content: contentString
+      content: this.generateInfoWindowContent(mapItem)
     });
 
+    this.infoWindows.set(mapItem.cityId, infoWindow);
+
     marker.addListener("click", () => {
-      // Close the previously open InfoWindow, if any
       if (this.openInfoWindow) {
         this.openInfoWindow.close();
       }
-
-      // Open the new InfoWindow and set it as the currently open one
-      infoWindow.open(map, marker);
+      infoWindow.open(this.map, marker);
       this.openInfoWindow = infoWindow;
+    });
+  }
+
+  generateInfoWindowContent(mapItem: MapItem) {
+    return `<div class="info-window">
+      <h2>${appState.cityNames[mapItem.cityId]}, ${
+      appState.countryNames[mapItem.countryAbbr]
+    }</h2>
+      <ul>
+      ${mapItem.users
+        .map(
+          (user) =>
+            `<li>
+              <a href="/profile/${user.username}">
+              <button>
+                ${user.firstName} ${user.lastName}
+                </button>
+                </a>
+            </li>`
+        )
+        .join("")}
+      </ul>
+    </div>`;
+  }
+
+  updateInfoWindowContent(cityId: string, updatedUsers: DocumentData[]) {
+    const infoWindow = this.infoWindows.get(cityId);
+    if (infoWindow) {
+      const mapItem = this.mapItems.find((item) => item.cityId === cityId);
+      if (mapItem) {
+        mapItem.users = updatedUsers;
+        infoWindow.setContent(this.generateInfoWindowContent(mapItem));
+      }
+    }
+  }
+
+  updateMarkerVisibility(filteredUsers: DocumentData[]) {
+    const visibleCityIds = new Set(
+      filteredUsers.map((user) => user.cityId).filter((id) => !!id)
+    );
+
+    this.markers.forEach((marker, cityId) => {
+      if (visibleCityIds.has(cityId)) {
+        marker.map = this.map; // Show marker
+        const updatedUsers = filteredUsers.filter(
+          (user) => user.cityId === cityId
+        );
+        this.updateInfoWindowContent(cityId, updatedUsers);
+      } else {
+        marker.map = null; // Hide marker
+      }
     });
   }
 }

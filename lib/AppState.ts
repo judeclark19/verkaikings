@@ -4,21 +4,13 @@ import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserList } from "./UserList";
 
-export type CountryUsersType = {
-  countryName: string;
-  cities: Record<string, DocumentData[]>;
-};
-
 class AppState {
   isInitialized = false;
-  // users: DocumentData[] = [];
   userList: UserList = userList;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
-  // usersByCountry: Record<string, CountryUsersType> = {};
-  // usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
   userMap: UserMapState | null = null;
   initPromise: Promise<void> | null = null;
 
@@ -37,7 +29,6 @@ class AppState {
     }
 
     this.initPromise = (async () => {
-      // this.users = users;
       this.userList = userList;
       this.userList.init(users);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
@@ -154,11 +145,7 @@ class AppState {
   }
 
   initUserMap() {
-    this.userMap = new UserMapState(
-      this.userList.users,
-      this.userList.usersByCountry,
-      this.cityNames
-    );
+    this.userMap = new UserMapState(this.userList.users, this.cityNames);
   }
 
   formatCityAndStatefromAddress(

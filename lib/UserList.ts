@@ -1,6 +1,11 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import appState, { CountryUsersType } from "./AppState";
+import appState from "./AppState";
+
+type CountryUsersType = {
+  countryName: string;
+  cities: Record<string, DocumentData[]>;
+};
 
 export class UserList {
   users: DocumentData[] = [];
@@ -24,12 +29,14 @@ export class UserList {
     this.users = users;
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
+    appState.initUserMap();
   }
 
   setFilteredUsers(users: DocumentData[]) {
     this.filteredUsers = users;
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
+    appState.userMap?.updateMarkerVisibility(users);
   }
 
   setUsersByCountry(users: DocumentData[]) {
@@ -53,8 +60,6 @@ export class UserList {
         this.usersByCountry[countryAbbr].cities[cityId].push(user);
       }
     });
-
-    appState.initUserMap();
   }
 
   setUsersByBirthday(users: DocumentData[]) {
