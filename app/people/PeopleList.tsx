@@ -11,7 +11,9 @@ import {
   FormControl,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText,
+  TextField,
+  InputAdornment
 } from "@mui/material";
 import ByName from "./ByName";
 import ByLocation from "./ByLocation/ByLocation";
@@ -19,6 +21,8 @@ import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";
 import UserMap from "./UserMap/UserMap.UI";
 import ByStory from "./ByStory";
+import SearchIcon from "@mui/icons-material/Search";
+import userList from "@/lib/UserList";
 
 export enum PeopleViews {
   NAME = "name",
@@ -32,6 +36,8 @@ const PeopleList = observer(() => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [searchPlaceholderText, setSearchPlaceholderText] =
+    useState("Search users...");
   const [viewingBy, setViewingBy] = useState<PeopleViews>(PeopleViews.NAME);
 
   useEffect(() => {
@@ -40,11 +46,16 @@ const PeopleList = observer(() => {
       viewByParam = PeopleViews.NAME;
     }
     setViewingBy(viewByParam as PeopleViews);
-    setLoading(false); // Set loading to false after initialization
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     router.replace(`?viewBy=${viewingBy.toLowerCase()}`);
+    if (viewingBy === "story") {
+      setSearchPlaceholderText("Search users or stories...");
+    } else {
+      setSearchPlaceholderText("Search users...");
+    }
   }, [viewingBy]);
 
   const handleViewChange = (view: PeopleViews) => {
@@ -107,8 +118,7 @@ const PeopleList = observer(() => {
         <FormControl
           fullWidth
           sx={{
-            maxWidth: 300,
-            marginBottom: 2,
+            maxWidth: 424,
             display: {
               xs: "flex",
               md: "none"
@@ -130,6 +140,31 @@ const PeopleList = observer(() => {
           </Select>
           <FormHelperText>Select view</FormHelperText>
         </FormControl>
+
+        <TextField
+          variant="outlined"
+          fullWidth
+          placeholder={searchPlaceholderText}
+          value={userList.query}
+          onChange={(e) => {
+            userList.setQuery(e.target.value);
+            userList.filterUsersByQuery(e.target.value, viewingBy === "story");
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              )
+            }
+          }}
+          sx={{
+            backgroundColor: "rgba(71, 71, 71)",
+            mt: 3,
+            maxWidth: 424
+          }}
+        />
       </Box>
 
       {viewingBy === "name" && <ByName />}

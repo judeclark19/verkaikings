@@ -2,6 +2,7 @@ import { List, Skeleton, Typography } from "@mui/material";
 import UserListItem from "../UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
+import userList from "@/lib/UserList";
 
 const ByCity = observer(
   ({ countryAbbr, cityId }: { countryAbbr: string; cityId: string }) => {
@@ -30,7 +31,7 @@ const ByCity = observer(
                 bgcolor: "background.paper"
               }}
             >
-              {appState.usersByCountry[countryAbbr].cities[cityId].map(
+              {userList.usersByCountry[countryAbbr].cities[cityId].map(
                 (user) => {
                   return <UserListItem key={user.username} user={user} />;
                 }

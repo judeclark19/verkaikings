@@ -9,11 +9,13 @@ import {
   Typography,
   Box,
   CircularProgress,
-  Link
+  Link,
+  Alert
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { observer } from "mobx-react-lite";
 import PasswordResetModal from "./PasswordResetModal";
+import PasswordInput from "@/components/PasswordInput";
 
 const LoginForm = observer(() => {
   const [email, setEmail] = useState("");
@@ -66,7 +68,17 @@ const LoginForm = observer(() => {
       <Typography variant="h2" gutterBottom>
         Log In
       </Typography>
-      <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: "400px" }}>
+      <Box
+        component="form"
+        onSubmit={handleLogin}
+        sx={{
+          width: "100%",
+          maxWidth: "400px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem"
+        }}
+      >
         <TextField
           label="Email"
           type="email"
@@ -78,29 +90,36 @@ const LoginForm = observer(() => {
           required
           autoComplete="email"
         />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
+
+        <PasswordInput
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          setValue={setPassword}
+          label="Password"
           autoComplete="current-password"
         />
+
         <Button
           type="submit"
           variant="contained"
           color="primary"
           fullWidth
-          sx={{ mt: 2 }}
           disabled={loading}
         >
           {loading ? <CircularProgress size={24} /> : "Login"}
         </Button>
-      </form>
-      {error && <Typography color="error">{error}</Typography>}
+      </Box>
+      {error && (
+        <Alert
+          sx={{
+            mt: 2,
+            width: "100%",
+            maxWidth: "400px"
+          }}
+          severity="error"
+        >
+          {error}
+        </Alert>
+      )}
 
       <Typography
         sx={{

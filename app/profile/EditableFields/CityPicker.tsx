@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
 import appState from "@/lib/AppState";
+import userList from "@/lib/UserList";
 
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -107,7 +108,7 @@ const CityPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            appState.setUsers(users);
+            userList.setUsers(users);
           });
 
           // check if country was changed, if so update myProfileStae.countryName

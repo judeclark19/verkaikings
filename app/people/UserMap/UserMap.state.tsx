@@ -43,6 +43,7 @@ class UserMapState {
 
   initializeMap(mapContainer: HTMLElement) {
     if (!window.google) return;
+    console.log("Initializing map...");
 
     const map = new window.google.maps.Map(mapContainer, {
       center: { lat: 20, lng: 0 },

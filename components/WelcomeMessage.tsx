@@ -6,6 +6,7 @@ import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
 import { DocumentData } from "firebase/firestore";
 import UserListItem from "@/app/people/UserListItem";
+import userList from "@/lib/UserList";
 
 const WelcomeMessage = observer(
   ({ isLoggedIn, email }: { isLoggedIn: boolean; email: string | null }) => {
@@ -13,12 +14,13 @@ const WelcomeMessage = observer(
 
     useEffect(() => {
       appState.waitForInitialization();
+      if (!userList.users.length) return;
 
       const userToSet =
-        appState.users.find((user) => user.email === email) || null;
+        userList.users.find((user) => user.email === email) || null;
 
       setLoggedInUser(userToSet);
-    }, [appState.isInitialized]);
+    }, [appState.isInitialized, userList.users]);
 
     if (isLoggedIn)
       return (

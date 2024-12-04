@@ -4,9 +4,10 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import { Skeleton, Typography } from "@mui/material";
 import ByCity from "./ByCity";
+import userList from "@/lib/UserList";
 
 const ByLocation = observer(() => {
-  const countries = Object.keys(appState.usersByCountry);
+  const countries = Object.keys(userList.usersByCountry);
 
   return (
     <>
@@ -16,7 +17,7 @@ const ByLocation = observer(() => {
           {countries.map((countryAbbr) => {
             // putting "No city listed" at the end of the list
             const cityIds = Object.keys(
-              appState.usersByCountry[countryAbbr].cities
+              userList.usersByCountry[countryAbbr].cities
             );
             const sortedCityIds = cityIds.filter(
               (id) => id !== "No city listed"
@@ -27,7 +28,7 @@ const ByLocation = observer(() => {
             const orderedCityIds = [...sortedCityIds, ...noCityListedId];
 
             const countryName =
-              appState.usersByCountry[countryAbbr].countryName;
+              userList.usersByCountry[countryAbbr].countryName;
 
             return (
               <div key={countryAbbr}>
