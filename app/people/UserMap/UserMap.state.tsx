@@ -24,8 +24,6 @@ class UserMapState {
     this.usersWithCity = users.filter((user) => user.cityId);
     this.cityNames = cityNames;
 
-    console.log("user map constructor");
-
     // INIT MAP ITEMS
     Object.keys(userList.usersByCountry).forEach((country) => {
       const countryObject = userList.usersByCountry[country];
