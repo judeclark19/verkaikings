@@ -3,7 +3,7 @@ import { DocumentData } from "firebase/firestore";
 import React from "react";
 import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
-  Email as EmailIcon,
+  // Email as EmailIcon,
   Instagram as InstagramIcon
 } from "@mui/icons-material";
 import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
@@ -20,7 +20,8 @@ function SocialsList({ user }: { user: DocumentData }) {
       <Typography variant="h3" sx={{ textAlign: "center", marginTop: 0 }}>
         Socials
       </Typography>
-      <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} />
+
+      {/* <ReadOnlyContactItem value={user.email} icon={<EmailIcon />} /> */}
 
       {user.instagram && (
         <ReadOnlyContactItem
