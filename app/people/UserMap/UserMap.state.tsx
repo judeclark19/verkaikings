@@ -40,11 +40,6 @@ class UserMapState {
   }
 
   initializeMap(mapContainer: HTMLElement) {
-    if (this.map) {
-      console.log("Map is already initialized.");
-      return;
-    }
-
     if (!window.google) return;
     console.log("Initializing map...");
 
@@ -73,6 +68,7 @@ class UserMapState {
             ) {
               appState.cityNames[mapItem.cityId] = place.name || "";
               appState.saveToLocalStorage();
+              console.log("$$$ Creating marker from API:", place);
               this.createMarker(place, mapItem);
             } else {
               console.error("Place details could not be retrieved:", status);
