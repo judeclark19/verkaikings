@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, Divider, Paper, Typography } from "@mui/material";
 import {
   City,
   Country,
@@ -20,6 +20,7 @@ import {
   NameEditingModal,
   PasswordChangeModal
 } from "./components";
+import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { db } from "@/lib/firebase";
@@ -57,6 +58,15 @@ const MyProfile = observer(() => {
 
   return (
     <>
+      {/* Back button */}
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<ArrowBackIcon />}
+        onClick={() => window.history.back()}
+      >
+        Go Back
+      </Button>
       <Box
         sx={{
           display: "flex",
