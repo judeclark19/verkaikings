@@ -38,8 +38,12 @@ const ByLocation = observer(() => {
             width: "100%"
           }}
         >
-          {countries.map((countryAbbr) => (
-            <ByCountry key={countryAbbr} countryAbbr={countryAbbr} />
+          {countries.map((countryAbbr, i) => (
+            <ByCountry
+              key={countryAbbr}
+              countryAbbr={countryAbbr}
+              titleColor={i % 2 === 0 ? "primary.dark" : "secondary.dark"}
+            />
           ))}
         </Box>
       ) : (

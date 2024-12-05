@@ -47,7 +47,12 @@ const ByName = observer(() => {
             width: "100%",
             py: 0,
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            // gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+
+            gridTemplateColumns: {
+              sx: "repeat(auto-fill,  1fr)",
+              sm: "repeat(auto-fill, minmax(300px, 1fr))"
+            },
 
             gap: 1
           }}

@@ -22,7 +22,8 @@ const ByMonth = observer(({ month }: { month: string }) => {
         variant="h2"
         sx={{
           textAlign: "center",
-          marginTop: 0
+          marginTop: 0,
+          color: parseInt(month) % 2 !== 0 ? "primary.dark" : "secondary.dark"
         }}
       >
         {getMonthName(parseInt(month), navigator.language || "en")}

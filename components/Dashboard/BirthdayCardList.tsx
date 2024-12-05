@@ -2,7 +2,6 @@ import UserListItem from "@/app/people/UserListItem";
 import { formatBirthday2digit } from "@/lib/clientUtils";
 import { Box, List, Typography } from "@mui/material";
 import { DocumentData } from "firebase/firestore";
-import React from "react";
 
 function BirthdayCardList({
   users,
@@ -27,7 +26,7 @@ function BirthdayCardList({
           width: "fit-content",
           maxWidth: 360,
           margin: "auto",
-          bgcolor: "background.paper"
+          padding: 0
         }}
       >
         {users.length > 0 &&
@@ -44,15 +43,20 @@ function BirthdayCardList({
                 }}
                 key={user.username}
               >
-                <UserListItem user={user} />
+                <div
+                  style={{
+                    backgroundColor: "rgb(18, 18, 18)"
+                  }}
+                >
+                  <UserListItem user={user} />
+                </div>
                 <div
                   style={{
                     whiteSpace: "nowrap",
                     paddingRight: "1rem"
                   }}
                 >
-                  {" "}
-                  - {formatBirthday2digit(user.birthday)}
+                  &nbsp; - {formatBirthday2digit(user.birthday)}
                 </div>
               </Box>
             ))}

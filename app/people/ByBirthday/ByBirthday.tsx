@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import ByMonth from "./ByMonth";
@@ -19,10 +19,13 @@ const ByBirthday = observer(() => {
       </Typography>
       {appState.isInitialized &&
       Object.keys(userList.usersByBirthday).length > 0 ? (
-        <div
-          style={{
+        <Box
+          sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gridTemplateColumns: {
+              sx: "repeat(auto-fill,  1fr)",
+              sm: "repeat(auto-fill, minmax(300px, 1fr))"
+            },
 
             gap: "1rem"
           }}
@@ -32,7 +35,7 @@ const ByBirthday = observer(() => {
             .map((month) => (
               <ByMonth key={month} month={month} />
             ))}
-        </div>
+        </Box>
       ) : (
         <Skeleton
           variant="rectangular"

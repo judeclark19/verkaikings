@@ -5,7 +5,15 @@ import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 
 const ByCity = observer(
-  ({ countryAbbr, cityId }: { countryAbbr: string; cityId: string }) => {
+  ({
+    countryAbbr,
+    cityId,
+    titleColor
+  }: {
+    countryAbbr: string;
+    cityId: string;
+    titleColor: "primary.dark" | "secondary.dark";
+  }) => {
     return (
       <Paper
         elevation={8}
@@ -25,7 +33,8 @@ const ByCity = observer(
               variant="h3"
               sx={{
                 textAlign: "center",
-                marginTop: 0
+                marginTop: 0,
+                color: titleColor
               }}
             >
               {cityId === "No city listed" ? (

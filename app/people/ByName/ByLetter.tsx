@@ -20,7 +20,7 @@ function ByLetter({
       key={letter}
       sx={{
         width: "100%",
-        height: "100%",
+        height: "fit-content",
         padding: "4px"
       }}
     >
@@ -36,7 +36,10 @@ function ByLetter({
           <ListSubheader
             sx={{
               backgroundColor: "transparent",
-              color: "text.primary"
+              color:
+                letter.charCodeAt(0) % 2 !== 0
+                  ? "primary.dark"
+                  : "secondary.dark"
             }}
           >
             <Typography

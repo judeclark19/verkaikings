@@ -6,11 +6,17 @@ import userList from "@/lib/UserList";
 const ByDay = observer(({ day, month }: { day: string; month: string }) => {
   return (
     <div key={day}>
-      <Typography variant="h3">{day}</Typography>
+      <Typography
+        variant="h3"
+        sx={{
+          color: parseInt(day) % 2 !== 0 ? "primary.dark" : "secondary.dark"
+        }}
+      >
+        {day}
+      </Typography>
       <List
         sx={{
           width: "100%",
-          maxWidth: 360,
           bgcolor: "background.paper",
           padding: 0
         }}
