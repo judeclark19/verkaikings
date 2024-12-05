@@ -24,7 +24,7 @@ const DatePickerForm = observer(
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
 
-      if (value && !value.isValid()) {
+      if (value && (!value.isValid() || dayjs().isSame(value, "day"))) {
         setLoading(false);
         setIsEditing(false);
         return;
