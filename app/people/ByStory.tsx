@@ -19,6 +19,7 @@ const ByStory = observer(() => {
         >
           {userList.filteredUsers
             .filter((user) => user.myWillemijnStory)
+            .sort(() => Math.random() - 0.5)
             .map((user) => (
               <Card sx={{ width: 600, maxWidth: "100%" }} key={user.username}>
                 <CardContent>
