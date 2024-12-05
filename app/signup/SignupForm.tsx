@@ -24,6 +24,7 @@ import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
 import { DocumentData } from "firebase-admin/firestore";
 import PasswordInput from "@/components/PasswordInput";
+import { cleanNameString } from "@/lib/clientUtils";
 
 const SignupForm = () => {
   const [signupStage, setSignupStage] = useState<1 | 2>(1);
@@ -108,9 +109,12 @@ const SignupForm = () => {
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
 
+      const cleanedFirstName = cleanNameString(firstName);
+      const cleanedLastName = cleanNameString(lastName);
+
       try {
         await updateProfile(user, {
-          displayName: `${firstName}_${lastName}`
+          displayName: `${cleanedFirstName}_${cleanedLastName}`
         });
         console.log("Display name updated successfully");
       } catch (updateError) {
@@ -120,9 +124,9 @@ const SignupForm = () => {
 
       // create new user in firestore
       await setDoc(doc(db, "users", user.uid), {
-        firstName,
-        lastName,
-        username: `${firstName}_${lastName}`,
+        firstName: cleanedFirstName,
+        lastName: cleanedLastName,
+        username: `${cleanedFirstName}_${cleanedLastName}`,
         email,
         phoneNumber: phoneData.phone,
         countryCode: `+${phoneData.country.dialCode}`,

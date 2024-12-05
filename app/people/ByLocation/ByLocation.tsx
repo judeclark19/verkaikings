@@ -7,7 +7,16 @@ import ByCity from "./ByCity";
 import userList from "@/lib/UserList";
 
 const ByLocation = observer(() => {
-  const countries = Object.keys(userList.usersByCountry);
+  // sort by user count
+  const countries = Object.keys(userList.usersByCountry)
+    .map((countryAbbr) => ({
+      countryAbbr,
+      userCount: Object.values(
+        userList.usersByCountry[countryAbbr].cities
+      ).reduce((count, users) => count + users.length, 0)
+    }))
+    .sort((a, b) => b.userCount - a.userCount)
+    .map((item) => item.countryAbbr);
 
   return (
     <>

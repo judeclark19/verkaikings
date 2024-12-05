@@ -115,3 +115,11 @@ export function isPhoneValid(phone: string) {
     return false;
   }
 }
+
+export function cleanNameString(input: string) {
+  return input
+    .trim() // Remove leading and trailing spaces
+    .normalize("NFD") // Normalize string to decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove the accents
+    .replace(/\s+/g, "_"); // Replace internal spaces with underscores
+}

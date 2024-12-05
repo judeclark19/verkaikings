@@ -5,6 +5,7 @@ import myProfileState from "../../MyProfile.state";
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
+import { cleanNameString } from "@/lib/clientUtils";
 
 const NameEditingForm = observer(
   ({ closeModal }: { closeModal: () => void }) => {
@@ -20,11 +21,14 @@ const NameEditingForm = observer(
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
 
+      const cleanedFirstName = cleanNameString(firstName);
+      const cleanedLastName = cleanNameString(lastName);
+
       try {
         // Update Firestore user document
         await updateDoc(userDoc, {
-          firstName: firstName,
-          lastName: lastName,
+          firstName: cleanedFirstName,
+          lastName: cleanedLastName,
           username: username
         });
 
@@ -32,7 +36,7 @@ const NameEditingForm = observer(
         const user = auth.currentUser; // Ensure `auth` is imported from Firebase
         if (user) {
           await updateProfile(user, {
-            displayName: `${firstName} ${lastName}`
+            displayName: `${cleanedFirstName} ${lastName}`
           });
           console.log("Firebase displayName updated successfully");
         }
@@ -47,7 +51,9 @@ const NameEditingForm = observer(
     };
 
     useEffect(() => {
-      setUsername(`${firstName}_${lastName}`);
+      const cleanedFirstName = cleanNameString(firstName);
+      const cleanedLastName = cleanNameString(lastName);
+      setUsername(`${cleanedFirstName}_${cleanedLastName}`);
     }, [firstName, lastName]);
 
     return (
