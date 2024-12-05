@@ -98,7 +98,7 @@ const NavbarUI = observer(
                 textDecoration: "none"
               }}
             >
-              Willemijn&apos;s World
+              Verkaikings Society
             </Typography>
             <Box
               sx={{
