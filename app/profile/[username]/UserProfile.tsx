@@ -10,7 +10,7 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Avatar, Box, Paper, Typography } from "@mui/material";
+import { Avatar, Box, Button, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
@@ -18,7 +18,8 @@ import { ProfileSkeleton, ReadOnlyContactItem } from "../components";
 import {
   AccountCircle as AccountCircleIcon,
   Cake as CakeIcon,
-  Public as PublicIcon
+  Public as PublicIcon,
+  ArrowBack as ArrowBackIcon
 } from "@mui/icons-material";
 import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import { getEmojiFlag } from "countries-list";
@@ -85,6 +86,15 @@ const UserProfile = ({
 
   return (
     <>
+      {/* back button */}
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<ArrowBackIcon />}
+        onClick={() => window.history.back()}
+      >
+        Go Back
+      </Button>
       <Box
         sx={{
           display: "flex",
