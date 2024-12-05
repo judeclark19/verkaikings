@@ -13,7 +13,7 @@ const ByStory = observer(() => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
+            flexWrap: "wrap",
             gap: 2
           }}
         >

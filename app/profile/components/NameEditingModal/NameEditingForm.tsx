@@ -21,14 +21,11 @@ const NameEditingForm = observer(
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
 
-      const cleanedFirstName = cleanNameString(firstName);
-      const cleanedLastName = cleanNameString(lastName);
-
       try {
         // Update Firestore user document
         await updateDoc(userDoc, {
-          firstName: cleanedFirstName,
-          lastName: cleanedLastName,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
           username: username
         });
 
@@ -36,7 +33,9 @@ const NameEditingForm = observer(
         const user = auth.currentUser; // Ensure `auth` is imported from Firebase
         if (user) {
           await updateProfile(user, {
-            displayName: `${cleanedFirstName} ${lastName}`
+            displayName: `${cleanNameString(firstName)}_${cleanNameString(
+              lastName
+            )}`
           });
           console.log("Firebase displayName updated successfully");
         }
@@ -51,9 +50,7 @@ const NameEditingForm = observer(
     };
 
     useEffect(() => {
-      const cleanedFirstName = cleanNameString(firstName);
-      const cleanedLastName = cleanNameString(lastName);
-      setUsername(`${cleanedFirstName}_${cleanedLastName}`);
+      setUsername(`${cleanNameString(firstName)}_${cleanNameString(lastName)}`);
     }, [firstName, lastName]);
 
     return (

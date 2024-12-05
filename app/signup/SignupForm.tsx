@@ -109,12 +109,11 @@ const SignupForm = () => {
       const token = await user.getIdToken();
       Cookies.set("authToken", token, { expires: 1 });
 
-      const cleanedFirstName = cleanNameString(firstName);
-      const cleanedLastName = cleanNameString(lastName);
-
       try {
         await updateProfile(user, {
-          displayName: `${cleanedFirstName}_${cleanedLastName}`
+          displayName: `${cleanNameString(firstName)}_${cleanNameString(
+            lastName
+          )}`
         });
         console.log("Display name updated successfully");
       } catch (updateError) {
@@ -124,9 +123,9 @@ const SignupForm = () => {
 
       // create new user in firestore
       await setDoc(doc(db, "users", user.uid), {
-        firstName: cleanedFirstName,
-        lastName: cleanedLastName,
-        username: `${cleanedFirstName}_${cleanedLastName}`,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        username: `${cleanNameString(firstName)}_${cleanNameString(lastName)}`,
         email,
         phoneNumber: phoneData.phone,
         countryCode: `+${phoneData.country.dialCode}`,
