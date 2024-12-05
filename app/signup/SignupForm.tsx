@@ -62,7 +62,6 @@ const SignupForm = () => {
 
     fetchPhoneNumbers()
       .then((phoneNumbers) => {
-        console.log("phoneNumbers", phoneNumbers);
         setPhoneNumbers(phoneNumbers);
       })
       .catch((err) => {

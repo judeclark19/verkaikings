@@ -119,6 +119,15 @@ export const MuiPhone: React.FC<MUIPhoneProps> = ({
                 }}
                 value={disabled ? disabledCountry : country.iso2}
                 disabled={disabled} // Disable country selection to make it read-only
+                onChange={(event) => {
+                  const selectedCountryIso2 = event.target.value;
+                  const selectedCountry = defaultCountries.find(
+                    (c) => parseCountry(c).iso2 === selectedCountryIso2
+                  );
+                  if (selectedCountry) {
+                    setCountry(selectedCountry[1]); // Update the country
+                  }
+                }}
                 renderValue={(value) => (
                   <FlagImage iso2={value} style={{ display: "flex" }} />
                 )}
