@@ -44,7 +44,7 @@ function DrawerUI({
   return (
     <Box onClick={handleDrawerToggle}>
       <Typography variant="h3" sx={{ my: 2, ml: 2 }}>
-        Willemijn&apos;s World
+        Verkaikings Society
       </Typography>
       <ListStyle>
         {navLinks
