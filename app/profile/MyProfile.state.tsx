@@ -12,6 +12,7 @@ class MyProfileState {
   countryName: string | null = null;
   email: string | null = null;
   instagram: string | null = null;
+  tiktok: string | null = null;
   duolingo: string | null = null;
   beReal: string | null = null;
   pronouns: string | null = null;
@@ -32,6 +33,7 @@ class MyProfileState {
     this.setCountryName(user.countryAbbr);
     this.setEmail(user.email);
     this.setInstagram(user.instagram);
+    this.setTiktok(user.tiktok);
     this.setDuolingo(user.duolingo);
     this.setBeReal(user.beReal);
     this.setPronouns(user.pronouns);
@@ -83,6 +85,10 @@ class MyProfileState {
     this.instagram = instagram;
   }
 
+  setTiktok(tiktok: string | null) {
+    this.tiktok = tiktok;
+  }
+
   setDuolingo(duolingo: string | null) {
     this.duolingo = duolingo;
   }
@@ -107,6 +113,7 @@ class MyProfileState {
     this.setCountryAbbr(null);
     this.setCountryName(null);
     this.setInstagram(null);
+    this.setTiktok(null);
     this.setEmail(null);
     this.setDuolingo(null);
     this.setBeReal(null);

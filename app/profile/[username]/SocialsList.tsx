@@ -8,6 +8,7 @@ import {
 } from "@mui/icons-material";
 import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
 import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
+import TikTokIcon from "../../../public/images/icons8-tiktok-24.svg";
 
 function SocialsList({ user }: { user: DocumentData }) {
   return (
@@ -28,6 +29,21 @@ function SocialsList({ user }: { user: DocumentData }) {
           value={user.instagram}
           icon={<InstagramIcon />}
           link={`https://instagram.com/${user.instagram}`}
+        />
+      )}
+
+      {user.tiktok && (
+        <ReadOnlyContactItem
+          value={user.tiktok}
+          icon={
+            <TikTokIcon
+              size={24}
+              style={{
+                flexShrink: 0
+              }}
+            />
+          }
+          link={`https://www.tiktok.com/@${user.tiktok}`}
         />
       )}
 
