@@ -9,7 +9,14 @@ import userList from "@/lib/UserList";
 const ByBirthday = observer(() => {
   return (
     <>
-      <Typography variant="h1">List of Birthdays</Typography>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        List of Birthdays
+      </Typography>
       {appState.isInitialized &&
       Object.keys(userList.usersByBirthday).length > 0 ? (
         <div

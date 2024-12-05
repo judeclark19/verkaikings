@@ -29,7 +29,14 @@ const UserMap = observer(() => {
 
   return (
     <>
-      <Typography variant="h1">Map of Verkaikings</Typography>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        Map of Verkaikings
+      </Typography>
       <div
         style={{
           position: "relative"

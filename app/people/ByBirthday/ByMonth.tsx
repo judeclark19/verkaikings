@@ -14,7 +14,8 @@ const ByMonth = observer(({ month }: { month: string }) => {
       elevation={8}
       color="secondary"
       sx={{
-        padding: 2
+        padding: 2,
+        height: "fit-content"
       }}
     >
       <Typography

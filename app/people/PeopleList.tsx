@@ -15,7 +15,7 @@ import {
   TextField,
   InputAdornment
 } from "@mui/material";
-import ByName from "./ByName";
+import ByName from "./ByName/ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";

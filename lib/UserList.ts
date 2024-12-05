@@ -95,17 +95,10 @@ export class UserList {
 
   setQuery(query: string) {
     this.query = query;
-    // this.filterUsersByQuery(query);
   }
 
   filterUsersByQuery(query: string, includeStory?: boolean) {
-    const fieldsToSearch = [
-      "firstName",
-      "lastName",
-      "username",
-      "email",
-      "phoneNumber"
-    ];
+    const fieldsToSearch = ["firstName", "lastName", "username", "phoneNumber"];
 
     if (includeStory) {
       fieldsToSearch.push("myWillemijnStory");

@@ -3,42 +3,90 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import UserListItem from "./UserListItem";
 import userList from "@/lib/UserList";
+import { DocumentData } from "firebase/firestore";
+
+const Column = ({ users }: { users: DocumentData[] }) => {
+  return (
+    <Box
+      sx={{
+        maxWidth: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2
+      }}
+    >
+      {users.map((user) => (
+        <Card
+          sx={{
+            width: 600,
+            maxWidth: "100%"
+          }}
+          key={user.username}
+        >
+          <CardContent>
+            <UserListItem user={user} />
+            <Typography
+              sx={{
+                marginTop: 1
+              }}
+            >
+              {user.myWillemijnStory}
+            </Typography>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
+  );
+};
 
 const ByStory = observer(() => {
+  const users = userList.filteredUsers
+    .filter((user) => user.myWillemijnStory)
+    .sort(() => Math.random() - 0.5);
+
+  // split into 2 columns
+  const half = Math.ceil(users.length / 2);
+  const column1 = users.slice(0, half);
+  const column2 = users.slice(half);
+
   return (
-    <div>
-      <Typography variant="h1">Willemijn Stories</Typography>
+    <>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        Willemijn Stories
+      </Typography>
+
+      <Typography
+        variant="h3"
+        sx={{
+          textAlign: "center",
+          mb: 6
+        }}
+      >
+        How we became her fans
+      </Typography>
 
       {userList.users && appState.isInitialized ? (
         <Box
           sx={{
             display: "flex",
             flexWrap: "wrap",
-            gap: 2
+            gap: 2,
+            justifyContent: "center"
           }}
         >
-          {userList.filteredUsers
-            .filter((user) => user.myWillemijnStory)
-            .sort(() => Math.random() - 0.5)
-            .map((user) => (
-              <Card sx={{ width: 600, maxWidth: "100%" }} key={user.username}>
-                <CardContent>
-                  <UserListItem user={user} />
-                  <Typography
-                    sx={{
-                      marginTop: 1
-                    }}
-                  >
-                    {user.myWillemijnStory}
-                  </Typography>
-                </CardContent>
-              </Card>
-            ))}
+          <Column users={column1} />
+
+          <Column users={column2} />
         </Box>
       ) : (
-        <Skeleton variant="rectangular" width="600px" height="70vh" />
+        <Skeleton variant="rectangular" width="600px" height="100vh" />
       )}
-    </div>
+    </>
   );
 });
 

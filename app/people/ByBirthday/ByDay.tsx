@@ -11,7 +11,8 @@ const ByDay = observer(({ day, month }: { day: string; month: string }) => {
         sx={{
           width: "100%",
           maxWidth: 360,
-          bgcolor: "background.paper"
+          bgcolor: "background.paper",
+          padding: 0
         }}
       >
         {userList.usersByBirthday[month][day].map((user) => (

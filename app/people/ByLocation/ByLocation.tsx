@@ -2,12 +2,12 @@
 
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
-import { Skeleton, Typography } from "@mui/material";
-import ByCity from "./ByCity";
+import { Box, Skeleton, Typography } from "@mui/material";
 import userList from "@/lib/UserList";
+import ByCountry from "./ByCountry";
 
 const ByLocation = observer(() => {
-  // sort by user count
+  // Sort countries by user count
   const countries = Object.keys(userList.usersByCountry)
     .map((countryAbbr) => ({
       countryAbbr,
@@ -20,47 +20,41 @@ const ByLocation = observer(() => {
 
   return (
     <>
-      <Typography variant="h1">List of users by country</Typography>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        List of users by country and city
+      </Typography>
       {appState.isInitialized ? (
-        <div>
-          {countries.map((countryAbbr) => {
-            // putting "No city listed" at the end of the list
-            const cityIds = Object.keys(
-              userList.usersByCountry[countryAbbr].cities
-            );
-            const sortedCityIds = cityIds.filter(
-              (id) => id !== "No city listed"
-            );
-            const noCityListedId = cityIds.includes("No city listed")
-              ? ["No city listed"]
-              : [];
-            const orderedCityIds = [...sortedCityIds, ...noCityListedId];
-
-            const countryName =
-              userList.usersByCountry[countryAbbr].countryName;
-
-            return (
-              <div key={countryAbbr}>
-                <Typography variant="h2">{countryName}</Typography>
-                {orderedCityIds.map((cityId) => {
-                  return (
-                    <ByCity
-                      key={cityId}
-                      countryAbbr={countryAbbr}
-                      cityId={cityId}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+            justifyContent: "center",
+            width: "100%"
+          }}
+        >
+          {countries.map((countryAbbr) => (
+            <ByCountry key={countryAbbr} countryAbbr={countryAbbr} />
+          ))}
+        </Box>
       ) : (
         <Skeleton
           variant="rectangular"
-          width="360px"
-          height="70vh"
-          sx={{ borderRadius: 1 }}
+          width="1016px"
+          sx={{
+            margin: "auto",
+            maxWidth: "100%",
+            borderRadius: 1,
+            height: {
+              xs: "650px",
+              md: "350px"
+            }
+          }}
         />
       )}
     </>

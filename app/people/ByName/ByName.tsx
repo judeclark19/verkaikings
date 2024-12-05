@@ -1,17 +1,10 @@
 "use client";
 
-import {
-  Alert,
-  List,
-  ListSubheader,
-  Skeleton,
-  Typography
-} from "@mui/material";
-import UserListItem from "./UserListItem";
+import { Alert, List, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
-import { DocumentData } from "firebase/firestore";
+import ByLetter from "./ByLetter";
 
 const ByName = observer(() => {
   const groupedUsers = userList.filteredUsers
@@ -28,7 +21,14 @@ const ByName = observer(() => {
 
   return (
     <div>
-      <Typography variant="h1">List of People Alphabetically</Typography>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center"
+        }}
+      >
+        List of People Alphabetically
+      </Typography>
 
       {appState.isInitialized && userList.filteredUsers.length === 0 && (
         <Alert
@@ -45,38 +45,30 @@ const ByName = observer(() => {
         <List
           sx={{
             width: "100%",
-            maxWidth: 360,
-            bgcolor: "background.paper",
-            py: 0
+            py: 0,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+
+            gap: 1
           }}
         >
           {Object.keys(groupedUsers).map((letter) => (
-            <li key={letter}>
-              <ul
-                style={{
-                  padding: 0
-                }}
-              >
-                <ListSubheader
-                  sx={{
-                    backgroundColor: "background.default"
-                  }}
-                >
-                  {letter}
-                </ListSubheader>
-                {groupedUsers[letter].map((user: DocumentData) => (
-                  <UserListItem key={user.username} user={user} />
-                ))}
-              </ul>
-            </li>
+            <ByLetter
+              key={letter}
+              letter={letter}
+              groupedUsers={groupedUsers}
+            />
           ))}
         </List>
       ) : (
         <Skeleton
           variant="rectangular"
-          width="360px"
-          height="70vh"
-          sx={{ borderRadius: 1 }}
+          width="100%"
+          height="100vh"
+          sx={{
+            borderRadius: 1,
+            maxWidth: "100%"
+          }}
         />
       )}
     </div>
