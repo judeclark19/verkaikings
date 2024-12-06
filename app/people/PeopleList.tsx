@@ -58,6 +58,7 @@ const PeopleList = observer(() => {
     } else {
       setSearchPlaceholderText("Search users...");
     }
+    userList.filterUsersByQuery(userList.query, viewingBy);
   }, [viewingBy]);
 
   const handleViewChange = (view: PeopleViews) => {
