@@ -1,6 +1,7 @@
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Skeleton,
@@ -11,6 +12,7 @@ import appState from "@/lib/AppState";
 import UserListItem from "./UserListItem";
 import userList from "@/lib/UserList";
 import { DocumentData } from "firebase/firestore";
+import { PeopleViews } from "./PeopleList";
 
 const Column = ({ users }: { users: DocumentData[] }) => {
   return (
@@ -56,10 +58,6 @@ const ByStory = observer(() => {
   const column1 = users.slice(0, half);
   const column2 = users.slice(half);
 
-  if (!appState.isInitialized) {
-    <Skeleton variant="rectangular" width="600px" height="100vh" />;
-  }
-
   return (
     <>
       <Typography
@@ -81,7 +79,41 @@ const ByStory = observer(() => {
         How we became her fans
       </Typography>
 
-      {users.length > 0 ? (
+      {!appState.isInitialized && (
+        <Skeleton variant="rectangular" width="100%" height="100vh" />
+      )}
+
+      {userList.query && (
+        <Alert
+          sx={{
+            my: 2,
+            display: "flex",
+            alignItems: "center"
+          }}
+          severity={users.length === 0 ? "error" : "info"}
+        >
+          {users.length === 0
+            ? `No users or stories found with `
+            : `Showing results for `}
+          the search query: &ldquo;
+          {userList.query}&rdquo;.
+          <Button
+            onClick={() => {
+              userList.setQuery("");
+              userList.filterUsersByQuery("", PeopleViews.STORY);
+            }}
+            sx={{
+              ml: 2
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Clear search
+          </Button>
+        </Alert>
+      )}
+
+      {users.length > 0 && (
         <Box
           sx={{
             display: "flex",
@@ -94,16 +126,6 @@ const ByStory = observer(() => {
 
           <Column users={column2} />
         </Box>
-      ) : (
-        <Alert
-          sx={{
-            mt: 2
-          }}
-          severity="info"
-        >
-          No users or stories found with the search query: &ldquo;
-          {userList.query}&rdquo;.
-        </Alert>
       )}
     </>
   );

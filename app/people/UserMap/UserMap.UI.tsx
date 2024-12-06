@@ -1,8 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
-import { Alert, Skeleton, Typography } from "@mui/material";
+import { Alert, Button, Skeleton, Typography } from "@mui/material";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
+import { PeopleViews } from "../PeopleList";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,15 @@ const UserMap = observer(() => {
     initialize();
   }, [appState.userMap]);
 
+  const clearSearch = () => {
+    userList.setQuery("");
+    userList.filterUsersByQuery("", PeopleViews.MAP);
+  };
+
+  const hasQuery = !!userList.query;
+  const hasVisibleMarkers =
+    appState.userMap && appState.userMap.visibleMarkerCount > 0;
+
   return (
     <>
       <Typography
@@ -47,6 +57,33 @@ const UserMap = observer(() => {
       >
         Showing users who have added a city to their profile
       </Typography>
+
+      {hasQuery && (
+        <Alert
+          severity={hasVisibleMarkers ? "info" : "error"}
+          sx={{
+            mb: 2,
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          {hasVisibleMarkers
+            ? `Showing results for `
+            : `No users to show based on `}
+          the query &ldquo;{userList.query}&rdquo;.
+          <Button
+            onClick={clearSearch}
+            sx={{
+              ml: 2
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Clear search
+          </Button>
+        </Alert>
+      )}
+
       <div
         style={{
           position: "relative"
@@ -62,24 +99,6 @@ const UserMap = observer(() => {
         >
           <Skeleton variant="rectangular" width="100%" height="100%" />
         </div>
-
-        {appState.userMap && appState.userMap.visibleMarkerCount === 0 && (
-          <Alert
-            severity="info"
-            sx={{
-              position: "absolute",
-              top: 0,
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1000
-            }}
-          >
-            No users to show based on the query &ldquo;{userList.query}&rdquo;.
-          </Alert>
-        )}
       </div>
     </>
   );
