@@ -2,9 +2,10 @@
 
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
-import { Alert, Box, Skeleton, Typography } from "@mui/material";
+import { Alert, Box, Button, Skeleton, Typography } from "@mui/material";
 import userList from "@/lib/UserList";
 import ByCountry from "./ByCountry";
+import { PeopleViews } from "../PeopleList";
 
 const ByLocation = observer(() => {
   // Sort countries by user count
@@ -29,25 +30,6 @@ const ByLocation = observer(() => {
     }
   });
 
-  if (!appState.isInitialized) {
-    // Render Skeleton while loading
-    return (
-      <Skeleton
-        variant="rectangular"
-        width="1016px"
-        sx={{
-          margin: "auto",
-          maxWidth: "100%",
-          borderRadius: 1,
-          height: {
-            xs: "650px",
-            md: "350px"
-          }
-        }}
-      />
-    );
-  }
-
   return (
     <>
       <Typography
@@ -58,7 +40,54 @@ const ByLocation = observer(() => {
       >
         List of users by country and city
       </Typography>
-      {countries.length > 0 ? (
+
+      {!appState.isInitialized && (
+        <Skeleton
+          variant="rectangular"
+          width="1016px"
+          sx={{
+            margin: "auto",
+            maxWidth: "100%",
+            borderRadius: 1,
+            height: {
+              xs: "650px",
+              md: "350px"
+            }
+          }}
+        />
+      )}
+
+      {userList.query && (
+        <Alert
+          sx={{
+            my: 2,
+            display: "flex",
+            alignItems: "center"
+          }}
+          severity={countries.length === 0 ? "error" : "info"}
+        >
+          {countries.length === 0
+            ? `No users found with `
+            : `Showing results for `}
+          the search query: &ldquo;
+          {userList.query}&rdquo;.
+          <Button
+            onClick={() => {
+              userList.setQuery("");
+              userList.filterUsersByQuery("", PeopleViews.LOCATION);
+            }}
+            sx={{
+              ml: 2
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Clear search
+          </Button>
+        </Alert>
+      )}
+
+      {countries.length > 0 && (
         <div
           style={{
             maxWidth: "1016px",
@@ -132,15 +161,6 @@ const ByLocation = observer(() => {
             </Box>
           </Box>
         </div>
-      ) : (
-        <Alert
-          sx={{
-            mt: 2
-          }}
-          severity="info"
-        >
-          No users found with the search query: &ldquo;{userList.query}&rdquo;.
-        </Alert>
       )}
     </>
   );

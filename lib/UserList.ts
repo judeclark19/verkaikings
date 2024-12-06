@@ -99,13 +99,13 @@ export class UserList {
   }
 
   filterUsersByQuery(query: string, viewingBy: PeopleViews) {
-    const fieldsToSearch = ["firstName", "lastName", "username", "phoneNumber"];
+    const fieldsToSearch = ["firstName", "lastName", "username"];
+    if (viewingBy === PeopleViews.NAME) {
+      fieldsToSearch.push("phoneNumber");
+    }
 
     if (viewingBy === PeopleViews.STORY) {
       fieldsToSearch.push("myWillemijnStory");
-    }
-    if (viewingBy === PeopleViews.LOCATION || viewingBy === PeopleViews.MAP) {
-      fieldsToSearch.push("cityName");
     }
 
     if (this.debounceTimeout) {
@@ -132,11 +132,26 @@ export class UserList {
         }`.trim();
         const matchesFullName = fullName.toLowerCase().includes(lowerCaseQuery);
 
-        return matchesField || matchesFullName;
+        // Check city and country names
+        const cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
+        const countryName =
+          appState.countryNames[user.countryAbbr]?.toLowerCase() || "";
+        const matchesLocation =
+          cityName.includes(lowerCaseQuery) ||
+          countryName.includes(lowerCaseQuery);
+
+        if (
+          viewingBy === PeopleViews.LOCATION ||
+          viewingBy === PeopleViews.MAP
+        ) {
+          return matchesField || matchesFullName || matchesLocation;
+        } else {
+          return matchesField || matchesFullName;
+        }
       });
 
       this.setFilteredUsers(result);
-    }, 1); // 300ms debounce
+    }, 300); // 300ms debounce
   }
 }
 
