@@ -18,6 +18,17 @@ const ByLocation = observer(() => {
     .sort((a, b) => b.userCount - a.userCount)
     .map((item) => item.countryAbbr);
 
+  const leftColumn: string[] = [];
+  const rightColumn: string[] = [];
+
+  countries.forEach((countryAbbr, i) => {
+    if (i % 2 === 0) {
+      leftColumn.push(countryAbbr);
+    } else {
+      rightColumn.push(countryAbbr);
+    }
+  });
+
   return (
     <>
       <Typography
@@ -29,23 +40,79 @@ const ByLocation = observer(() => {
         List of users by country and city
       </Typography>
       {appState.isInitialized ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-            justifyContent: "center",
-            width: "100%"
+        <div
+          style={{
+            maxWidth: "1016px",
+            margin: "auto"
           }}
         >
-          {countries.map((countryAbbr, i) => (
-            <ByCountry
-              key={countryAbbr}
-              countryAbbr={countryAbbr}
-              titleColor={i % 2 === 0 ? "primary.dark" : "secondary.dark"}
-            />
-          ))}
-        </Box>
+          <Box
+            sx={{
+              display: {
+                xs: "flex",
+                md: "none"
+              },
+              flexDirection: "column",
+              gap: 2,
+              alignItems: "center"
+            }}
+          >
+            {/* SINGLE COLUMN VIEW */}
+            {countries.map((countryAbbr, i) => (
+              <ByCountry
+                key={countryAbbr}
+                countryAbbr={countryAbbr}
+                titleColor={i % 2 === 0 ? "primary.dark" : "secondary.dark"}
+              />
+            ))}
+          </Box>
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "flex"
+              },
+              gap: 2
+            }}
+          >
+            {/* TWO COLUMN VIEW */}
+            <Box
+              sx={{
+                width: "50%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2
+              }}
+            >
+              {leftColumn.map((countryAbbr, i) => (
+                <ByCountry
+                  key={countryAbbr}
+                  countryAbbr={countryAbbr}
+                  titleColor={i % 2 === 0 ? "primary.dark" : "secondary.dark"}
+                />
+              ))}
+            </Box>
+
+            <Box
+              sx={{
+                width: "50%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2
+              }}
+            >
+              {rightColumn.map((countryAbbr, i) => (
+                <ByCountry
+                  key={countryAbbr}
+                  countryAbbr={countryAbbr}
+                  titleColor={i % 2 === 0 ? "primary.dark" : "secondary.dark"}
+                />
+              ))}
+            </Box>
+          </Box>
+        </div>
       ) : (
         <Skeleton
           variant="rectangular"
