@@ -76,26 +76,32 @@ class AppState {
     try {
       const storedCache = localStorage.getItem("placeDataCache");
 
-      if (storedCache) {
-        const parsedCache = JSON.parse(storedCache);
-
-        if (!localStorage.getItem("pdcLastUpdated")) {
-          localStorage.setItem("pdcLastUpdated", Date.now().toString());
-        }
-
-        const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
-        if (
-          Date.now() - parseInt(localStorage.getItem("pdcLastUpdated")!, 10) <=
-          threeMonthsInMs
-        ) {
-          this.cityNames = parsedCache.cityNames || {};
-          this.cityDetails = parsedCache.cityDetails || {};
-        } else {
-          localStorage.removeItem("placeDataCache"); // Clear cache after 30 days to force a fresh fetch
-        }
-      } else {
+      if (!storedCache) {
+        // Initialize the last updated time if the cache doesn't exist
         localStorage.setItem("pdcLastUpdated", Date.now().toString());
+        return;
       }
+
+      const parsedCache = JSON.parse(storedCache);
+      const lastUpdated = parseInt(
+        localStorage.getItem("pdcLastUpdated") || "0",
+        10
+      );
+      const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
+
+      if (
+        Date.now() - lastUpdated > threeMonthsInMs ||
+        !localStorage.getItem("pdcUpdate20241206")
+      ) {
+        // Clear the cache if it is older than 3 months
+        localStorage.removeItem("placeDataCache");
+        localStorage.setItem("pdcUpdate20241206", "true");
+        return;
+      }
+
+      // Load cached data
+      this.cityNames = parsedCache.cityNames || {};
+      this.cityDetails = parsedCache.cityDetails || {};
     } catch (error) {
       console.error("Error loading from localStorage:", error);
     }
@@ -115,10 +121,14 @@ class AppState {
 
   async fetchCityDetails(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
+    // const language = navigator.language || "en"; // Use browser locale or fallback to English
 
     if (cityId) {
       try {
-        const response = await fetch(`/api/getPlaceDetails?placeId=${cityId}`);
+        const language = navigator.language || "en"; // Use browser locale or fallback to English
+        const response = await fetch(
+          `/api/getPlaceDetails?placeId=${cityId}&language=${language}`
+        );
         const data = await response.json();
 
         if (data.result) {
