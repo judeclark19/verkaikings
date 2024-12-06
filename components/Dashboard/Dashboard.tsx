@@ -75,7 +75,14 @@ const Dashboard = observer(() => {
           }}
           elevation={0}
         >
-          <Typography variant="h3">Recent Birthdays</Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              color: "secondary.dark"
+            }}
+          >
+            Recent Birthdays
+          </Typography>
           <BirthdayCardList
             users={recentBirthdays}
             emptyMessage="None in the past week"
@@ -87,7 +94,14 @@ const Dashboard = observer(() => {
             gridArea: "todaysBirthdays"
           }}
         >
-          <Typography variant="h3">Today&apos;s Birthdays</Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              color: "primary.dark"
+            }}
+          >
+            Today&apos;s Birthdays
+          </Typography>
           <BirthdayCardList users={todaysBirthdays} emptyMessage="None today" />
         </Paper>
         <Paper
@@ -95,9 +109,16 @@ const Dashboard = observer(() => {
             p: 2,
             gridArea: "upcomingBirthdays"
           }}
-          elevation={3}
+          elevation={6}
         >
-          <Typography variant="h3">Upcoming Birthdays</Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              color: "secondary.dark"
+            }}
+          >
+            Upcoming Birthdays
+          </Typography>
           <BirthdayCardList
             users={upcomingBirthdays}
             emptyMessage="None within the next week"

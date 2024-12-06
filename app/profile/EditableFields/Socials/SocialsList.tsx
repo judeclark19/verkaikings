@@ -4,6 +4,7 @@ import myProfileState from "../../MyProfile.state";
 import { Email as EmailIcon } from "@mui/icons-material";
 import { Instagram, Duolingo, BeReal } from "./index";
 import EmailChangeModal from "../../components/EmailChangeModal/EmailChangeModal";
+import TikTok from "./TikTok";
 
 const SocialsList = observer(() => {
   return (
@@ -55,6 +56,7 @@ const SocialsList = observer(() => {
         <EmailChangeModal />
       </div>
       <Instagram />
+      <TikTok />
       <Duolingo />
       <BeReal />
     </Paper>

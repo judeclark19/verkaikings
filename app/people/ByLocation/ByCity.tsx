@@ -1,21 +1,42 @@
-import { List, Skeleton, Typography } from "@mui/material";
+import { List, Paper, Skeleton, Typography } from "@mui/material";
 import UserListItem from "../UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 
 const ByCity = observer(
-  ({ countryAbbr, cityId }: { countryAbbr: string; cityId: string }) => {
+  ({
+    countryAbbr,
+    cityId,
+    titleColor
+  }: {
+    countryAbbr: string;
+    cityId: string;
+    titleColor: "primary.dark" | "secondary.dark";
+  }) => {
     return (
-      <>
+      <Paper
+        elevation={8}
+        color="secondary"
+        sx={{
+          height: "fit-content"
+        }}
+      >
         {appState.isInitialized ? (
           <div
             key={cityId}
             style={{
-              marginLeft: "2rem"
+              padding: "1rem"
             }}
           >
-            <Typography variant="h3">
+            <Typography
+              variant="h3"
+              sx={{
+                textAlign: "center",
+                marginTop: 0,
+                color: titleColor
+              }}
+            >
               {cityId === "No city listed" ? (
                 "No city listed"
               ) : appState.cityNames[cityId] ? (
@@ -28,7 +49,9 @@ const ByCity = observer(
               sx={{
                 width: "100%",
                 maxWidth: 360,
-                bgcolor: "background.paper"
+                margin: "auto",
+                bgcolor: "background.paper",
+                padding: 0
               }}
             >
               {userList.usersByCountry[countryAbbr].cities[cityId].map(
@@ -46,7 +69,7 @@ const ByCity = observer(
             sx={{ borderRadius: 1 }}
           />
         )}
-      </>
+      </Paper>
     );
   }
 );

@@ -14,14 +14,16 @@ const ByMonth = observer(({ month }: { month: string }) => {
       elevation={8}
       color="secondary"
       sx={{
-        padding: 2
+        padding: 2,
+        height: "fit-content"
       }}
     >
       <Typography
         variant="h2"
         sx={{
           textAlign: "center",
-          marginTop: 0
+          marginTop: 0,
+          color: parseInt(month) % 2 !== 0 ? "primary.dark" : "secondary.dark"
         }}
       >
         {getMonthName(parseInt(month), navigator.language || "en")}

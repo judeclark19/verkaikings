@@ -64,7 +64,7 @@ const NavbarUI = observer(
     return (
       <>
         <AppBar
-          position="static"
+          position="sticky"
           sx={{
             backgroundColor: "primary.dark",
             color: "background.default"
