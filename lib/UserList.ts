@@ -1,6 +1,7 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
+import { PeopleViews } from "@/app/people/PeopleList";
 
 type CountryUsersType = {
   countryName: string;
@@ -97,11 +98,14 @@ export class UserList {
     this.query = query;
   }
 
-  filterUsersByQuery(query: string, includeStory?: boolean) {
+  filterUsersByQuery(query: string, viewingBy: PeopleViews) {
     const fieldsToSearch = ["firstName", "lastName", "username", "phoneNumber"];
 
-    if (includeStory) {
+    if (viewingBy === PeopleViews.STORY) {
       fieldsToSearch.push("myWillemijnStory");
+    }
+    if (viewingBy === PeopleViews.LOCATION || viewingBy === PeopleViews.MAP) {
+      fieldsToSearch.push("cityName");
     }
 
     if (this.debounceTimeout) {
@@ -132,7 +136,7 @@ export class UserList {
       });
 
       this.setFilteredUsers(result);
-    }, 300); // 300ms debounce
+    }, 1); // 300ms debounce
   }
 }
 

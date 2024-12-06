@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Alert, Box, Skeleton, Typography } from "@mui/material";
 import userList from "@/lib/UserList";
 import ByCountry from "./ByCountry";
 
@@ -29,6 +29,25 @@ const ByLocation = observer(() => {
     }
   });
 
+  if (!appState.isInitialized) {
+    // Render Skeleton while loading
+    return (
+      <Skeleton
+        variant="rectangular"
+        width="1016px"
+        sx={{
+          margin: "auto",
+          maxWidth: "100%",
+          borderRadius: 1,
+          height: {
+            xs: "650px",
+            md: "350px"
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <Typography
@@ -39,7 +58,7 @@ const ByLocation = observer(() => {
       >
         List of users by country and city
       </Typography>
-      {appState.isInitialized ? (
+      {countries.length > 0 ? (
         <div
           style={{
             maxWidth: "1016px",
@@ -114,19 +133,14 @@ const ByLocation = observer(() => {
           </Box>
         </div>
       ) : (
-        <Skeleton
-          variant="rectangular"
-          width="1016px"
+        <Alert
           sx={{
-            margin: "auto",
-            maxWidth: "100%",
-            borderRadius: 1,
-            height: {
-              xs: "650px",
-              md: "350px"
-            }
+            mt: 2
           }}
-        />
+          severity="info"
+        >
+          No users found with the search query: &ldquo;{userList.query}&rdquo;.
+        </Alert>
       )}
     </>
   );

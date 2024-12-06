@@ -37,6 +37,16 @@ const UserMap = observer(() => {
       >
         Map of Verkaikings
       </Typography>
+
+      <Typography
+        variant="h3"
+        sx={{
+          textAlign: "center",
+          mb: 6
+        }}
+      >
+        Showing users who have added a city to their profile
+      </Typography>
       <div
         style={{
           position: "relative"
@@ -53,7 +63,7 @@ const UserMap = observer(() => {
           <Skeleton variant="rectangular" width="100%" height="100%" />
         </div>
 
-        {appState.isInitialized && userList.filteredUsers.length === 0 && (
+        {appState.userMap && appState.userMap.visibleMarkerCount === 0 && (
           <Alert
             severity="info"
             sx={{
