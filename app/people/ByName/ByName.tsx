@@ -53,7 +53,7 @@ const ByName = observer(() => {
           severity={userList.filteredUsers.length === 0 ? "error" : "info"}
         >
           {userList.filteredUsers.length === 0
-            ? `No users or stories found with `
+            ? `No users found with `
             : `Showing results for `}
           the search query: &ldquo;
           {userList.query}&rdquo;.

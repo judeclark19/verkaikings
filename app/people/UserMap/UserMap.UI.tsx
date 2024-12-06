@@ -58,16 +58,19 @@ const UserMap = observer(() => {
         Showing users who have added a city to their profile
       </Typography>
 
-      {hasQuery && hasVisibleMarkers && (
+      {hasQuery && (
         <Alert
-          severity="info"
+          severity={hasVisibleMarkers ? "info" : "error"}
           sx={{
             mb: 2,
             display: "flex",
             alignItems: "center"
           }}
         >
-          Showing users based on the query &ldquo;{userList.query}&rdquo;.
+          {hasVisibleMarkers
+            ? `Showing results for `
+            : `No users to show based on `}
+          the query &ldquo;{userList.query}&rdquo;.
           <Button
             onClick={clearSearch}
             sx={{
@@ -96,37 +99,6 @@ const UserMap = observer(() => {
         >
           <Skeleton variant="rectangular" width="100%" height="100%" />
         </div>
-
-        {appState.userMap &&
-          appState.userMap.visibleMarkerCount === 0 &&
-          hasQuery && (
-            <Alert
-              severity="error"
-              sx={{
-                position: "absolute",
-                top: 0,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000
-              }}
-            >
-              No users to show based on the query &ldquo;{userList.query}
-              &rdquo;.
-              <Button
-                onClick={clearSearch}
-                sx={{
-                  ml: 2
-                }}
-                variant="contained"
-                color="primary"
-              >
-                Clear search
-              </Button>
-            </Alert>
-          )}
       </div>
     </>
   );
