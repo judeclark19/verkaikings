@@ -13,7 +13,8 @@ import {
   MenuItem,
   FormHelperText,
   TextField,
-  InputAdornment
+  InputAdornment,
+  IconButton
 } from "@mui/material";
 import ByName from "./ByName/ByName";
 import ByLocation from "./ByLocation/ByLocation";
@@ -23,6 +24,7 @@ import UserMap from "./UserMap/UserMap.UI";
 import ByStory from "./ByStory";
 import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
+import { ClearIcon } from "@mui/x-date-pickers/icons";
 
 export enum PeopleViews {
   NAME = "name",
@@ -60,6 +62,7 @@ const PeopleList = observer(() => {
 
   const handleViewChange = (view: PeopleViews) => {
     setViewingBy(view);
+    userList.filterUsersByQuery(userList.query, view);
   };
 
   if (loading) {
@@ -103,7 +106,7 @@ const PeopleList = observer(() => {
           {Object.values(PeopleViews).map((view) => (
             <Button
               key={view}
-              onClick={() => setViewingBy(view)}
+              onClick={() => handleViewChange(view)}
               sx={{
                 backgroundColor:
                   viewingBy === view ? "primary.main" : "primary.dark",
@@ -148,13 +151,26 @@ const PeopleList = observer(() => {
           value={userList.query}
           onChange={(e) => {
             userList.setQuery(e.target.value);
-            userList.filterUsersByQuery(e.target.value, viewingBy === "story");
+            userList.filterUsersByQuery(e.target.value, viewingBy);
           }}
           slotProps={{
             input: {
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon />
+                </InputAdornment>
+              ),
+              endAdornment: userList.query && (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="clear search"
+                    onClick={() => {
+                      userList.setQuery("");
+                      userList.filterUsersByQuery("", viewingBy);
+                    }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
                 </InputAdornment>
               )
             }

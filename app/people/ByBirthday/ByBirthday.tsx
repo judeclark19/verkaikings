@@ -1,12 +1,26 @@
 "use client";
 
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Alert, Box, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import ByMonth from "./ByMonth";
 import userList from "@/lib/UserList";
+import { useEffect, useState } from "react";
+import { toJS } from "mobx";
 
 const ByBirthday = observer(() => {
+  const [resultsCount, setResultsCount] = useState<number>(0);
+
+  useEffect(() => {
+    console.log(
+      "ByBirthday useEffect",
+      toJS(userList.usersByBirthday),
+      Object.keys(userList.usersByBirthday).length
+    );
+
+    setResultsCount(Object.keys(userList.usersByBirthday).length);
+  }, [userList.usersByBirthday]);
+
   return (
     <>
       <Typography
@@ -18,7 +32,7 @@ const ByBirthday = observer(() => {
         List of Birthdays
       </Typography>
       {appState.isInitialized &&
-      Object.keys(userList.usersByBirthday).length > 0 ? (
+      Object.keys(userList.usersByBirthday).length ? (
         <Box
           sx={{
             display: "grid",
@@ -37,6 +51,18 @@ const ByBirthday = observer(() => {
             ))}
         </Box>
       ) : (
+        <Alert
+          sx={{
+            mt: 2
+          }}
+          severity="info"
+        >
+          No birthdays found with the search query: &ldquo;{userList.query}
+          &rdquo;.
+        </Alert>
+      )}
+
+      {!appState.isInitialized && (
         <Skeleton
           variant="rectangular"
           width="100%"
