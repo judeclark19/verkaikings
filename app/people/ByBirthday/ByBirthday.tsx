@@ -5,20 +5,11 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import ByMonth from "./ByMonth";
 import userList from "@/lib/UserList";
-import { useEffect, useState } from "react";
-import { toJS } from "mobx";
+import { useEffect } from "react";
 
 const ByBirthday = observer(() => {
-  const [resultsCount, setResultsCount] = useState<number>(0);
-
   useEffect(() => {
-    console.log(
-      "ByBirthday useEffect",
-      toJS(userList.usersByBirthday),
-      Object.keys(userList.usersByBirthday).length
-    );
-
-    setResultsCount(Object.keys(userList.usersByBirthday).length);
+    console.log("ByBirthday useEffect");
   }, [userList.usersByBirthday]);
 
   if (!appState.isInitialized) {
