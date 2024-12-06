@@ -1,4 +1,11 @@
-import { Box, Card, CardContent, Skeleton, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Skeleton,
+  Typography
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import UserListItem from "./UserListItem";
@@ -49,6 +56,10 @@ const ByStory = observer(() => {
   const column1 = users.slice(0, half);
   const column2 = users.slice(half);
 
+  if (!appState.isInitialized) {
+    <Skeleton variant="rectangular" width="600px" height="100vh" />;
+  }
+
   return (
     <>
       <Typography
@@ -70,7 +81,7 @@ const ByStory = observer(() => {
         How we became her fans
       </Typography>
 
-      {userList.users && appState.isInitialized ? (
+      {users.length > 0 ? (
         <Box
           sx={{
             display: "flex",
@@ -84,7 +95,15 @@ const ByStory = observer(() => {
           <Column users={column2} />
         </Box>
       ) : (
-        <Skeleton variant="rectangular" width="600px" height="100vh" />
+        <Alert
+          sx={{
+            mt: 2
+          }}
+          severity="info"
+        >
+          No users or stories found with the search query: &ldquo;
+          {userList.query}&rdquo;.
+        </Alert>
       )}
     </>
   );

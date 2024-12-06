@@ -18,6 +18,7 @@ class UserMapState {
   markers = new Map<string, google.maps.marker.AdvancedMarkerElement>();
   infoWindows = new Map<string, google.maps.InfoWindow>();
   map: google.maps.Map | null = null;
+  visibleMarkerCount = 0; // Observable property to track visible markers
 
   constructor(users: DocumentData[], cityNames: Record<string, string>) {
     makeAutoObservable(this);
@@ -79,6 +80,7 @@ class UserMapState {
     });
 
     this.isInitialized = true;
+    this.updateVisibleMarkerCount(); // Update visible markers after initialization
   }
 
   createMarker(place: google.maps.places.PlaceResult, mapItem: MapItem) {
@@ -154,6 +156,14 @@ class UserMapState {
         marker.map = null; // Hide marker
       }
     });
+
+    this.updateVisibleMarkerCount(); // Update visible marker count after changing visibility
+  }
+
+  updateVisibleMarkerCount() {
+    this.visibleMarkerCount = Array.from(this.markers.values()).filter(
+      (marker) => marker.map === this.map
+    ).length;
   }
 }
 
