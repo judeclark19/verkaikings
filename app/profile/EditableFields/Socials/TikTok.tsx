@@ -1,5 +1,4 @@
 import { useState } from "react";
-import InstagramIcon from "@mui/icons-material/Instagram";
 import { TextField, Typography } from "@mui/material";
 import myProfileState from "../../MyProfile.state";
 import { observer } from "mobx-react-lite";
