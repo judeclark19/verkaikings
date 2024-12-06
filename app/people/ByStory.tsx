@@ -56,6 +56,10 @@ const ByStory = observer(() => {
   const column1 = users.slice(0, half);
   const column2 = users.slice(half);
 
+  if (!appState.isInitialized) {
+    <Skeleton variant="rectangular" width="600px" height="100vh" />;
+  }
+
   return (
     <>
       <Typography
@@ -77,7 +81,7 @@ const ByStory = observer(() => {
         How we became her fans
       </Typography>
 
-      {appState.isInitialized && users.length > 0 ? (
+      {users.length > 0 ? (
         <Box
           sx={{
             display: "flex",
@@ -100,10 +104,6 @@ const ByStory = observer(() => {
           No users or stories found with the search query: &ldquo;
           {userList.query}&rdquo;.
         </Alert>
-      )}
-
-      {!appState.isInitialized && (
-        <Skeleton variant="rectangular" width="600px" height="100vh" />
       )}
     </>
   );

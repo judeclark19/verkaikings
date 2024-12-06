@@ -19,6 +19,20 @@ const ByName = observer(() => {
       return groups;
     }, {} as Record<string, typeof userList.filteredUsers>);
 
+  if (!appState.isInitialized) {
+    return (
+      <Skeleton
+        variant="rectangular"
+        width="100%"
+        height="100vh"
+        sx={{
+          borderRadius: 1,
+          maxWidth: "100%"
+        }}
+      />
+    );
+  }
+
   return (
     <div>
       <Typography
@@ -30,24 +44,12 @@ const ByName = observer(() => {
         List of People Alphabetically
       </Typography>
 
-      {appState.isInitialized && userList.filteredUsers.length === 0 && (
-        <Alert
-          sx={{
-            mt: 2
-          }}
-          severity="info"
-        >
-          No users found with the search query: &ldquo;{userList.query}&rdquo;.
-        </Alert>
-      )}
-
-      {userList.users.length && appState.isInitialized ? (
+      {userList.filteredUsers.length > 0 ? (
         <List
           sx={{
             width: "100%",
             py: 0,
             display: "grid",
-            // gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
 
             gridTemplateColumns: {
               sx: "repeat(auto-fill,  1fr)",
@@ -66,15 +68,14 @@ const ByName = observer(() => {
           ))}
         </List>
       ) : (
-        <Skeleton
-          variant="rectangular"
-          width="100%"
-          height="100vh"
+        <Alert
           sx={{
-            borderRadius: 1,
-            maxWidth: "100%"
+            mt: 2
           }}
-        />
+          severity="info"
+        >
+          No users found with the search query: &ldquo;{userList.query}&rdquo;.
+        </Alert>
       )}
     </div>
   );

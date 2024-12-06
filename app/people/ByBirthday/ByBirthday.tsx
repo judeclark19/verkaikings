@@ -21,6 +21,17 @@ const ByBirthday = observer(() => {
     setResultsCount(Object.keys(userList.usersByBirthday).length);
   }, [userList.usersByBirthday]);
 
+  if (!appState.isInitialized) {
+    return (
+      <Skeleton
+        variant="rectangular"
+        width="100%"
+        height="70vh"
+        sx={{ borderRadius: 1 }}
+      />
+    );
+  }
+
   return (
     <>
       <Typography
@@ -31,8 +42,7 @@ const ByBirthday = observer(() => {
       >
         List of Birthdays
       </Typography>
-      {appState.isInitialized &&
-      Object.keys(userList.usersByBirthday).length ? (
+      {Object.keys(userList.usersByBirthday).length ? (
         <Box
           sx={{
             display: "grid",
@@ -60,15 +70,6 @@ const ByBirthday = observer(() => {
           No birthdays found with the search query: &ldquo;{userList.query}
           &rdquo;.
         </Alert>
-      )}
-
-      {!appState.isInitialized && (
-        <Skeleton
-          variant="rectangular"
-          width="100%"
-          height="70vh"
-          sx={{ borderRadius: 1 }}
-        />
       )}
     </>
   );
