@@ -38,7 +38,7 @@ const ByLocation = observer(() => {
           textAlign: "center"
         }}
       >
-        List of users by country and city
+        List of Users by Country and City
       </Typography>
 
       {!appState.isInitialized && (
@@ -87,7 +87,7 @@ const ByLocation = observer(() => {
         </Alert>
       )}
 
-      {countries.length > 0 && (
+      {appState.isInitialized && countries.length > 0 && (
         <div
           style={{
             maxWidth: "1016px",

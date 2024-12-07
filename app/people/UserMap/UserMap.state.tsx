@@ -68,7 +68,7 @@ class UserMapState {
               place?.geometry?.location
             ) {
               appState.cityNames[mapItem.cityId] = place.name || "";
-              appState.saveToLocalStorage();
+              appState.setPDCinDB();
               console.log("$$$ Creating marker from API:", place);
               this.createMarker(place, mapItem);
             } else {
