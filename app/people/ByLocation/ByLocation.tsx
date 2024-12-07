@@ -38,7 +38,7 @@ const ByLocation = observer(() => {
           textAlign: "center"
         }}
       >
-        List of users by country and city
+        List of Users by Country and City
       </Typography>
 
       {!appState.isInitialized && (
