@@ -60,6 +60,7 @@ const CityPicker = observer(
 
       // case 1: user clears the city
       if (inputRef.current!.value === "") {
+        console.log("case 1");
         setLoading(true);
         updateDoc(userDoc, {
           cityId: null
@@ -80,11 +81,13 @@ const CityPicker = observer(
 
       // case 2: user does not change the city
       if (!changedCity) {
+        console.log("case 2");
         setIsEditing(false);
         return;
       }
 
       // case 3: user changes the city
+      console.log("case 3");
       setLoading(true);
 
       // check if city is in cache

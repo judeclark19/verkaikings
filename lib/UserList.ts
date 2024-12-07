@@ -1,7 +1,6 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import { PeopleViews } from "@/app/people/PeopleList";
-import UserMap from "@/app/people/UserMap/UserMap.UI";
 import appState from "./AppState";
 
 type CountryUsersType = {
@@ -33,7 +32,7 @@ export class UserList {
   ) {
     if (!users) return;
     this.users = users;
-    this.setUsersByCountry(users, cityNames, countryNames);
+    this.setUsersByCountry(users, countryNames);
     this.setUsersByBirthday(users);
   }
 
@@ -43,20 +42,19 @@ export class UserList {
     countryNames: Record<string, string>
   ) {
     this.filteredUsers = users;
-    this.setUsersByCountry(users, cityNames, countryNames);
+    this.setUsersByCountry(users, countryNames);
     this.setUsersByBirthday(users);
     appState.userMap?.updateMarkerVisibility(users);
   }
 
   setUsersByCountry(
     users: DocumentData[],
-    cityNames: Record<string, string>,
     countryNames: Record<string, string>
   ) {
     this.usersByCountry = {};
     users.forEach((user) => {
       const countryAbbr = user.countryAbbr;
-      let cityId = user.cityId || "No city listed";
+      const cityId = user.cityId || "No city listed";
 
       if (!this.usersByCountry[countryAbbr]) {
         this.usersByCountry[countryAbbr] = {

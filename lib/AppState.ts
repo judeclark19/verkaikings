@@ -1,7 +1,7 @@
 import UserMapState from "@/app/people/UserMap/UserMap.state";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import userList from "./UserList";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
@@ -68,7 +68,7 @@ class AppState {
             const computedName = this.formatCountryNameFromISOCode(iso);
             if (computedName) {
               this.countryNames[iso] = computedName;
-              await this.saveCountryToDB(iso, language, computedName);
+              await this.saveCountryToDB(iso, computedName, language);
             }
           }
         });
@@ -77,7 +77,7 @@ class AppState {
       await Promise.all([...cityFetchPromises, ...countryFetchPromises]);
 
       // Now that cities and countries are fetched, set up the user lists
-      userList.setUsersByCountry(users, this.cityNames, this.countryNames);
+      userList.setUsersByCountry(users, this.countryNames);
       userList.setUsersByBirthday(users);
       myProfileState.init(this.loggedInUser!, userId);
       this.initUserMap();
@@ -219,7 +219,14 @@ class AppState {
     return data;
   }
 
-  async saveCityDetailsToDB(cityId: string, language: string, data: any) {
+  async saveCityDetailsToDB(
+    cityId: string,
+    language: string,
+    data: {
+      name: string;
+      details: google.maps.places.PlaceResult;
+    }
+  ) {
     const docRef = doc(db, "cities", cityId, "translations", language);
     await setDoc(docRef, {
       ...data,

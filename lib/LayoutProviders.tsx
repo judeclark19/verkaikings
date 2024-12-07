@@ -10,7 +10,6 @@ import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import appState from "./AppState";
 import userList from "./UserList";
-import { toJS } from "mobx";
 
 export default function LayoutProviders({
   children,
