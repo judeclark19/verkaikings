@@ -87,7 +87,7 @@ const ByLocation = observer(() => {
         </Alert>
       )}
 
-      {countries.length > 0 && (
+      {appState.isInitialized && countries.length > 0 && (
         <div
           style={{
             maxWidth: "1016px",
