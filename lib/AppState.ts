@@ -3,9 +3,18 @@ import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserList } from "./UserList";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 class AppState {
   isInitialized = false;
+  language: string = "en";
   userList: UserList = userList;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
@@ -29,10 +38,11 @@ class AppState {
     }
 
     this.initPromise = (async () => {
+      this.language = navigator.language || "en";
       this.userList = userList;
       this.userList.init(users);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
-      this.loadFromLocalStorage();
+      await this.loadPDCfromDB();
 
       // Fetch city names and details
       const cityIds = users.map((user) => user.cityId);
@@ -55,7 +65,7 @@ class AppState {
 
       this.userList.setUsersByCountry(users);
       this.userList.setUsersByBirthday(users);
-      this.saveToLocalStorage();
+      this.setPDCinDB();
       myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);
     })();
@@ -72,48 +82,52 @@ class AppState {
     if (this.initPromise) await this.initPromise;
   }
 
-  loadFromLocalStorage() {
+  async loadPDCfromDB() {
     try {
-      const storedCache = localStorage.getItem("placeDataCache");
+      const pdcDocRef = doc(db, "placeDataCache", this.language);
+      const pdcSnapshot = await getDoc(pdcDocRef);
 
-      if (!storedCache) {
-        // Initialize the last updated time if the cache doesn't exist
-        localStorage.setItem("pdcLastUpdated", Date.now().toString());
+      if (!pdcSnapshot.data()) {
+        setDoc(pdcDocRef, { lastUpdated: serverTimestamp() });
         return;
       }
 
-      const parsedCache = JSON.parse(storedCache);
-      const lastUpdated = parseInt(
-        localStorage.getItem("pdcLastUpdated") || "0",
-        10
-      );
+      if (!pdcSnapshot.data()?.lastUpdated) {
+        updateDoc(pdcDocRef, { lastUpdated: serverTimestamp() });
+        return;
+      }
+
       const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
 
       if (
-        Date.now() - lastUpdated > threeMonthsInMs ||
-        !localStorage.getItem("pdcUpdate20241206")
+        Date.now() - pdcSnapshot.data()!.lastUpdated.toMillis() >
+        threeMonthsInMs
       ) {
         // Clear the cache if it is older than 3 months
-        localStorage.removeItem("placeDataCache");
-        localStorage.setItem("pdcUpdate20241206", "true");
+        setDoc(pdcDocRef, { lastUpdated: serverTimestamp() });
         return;
       }
 
       // Load cached data
-      this.cityNames = parsedCache.cityNames || {};
-      this.cityDetails = parsedCache.cityDetails || {};
+      this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
+      this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
     } catch (error) {
       console.error("Error loading from localStorage:", error);
     }
   }
 
-  saveToLocalStorage() {
+  setPDCinDB() {
     try {
       const data = {
         cityNames: toJS(this.cityNames),
         cityDetails: toJS(this.cityDetails) // Save detailed location data
       };
-      localStorage.setItem("placeDataCache", JSON.stringify(data));
+
+      const pdcDocRef = doc(db, "placeDataCache", this.language);
+      updateDoc(pdcDocRef, {
+        cityNames: JSON.stringify(data.cityNames),
+        cityDetails: JSON.stringify(data.cityDetails)
+      });
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
@@ -121,13 +135,11 @@ class AppState {
 
   async fetchCityDetails(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
-    // const language = navigator.language || "en"; // Use browser locale or fallback to English
 
     if (cityId) {
       try {
-        const language = navigator.language || "en"; // Use browser locale or fallback to English
         const response = await fetch(
-          `/api/getPlaceDetails?placeId=${cityId}&language=${language}`
+          `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`
         );
         const data = await response.json();
 
@@ -138,7 +150,7 @@ class AppState {
           this.cityDetails[cityId] = data.result;
         }
 
-        this.saveToLocalStorage();
+        this.setPDCinDB();
       } catch (error) {
         console.error("Failed to fetch city details:", error);
       }
@@ -148,7 +160,7 @@ class AppState {
   }
 
   formatCountryNameFromISOCode(isoCode: string) {
-    const displayNames = new Intl.DisplayNames([navigator.language || "en"], {
+    const displayNames = new Intl.DisplayNames([this.language], {
       type: "region"
     });
     return displayNames.of(isoCode.toUpperCase());
@@ -210,7 +222,7 @@ class AppState {
         this.formatCountryNameFromISOCode(isoCode) || "";
     }
 
-    this.saveToLocalStorage();
+    this.setPDCinDB();
   }
 }
 

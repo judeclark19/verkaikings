@@ -16,7 +16,6 @@ const NameEditingForm = observer(
 
     const handleSubmit = async (e: FormEvent) => {
       e.preventDefault();
-      console.log("Form submitted");
 
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
