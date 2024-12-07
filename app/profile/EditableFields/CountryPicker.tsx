@@ -14,6 +14,7 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
 import userList from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -60,7 +61,7 @@ const CountryPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            userList.setUsers(users);
+            userList.setUsers(users, appState.cityNames, appState.countryNames);
           });
 
           console.log("Country updated");

@@ -2,11 +2,12 @@ import UserMapState from "@/app/people/UserMap/UserMap.state";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
-import userList, { UserList } from "./UserList";
+import userList from "./UserList";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 class AppState {
   isInitialized = false;
-  userList: UserList = userList;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
@@ -29,34 +30,57 @@ class AppState {
     }
 
     this.initPromise = (async () => {
-      this.userList = userList;
-      this.userList.init(users);
+      userList.init(users);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
-      this.loadFromLocalStorage();
+      const language = navigator.language || "en";
 
-      // Fetch city names and details
+      // Extract city and country arrays
       const cityIds = users.map((user) => user.cityId);
-      for (const cityId of cityIds) {
-        if (!cityId) continue;
-
-        if (!this.cityNames[cityId] || !this.cityDetails[cityId]) {
-          await this.fetchCityDetails(cityId);
-        }
-      }
-
-      // Populate country names
       const countryISOs = users.map((user) => user.countryAbbr);
-      for (const iso of countryISOs) {
-        if (!iso || this.countryNames[iso]) continue;
-        this.countryNames[iso] = this.formatCountryNameFromISOCode(
-          iso
-        ) as string;
-      }
 
-      this.userList.setUsersByCountry(users);
-      this.userList.setUsersByBirthday(users);
-      this.saveToLocalStorage();
+      // Parallel city fetches
+      const cityFetchPromises = cityIds
+        .filter((cityId): cityId is string => !!cityId)
+        .map(async (cityId) => {
+          // If we already have data, skip
+          if (this.cityNames[cityId] && this.cityDetails[cityId]) return;
+
+          const cityData = await this.getCityDetailsFromDB(cityId, language);
+          if (cityData) {
+            this.cityNames[cityId] = cityData.name;
+            this.cityDetails[cityId] = cityData.details;
+          } else {
+            await this.fetchCityDetailsFromAPI(cityId);
+          }
+        });
+
+      // Parallel country fetches
+      const countryFetchPromises = countryISOs
+        .filter((iso): iso is string => !!iso)
+        .map(async (iso) => {
+          // If we already have a country name, skip
+          if (this.countryNames[iso]) return;
+
+          const dbCountryName = await this.getCountryNameFromDB(iso, language);
+          if (dbCountryName) {
+            this.countryNames[iso] = dbCountryName;
+          } else {
+            const computedName = this.formatCountryNameFromISOCode(iso);
+            if (computedName) {
+              this.countryNames[iso] = computedName;
+              await this.saveCountryToDB(iso, language, computedName);
+            }
+          }
+        });
+
+      // Wait for all parallel operations to complete
+      await Promise.all([...cityFetchPromises, ...countryFetchPromises]);
+
+      // Now that cities and countries are fetched, set up the user lists
+      userList.setUsersByCountry(users, this.cityNames, this.countryNames);
+      userList.setUsersByBirthday(users);
       myProfileState.init(this.loggedInUser!, userId);
+      this.initUserMap();
       this.setInitialized(true);
     })();
 
@@ -72,56 +96,8 @@ class AppState {
     if (this.initPromise) await this.initPromise;
   }
 
-  loadFromLocalStorage() {
-    try {
-      const storedCache = localStorage.getItem("placeDataCache");
-
-      if (!storedCache) {
-        // Initialize the last updated time if the cache doesn't exist
-        localStorage.setItem("pdcLastUpdated", Date.now().toString());
-        return;
-      }
-
-      const parsedCache = JSON.parse(storedCache);
-      const lastUpdated = parseInt(
-        localStorage.getItem("pdcLastUpdated") || "0",
-        10
-      );
-      const threeMonthsInMs = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
-
-      if (
-        Date.now() - lastUpdated > threeMonthsInMs ||
-        !localStorage.getItem("pdcUpdate20241206")
-      ) {
-        // Clear the cache if it is older than 3 months
-        localStorage.removeItem("placeDataCache");
-        localStorage.setItem("pdcUpdate20241206", "true");
-        return;
-      }
-
-      // Load cached data
-      this.cityNames = parsedCache.cityNames || {};
-      this.cityDetails = parsedCache.cityDetails || {};
-    } catch (error) {
-      console.error("Error loading from localStorage:", error);
-    }
-  }
-
-  saveToLocalStorage() {
-    try {
-      const data = {
-        cityNames: toJS(this.cityNames),
-        cityDetails: toJS(this.cityDetails) // Save detailed location data
-      };
-      localStorage.setItem("placeDataCache", JSON.stringify(data));
-    } catch (error) {
-      console.error("Error saving to localStorage:", error);
-    }
-  }
-
-  async fetchCityDetails(cityId: string) {
+  async fetchCityDetailsFromAPI(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
-    // const language = navigator.language || "en"; // Use browser locale or fallback to English
 
     if (cityId) {
       try {
@@ -136,9 +112,13 @@ class AppState {
             data.result.address_components
           );
           this.cityDetails[cityId] = data.result;
-        }
 
-        this.saveToLocalStorage();
+          // Save the fetched data to Firestore
+          await this.saveCityDetailsToDB(cityId, language, {
+            name: this.cityNames[cityId],
+            details: this.cityDetails[cityId]
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch city details:", error);
       }
@@ -155,7 +135,7 @@ class AppState {
   }
 
   initUserMap() {
-    this.userMap = new UserMapState(this.userList.users, this.cityNames);
+    this.userMap = new UserMapState(userList.users, this.cityNames);
   }
 
   formatCityAndStatefromAddress(
@@ -209,8 +189,77 @@ class AppState {
       this.countryNames[isoCode] =
         this.formatCountryNameFromISOCode(isoCode) || "";
     }
+  }
 
-    this.saveToLocalStorage();
+  async getCityDetailsFromDB(cityId: string, language: string) {
+    const docRef = doc(db, "cities", cityId, "translations", language);
+    const snapshot = await getDoc(docRef);
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+    const data = snapshot.data();
+    if (!data) {
+      return null; // Just in case, but this should never happen if snapshot.exists() is true
+    }
+
+    const lastUpdated =
+      data.lastUpdated && "toMillis" in data.lastUpdated
+        ? data.lastUpdated.toMillis()
+        : 0;
+
+    const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;
+
+    if (Date.now() - lastUpdated > ninetyDaysInMs) {
+      // Data is stale, return null to trigger API fetch
+      return null;
+    }
+
+    return data;
+  }
+
+  async saveCityDetailsToDB(cityId: string, language: string, data: any) {
+    const docRef = doc(db, "cities", cityId, "translations", language);
+    await setDoc(docRef, {
+      ...data,
+      lastUpdated: serverTimestamp()
+    });
+  }
+
+  async getCountryNameFromDB(
+    isoCode: string,
+    language: string
+  ): Promise<string | null> {
+    const docRef = doc(db, "countries", isoCode, "translations", language);
+    const snapshot = await getDoc(docRef);
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+    const data = snapshot.data();
+    if (!data) {
+      return null;
+    }
+
+    const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;
+    const lastUpdated = data.lastUpdated?.toMillis
+      ? data.lastUpdated.toMillis()
+      : 0;
+    if (Date.now() - lastUpdated > ninetyDaysInMs) {
+      return null; // Force re-fetch if stale
+    }
+
+    return data.name || null;
+  }
+
+  async saveCountryToDB(isoCode: string, name: string, language: string) {
+    const docRef = doc(db, "countries", isoCode, "translations", language);
+    await setDoc(docRef, {
+      name,
+      lastUpdated: serverTimestamp()
+    });
   }
 }
 

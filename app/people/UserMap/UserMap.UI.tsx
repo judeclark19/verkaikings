@@ -30,7 +30,12 @@ const UserMap = observer(() => {
 
   const clearSearch = () => {
     userList.setQuery("");
-    userList.filterUsersByQuery("", PeopleViews.MAP);
+    userList.filterUsersByQuery(
+      "",
+      PeopleViews.MAP,
+      appState.cityNames,
+      appState.countryNames
+    );
   };
 
   const hasQuery = !!userList.query;

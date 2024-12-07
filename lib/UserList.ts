@@ -1,7 +1,8 @@
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
+import UserMap from "@/app/people/UserMap/UserMap.UI";
+import appState from "./AppState";
 
 type CountryUsersType = {
   countryName: string;
@@ -25,32 +26,41 @@ export class UserList {
     this.filteredUsers = users;
   }
 
-  setUsers(users: DocumentData[]) {
+  setUsers(
+    users: DocumentData[],
+    cityNames: Record<string, string>,
+    countryNames: Record<string, string>
+  ) {
     if (!users) return;
     this.users = users;
-    this.setUsersByCountry(users);
+    this.setUsersByCountry(users, cityNames, countryNames);
     this.setUsersByBirthday(users);
-    appState.initUserMap();
   }
 
-  setFilteredUsers(users: DocumentData[]) {
+  setFilteredUsers(
+    users: DocumentData[],
+    cityNames: Record<string, string>,
+    countryNames: Record<string, string>
+  ) {
     this.filteredUsers = users;
-    this.setUsersByCountry(users);
+    this.setUsersByCountry(users, cityNames, countryNames);
     this.setUsersByBirthday(users);
     appState.userMap?.updateMarkerVisibility(users);
   }
 
-  setUsersByCountry(users: DocumentData[]) {
+  setUsersByCountry(
+    users: DocumentData[],
+    cityNames: Record<string, string>,
+    countryNames: Record<string, string>
+  ) {
     this.usersByCountry = {};
     users.forEach((user) => {
       const countryAbbr = user.countryAbbr;
-      let cityId = user.cityId;
-
-      if (!cityId) cityId = "No city listed";
+      let cityId = user.cityId || "No city listed";
 
       if (!this.usersByCountry[countryAbbr]) {
         this.usersByCountry[countryAbbr] = {
-          countryName: appState.countryNames[countryAbbr] || "",
+          countryName: countryNames[countryAbbr] || "",
           cities: {
             [cityId]: [user]
           }
@@ -64,31 +74,17 @@ export class UserList {
   }
 
   setUsersByBirthday(users: DocumentData[]) {
-    // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
-
     users.forEach((user) => {
       if (!user.birthday) return;
-      const { birthday } = user;
-      const month = birthday.split("-")[1];
-      const day = birthday.split("-")[2];
-
+      const [, month, day] = user.birthday.split("-");
       if (!this.usersByBirthday[month]) {
-        // init month object
         this.usersByBirthday[month] = {
           [day]: [user]
         };
-      } else if (
-        this.usersByBirthday[month] &&
-        !this.usersByBirthday[month][day]
-      ) {
-        // init day object
+      } else if (!this.usersByBirthday[month][day]) {
         this.usersByBirthday[month][day] = [user];
-      } else if (
-        this.usersByBirthday[month] &&
-        this.usersByBirthday[month][day]
-      ) {
-        // add user to day
+      } else {
         this.usersByBirthday[month][day].push(user);
       }
     });
@@ -98,7 +94,12 @@ export class UserList {
     this.query = query;
   }
 
-  filterUsersByQuery(query: string, viewingBy: PeopleViews) {
+  filterUsersByQuery(
+    query: string,
+    viewingBy: PeopleViews,
+    cityNames: Record<string, string>,
+    countryNames: Record<string, string>
+  ) {
     const fieldsToSearch = ["firstName", "lastName", "username"];
     if (viewingBy === PeopleViews.NAME) {
       fieldsToSearch.push("phoneNumber");
@@ -113,32 +114,35 @@ export class UserList {
     }
 
     this.debounceTimeout = setTimeout(() => {
-      const lowerCaseQuery = query.toLowerCase();
+      const lowerCaseQuery = query.toLowerCase().trim();
 
-      if (!lowerCaseQuery.trim()) {
-        this.setFilteredUsers(this.users);
+      if (!lowerCaseQuery) {
+        this.setFilteredUsers(this.users, cityNames, countryNames);
         return;
       }
 
       const result = this.users.filter((user) => {
-        // Check individual fields
         const matchesField = fieldsToSearch.some((key) =>
           String(user[key]).toLowerCase().includes(lowerCaseQuery)
         );
 
-        // Check combined firstName + lastName
         const fullName = `${user.firstName || ""} ${
           user.lastName || ""
         }`.trim();
         const matchesFullName = fullName.toLowerCase().includes(lowerCaseQuery);
 
-        // Check city and country names
-        const cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
-        const countryName =
-          appState.countryNames[user.countryAbbr]?.toLowerCase() || "";
+        const cityId = user.cityId || "";
+        const countryAbbr = user.countryAbbr || "";
+
+        const cityName =
+          cityId && cityNames[cityId] ? cityNames[cityId].toLowerCase() : "";
+        const cName =
+          countryAbbr && countryNames[countryAbbr]
+            ? countryNames[countryAbbr].toLowerCase()
+            : "";
+
         const matchesLocation =
-          cityName.includes(lowerCaseQuery) ||
-          countryName.includes(lowerCaseQuery);
+          cityName.includes(lowerCaseQuery) || cName.includes(lowerCaseQuery);
 
         if (
           viewingBy === PeopleViews.LOCATION ||
@@ -150,8 +154,8 @@ export class UserList {
         }
       });
 
-      this.setFilteredUsers(result);
-    }, 300); // 300ms debounce
+      this.setFilteredUsers(result, cityNames, countryNames);
+    }, 300);
   }
 }
 

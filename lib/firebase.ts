@@ -1,7 +1,11 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,19 +17,22 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Check if Firebase has already been initialized
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Firebase Auth
+// Auth
 export const auth: Auth = getAuth(app);
 
-// Firestore
-export const db = getFirestore(app); // Initialize Firestore
+// Firestore with persistence
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});
 
 // Storage
 export const storage = getStorage(app);
 
-// Auth listener for state changes
+// Auth listener
 export const authListener = (callback: (user: User | null) => void) => {
   onAuthStateChanged(auth, (user) => {
     callback(user);

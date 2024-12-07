@@ -74,7 +74,12 @@ const ByLocation = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.LOCATION);
+              userList.filterUsersByQuery(
+                "",
+                PeopleViews.LOCATION,
+                appState.cityNames,
+                appState.countryNames
+              );
             }}
             sx={{
               ml: 2

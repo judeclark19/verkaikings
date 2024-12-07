@@ -1,6 +1,7 @@
 import UserListItem from "@/app/people/UserListItem";
+import appState from "@/lib/AppState";
 import { formatBirthday2digit } from "@/lib/clientUtils";
-import { Box, List, Typography } from "@mui/material";
+import { Box, CircularProgress, List, Typography } from "@mui/material";
 import { DocumentData } from "firebase/firestore";
 
 function BirthdayCardList({
@@ -10,6 +11,10 @@ function BirthdayCardList({
   users: DocumentData[];
   emptyMessage: string;
 }) {
+  if (!appState.isInitialized) {
+    return <CircularProgress />;
+  }
+
   return (
     <>
       {users.length === 0 && (

@@ -89,7 +89,7 @@ const CityPicker = observer(
 
       // check if city is in cache
       if (!appState.cityNames[myProfileState.placeId!]) {
-        await appState.fetchCityDetails(myProfileState.placeId!);
+        await appState.fetchCityDetailsFromAPI(myProfileState.placeId!);
       }
 
       // check if country is in cache
@@ -108,7 +108,7 @@ const CityPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            userList.setUsers(users);
+            userList.setUsers(users, appState.cityNames, appState.countryNames);
           });
 
           // check if country was changed, if so update myProfileStae.countryName

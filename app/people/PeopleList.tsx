@@ -25,6 +25,7 @@ import ByStory from "./ByStory";
 import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
 import { ClearIcon } from "@mui/x-date-pickers/icons";
+import appState from "@/lib/AppState";
 
 export enum PeopleViews {
   NAME = "name",
@@ -58,12 +59,22 @@ const PeopleList = observer(() => {
     } else {
       setSearchPlaceholderText("Search users...");
     }
-    userList.filterUsersByQuery(userList.query, viewingBy);
+    userList.filterUsersByQuery(
+      userList.query,
+      viewingBy,
+      appState.cityNames,
+      appState.countryNames
+    );
   }, [viewingBy]);
 
   const handleViewChange = (view: PeopleViews) => {
     setViewingBy(view);
-    userList.filterUsersByQuery(userList.query, view);
+    userList.filterUsersByQuery(
+      userList.query,
+      view,
+      appState.cityNames,
+      appState.countryNames
+    );
   };
 
   if (loading) {
@@ -152,7 +163,12 @@ const PeopleList = observer(() => {
           value={userList.query}
           onChange={(e) => {
             userList.setQuery(e.target.value);
-            userList.filterUsersByQuery(e.target.value, viewingBy);
+            userList.filterUsersByQuery(
+              e.target.value,
+              viewingBy,
+              appState.cityNames,
+              appState.countryNames
+            );
           }}
           slotProps={{
             input: {
@@ -167,7 +183,12 @@ const PeopleList = observer(() => {
                     aria-label="clear search"
                     onClick={() => {
                       userList.setQuery("");
-                      userList.filterUsersByQuery("", viewingBy);
+                      userList.filterUsersByQuery(
+                        "",
+                        viewingBy,
+                        appState.cityNames,
+                        appState.countryNames
+                      );
                     }}
                   >
                     <ClearIcon />

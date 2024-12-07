@@ -9,6 +9,8 @@ import { useEffect } from "react";
 import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import appState from "./AppState";
+import userList from "./UserList";
+import { toJS } from "mobx";
 
 export default function LayoutProviders({
   children,
@@ -34,19 +36,37 @@ export default function LayoutProviders({
     if (isLoggedIn) {
       if (!appState.isInitialized) {
         fetchUsers().then((users) => {
-          appState.init(users, userId!);
+          appState.init(users, userId!).then(() => {
+            // Now appState is initialized, cityNames and countryNames should be ready
+            unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+              const updatedUsers = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+
+              userList.setUsers(
+                updatedUsers,
+                appState.cityNames,
+                appState.countryNames
+              );
+            });
+          });
+        });
+      } else {
+        // If already initialized, attach snapshot right away
+        unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+          const updatedUsers = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+
+          userList.setUsers(
+            updatedUsers,
+            appState.cityNames,
+            appState.countryNames
+          );
         });
       }
-
-      // Add snapshot listener to keep user data in sync
-      unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
-        const updatedUsers = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        appState.userList.setUsers(updatedUsers); // Update appState
-      });
     }
 
     // Cleanup on unmount or when isLoggedIn changes to false

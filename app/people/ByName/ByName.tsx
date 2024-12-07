@@ -60,7 +60,12 @@ const ByName = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.NAME);
+              userList.filterUsersByQuery(
+                "",
+                PeopleViews.NAME,
+                appState.cityNames,
+                appState.countryNames
+              );
             }}
             sx={{
               ml: 2

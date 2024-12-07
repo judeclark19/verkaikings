@@ -16,7 +16,6 @@ const NameEditingForm = observer(
 
     const handleSubmit = async (e: FormEvent) => {
       e.preventDefault();
-      console.log("Form submitted");
 
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
@@ -39,8 +38,6 @@ const NameEditingForm = observer(
           });
           console.log("Firebase displayName updated successfully");
         }
-
-        console.log("Name updated successfully");
       } catch (error) {
         console.error("Error updating Name: ", error);
       } finally {

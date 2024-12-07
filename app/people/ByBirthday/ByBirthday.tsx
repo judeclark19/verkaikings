@@ -57,7 +57,12 @@ const ByBirthday = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.BIRTHDAY);
+              userList.filterUsersByQuery(
+                "",
+                PeopleViews.BIRTHDAY,
+                appState.cityNames,
+                appState.countryNames
+              );
             }}
             sx={{
               ml: 2
