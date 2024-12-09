@@ -26,6 +26,9 @@ const ByCountry = observer(
     const orderedCityIds = [...sortedCityIds, ...noCityListedId];
 
     const countryName = userList.usersByCountry[countryAbbr].countryName;
+    const numberOfUsers = Object.values(
+      userList.usersByCountry[countryAbbr].cities
+    ).reduce((total, cityUsers) => total + cityUsers.length, 0);
 
     return (
       <Box
@@ -59,8 +62,8 @@ const ByCountry = observer(
                 // color: titleColor
               }}
             >
-              {countryName} ({sortedCityIds.length}{" "}
-              {sortedCityIds.length === 1 ? "city" : "cities"})
+              {countryName} ({numberOfUsers}{" "}
+              {numberOfUsers === 1 ? "person" : "people"})
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
