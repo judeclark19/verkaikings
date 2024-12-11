@@ -107,7 +107,7 @@ const SignupForm = () => {
       const user = userCredential.user;
 
       const token = await user.getIdToken();
-      Cookies.set("authToken", token, { expires: 1 });
+      Cookies.set("authToken", token, { expires: 10 });
 
       try {
         await updateProfile(user, {

@@ -11,11 +11,13 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { db } from "./firebase";
+import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
 
 class AppState {
   isInitialized = false;
   language: string = "en";
   userList: UserList = userList;
+  myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
@@ -27,7 +29,7 @@ class AppState {
     makeAutoObservable(this);
   }
 
-  async init(users: DocumentData[], userId: string) {
+  async init(users: DocumentData[], userId: string, stories: DocumentData[]) {
     if (this.isInitialized) {
       return;
     }
@@ -41,6 +43,8 @@ class AppState {
       this.language = navigator.language || "en";
       this.userList = userList;
       this.userList.init(users);
+      this.myWillemijnStories = myWillemijnStories;
+      this.myWillemijnStories.init(stories);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
@@ -58,9 +62,7 @@ class AppState {
       const countryISOs = users.map((user) => user.countryAbbr);
       for (const iso of countryISOs) {
         if (!iso || this.countryNames[iso]) continue;
-        this.countryNames[iso] = this.formatCountryNameFromISOCode(
-          iso
-        ) as string;
+        this.addCountryToList(iso);
       }
 
       this.userList.setUsersByCountry(users);

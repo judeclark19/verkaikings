@@ -9,10 +9,12 @@ import {
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
-import UserListItem from "./UserListItem";
+import UserListItem from "../UserListItem";
 import userList from "@/lib/UserList";
 import { DocumentData } from "firebase/firestore";
-import { PeopleViews } from "./PeopleList";
+import { PeopleViews } from "../PeopleList";
+import StoryComments from "./StoryComments";
+import StoryReactions from "./StoryReactions";
 
 const Column = ({ users }: { users: DocumentData[] }) => {
   return (
@@ -24,34 +26,50 @@ const Column = ({ users }: { users: DocumentData[] }) => {
         gap: 2
       }}
     >
-      {users.map((user) => (
-        <Card
-          sx={{
-            width: 600,
-            maxWidth: "100%"
-          }}
-          key={user.username}
-        >
-          <CardContent>
-            <UserListItem user={user} />
-            <Typography
-              sx={{
-                marginTop: 1
-              }}
-            >
-              {user.myWillemijnStory}
-            </Typography>
-          </CardContent>
-        </Card>
-      ))}
+      {users.map((user) => {
+        const story = appState.myWillemijnStories.filteredStories.find(
+          (story) => story.authorId === user.id
+        );
+
+        return (
+          <Card
+            sx={{
+              width: 600,
+              maxWidth: "100%",
+              mb: 3
+            }}
+            key={user.username}
+          >
+            <CardContent>
+              {/* Story Author and Content */}
+              <UserListItem user={user} />
+              <Typography
+                sx={{
+                  marginTop: 1
+                }}
+              >
+                {story?.storyContent}
+              </Typography>
+
+              <StoryReactions story={story!} />
+              <StoryComments story={story!} />
+            </CardContent>
+          </Card>
+        );
+      })}
     </Box>
   );
 };
 
 const ByStory = observer(() => {
-  const users = userList.filteredUsers
-    .filter((user) => user.myWillemijnStory)
-    .sort(() => Math.random() - 0.5);
+  const stories = appState.myWillemijnStories.filteredStories;
+
+  const users = userList.users
+    .slice()
+    .sort(() => Math.random() - 0.5)
+    .filter((user) => {
+      return stories.some((story) => story.authorId === user.id);
+    });
 
   // split into 2 columns
   const half = Math.ceil(users.length / 2);
