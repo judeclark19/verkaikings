@@ -21,7 +21,7 @@ import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
 import { useRouter, useSearchParams } from "next/navigation";
 import UserMap from "./UserMap/UserMap.UI";
-import ByStory from "./ByStory";
+import ByStory from "./ByStory/ByStory";
 import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
 import { ClearIcon } from "@mui/x-date-pickers/icons";

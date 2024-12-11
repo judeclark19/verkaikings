@@ -37,6 +37,7 @@ export class UserList {
     this.filteredUsers = users;
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
+    appState.myWillemijnStories.updateFilteredStories();
     appState.userMap?.updateMarkerVisibility(users);
   }
 

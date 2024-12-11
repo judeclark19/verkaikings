@@ -41,6 +41,7 @@ const NameEditingForm = observer(
 
         console.log("Name updated successfully");
       } catch (error) {
+        alert(`Error updating Name: ${error}`);
         console.error("Error updating Name: ", error);
       } finally {
         setLoading(false);

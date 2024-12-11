@@ -37,7 +37,12 @@ class MyProfileState {
     this.setDuolingo(user.duolingo);
     this.setBeReal(user.beReal);
     this.setPronouns(user.pronouns);
-    this.setMyWillemijnStory(user.myWillemijnStory);
+
+    this.setMyWillemijnStory(
+      appState.myWillemijnStories.allStories.find(
+        (story) => story.authorId === userId
+      )?.storyContent
+    );
     this.setIsFetched(true);
   }
 

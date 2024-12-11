@@ -20,9 +20,10 @@ export default function LayoutProviders({
   userId?: string;
 }) {
   useEffect(() => {
-    let unsubscribe: (() => void) | null = null;
+    let unsubscribeUsers: (() => void) | null = null;
+    let unsubscribeStories: (() => void) | null = null;
 
-    // Initialize user data on login
+    // Fetch users from Firestore
     async function fetchUsers() {
       const users = await getDocs(collection(db, "users"));
       return users.docs.map((doc) => ({
@@ -31,27 +32,51 @@ export default function LayoutProviders({
       }));
     }
 
+    // Fetch myWillemijnStories from Firestore
+    async function fetchMWStories() {
+      const stories = await getDocs(collection(db, "myWillemijnStories"));
+      return stories.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    }
+
     if (isLoggedIn) {
       if (!appState.isInitialized) {
-        fetchUsers().then((users) => {
-          appState.init(users, userId!);
-        });
+        Promise.all([fetchUsers(), fetchMWStories()])
+          .then(([users, stories]) => {
+            appState.init(users, userId!, stories);
+          })
+          .catch((error) => {
+            console.error("Error during appState initialization:", error);
+          });
       }
 
-      // Add snapshot listener to keep user data in sync
-      unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+      // Add snapshot listeners to keep data in sync
+      unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
         const updatedUsers = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
         }));
-
-        appState.userList.setUsers(updatedUsers); // Update appState
+        appState.userList.setUsers(updatedUsers);
       });
+
+      unsubscribeStories = onSnapshot(
+        collection(db, "myWillemijnStories"),
+        (snapshot) => {
+          const updatedStories = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          appState.myWillemijnStories.setAllStories(updatedStories);
+        }
+      );
     }
 
     // Cleanup on unmount or when isLoggedIn changes to false
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribeUsers) unsubscribeUsers();
+      if (unsubscribeStories) unsubscribeStories();
     };
   }, [isLoggedIn]);
 
