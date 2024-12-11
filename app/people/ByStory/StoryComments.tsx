@@ -10,8 +10,8 @@ import {
   Link,
   IconButton
 } from "@mui/material";
-import { doc, DocumentData, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 type Comment = {
@@ -23,6 +23,21 @@ type Comment = {
 const StoryComments = ({ story }: { story: DocumentData }) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>(story.comments || []);
+
+  useEffect(() => {
+    const storyDocRef = doc(db, "myWillemijnStories", story.id);
+
+    const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const storyData = docSnapshot.data();
+        setComments(storyData.comments || []);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [story.id]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,10 +61,9 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
           comments: [...comments, newComment]
         });
 
-        // Update local state to display the comment immediately
-        setComments((prevComments) => [...prevComments, newComment]);
         setCommentText(""); // Clear the input
       } catch (error) {
+        alert(`Error adding comment: ${error}`);
         console.error("Error adding comment:", error);
       }
     } else {
@@ -66,10 +80,8 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
       );
 
       await updateDoc(storyDocRef, { comments: updatedComments });
-
-      // Update local state to remove the comment immediately
-      setComments(updatedComments);
     } catch (error) {
+      alert(`Error deleting comment: ${error}`);
       console.error("Error deleting comment:", error);
     }
   };

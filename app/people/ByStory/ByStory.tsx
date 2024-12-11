@@ -11,12 +11,38 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import UserListItem from "../UserListItem";
 import userList from "@/lib/UserList";
-import { DocumentData } from "firebase/firestore";
+import { doc, DocumentData, onSnapshot } from "firebase/firestore";
 import { PeopleViews } from "../PeopleList";
 import StoryComments from "./StoryComments";
 import StoryReactions from "./StoryReactions";
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
 
-const Column = ({ users }: { users: DocumentData[] }) => {
+const Column = observer(({ users }: { users: DocumentData[] }) => {
+  const [stories, setStories] = useState<Record<string, DocumentData>>({});
+
+  useEffect(() => {
+    const unsubscribes: (() => void)[] = [];
+    users.forEach((user) => {
+      const storyDocRef = doc(db, "myWillemijnStories", user.id);
+
+      const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          setStories((prevStories) => ({
+            ...prevStories,
+            [user.id]: docSnapshot.data()
+          }));
+        }
+      });
+
+      unsubscribes.push(unsubscribe);
+    });
+
+    return () => {
+      unsubscribes.forEach((unsubscribe) => unsubscribe());
+    };
+  }, [users]);
+
   return (
     <Box
       sx={{
@@ -27,7 +53,9 @@ const Column = ({ users }: { users: DocumentData[] }) => {
       }}
     >
       {users.map((user) => {
-        const story = appState.myWillemijnStories.filteredStories.find(
+        const story = stories[user.id];
+
+        const storyDoc = appState.myWillemijnStories.filteredStories.find(
           (story) => story.authorId === user.id
         );
 
@@ -48,18 +76,18 @@ const Column = ({ users }: { users: DocumentData[] }) => {
                   marginTop: 1
                 }}
               >
-                {story?.storyContent}
+                {story?.storyContent || "Loading..."}
               </Typography>
 
-              <StoryReactions story={story!} />
-              <StoryComments story={story!} />
+              {story && <StoryReactions story={storyDoc!} />}
+              {story && <StoryComments story={storyDoc!} />}
             </CardContent>
           </Card>
         );
       })}
     </Box>
   );
-};
+});
 
 const ByStory = observer(() => {
   const stories = appState.myWillemijnStories.filteredStories;

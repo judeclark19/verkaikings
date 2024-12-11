@@ -68,6 +68,7 @@ const MyWillemijnStory = observer(() => {
       // Update local state after successful update
       setTemp(myProfileState.myWillemijnStory || "");
     } catch (error) {
+      alert(`Error updating or creating MyWillemijnStory: ${error}`);
       console.error("Error updating or creating MyWillemijnStory: ", error);
     } finally {
       setLoading(false);

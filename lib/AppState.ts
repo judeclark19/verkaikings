@@ -114,7 +114,7 @@ class AppState {
       this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
       this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
     } catch (error) {
-      console.error("Error loading from localStorage:", error);
+      console.error("Error loading from database:", error);
     }
   }
 
@@ -131,7 +131,7 @@ class AppState {
         cityDetails: JSON.stringify(data.cityDetails)
       });
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
+      console.error("Error saving to database:", error);
     }
   }
 

@@ -45,6 +45,7 @@ const NavbarUI = observer(
         // Force server-side navigation to ensure middleware checks the cookie
         window.location.href = "/"; // Triggers full page load
       } catch (error) {
+        alert(`Error logging out: ${error}`);
         console.error("Error logging out:", error);
       }
     };

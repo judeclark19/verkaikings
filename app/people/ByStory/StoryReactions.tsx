@@ -5,9 +5,10 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  DocumentData
+  DocumentData,
+  onSnapshot
 } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 
@@ -19,6 +20,21 @@ type Reaction = {
 
 const StoryReactions = ({ story }: { story: DocumentData }) => {
   const [reactions, setReactions] = useState<Reaction[]>(story.reactions || []);
+
+  useEffect(() => {
+    const storyDocRef = doc(db, "myWillemijnStories", story.id);
+
+    const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const storyData = docSnapshot.data();
+        setReactions(storyData.reactions || []);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [story.id]);
 
   const handleReaction = async (reactionType: "like" | "love" | "laugh") => {
     if (!appState.loggedInUser) {
@@ -40,11 +56,8 @@ const StoryReactions = ({ story }: { story: DocumentData }) => {
         await updateDoc(storyDocRef, {
           reactions: arrayRemove(existingReaction)
         });
-        // Remove the reaction from useState
-        setReactions((prev) =>
-          prev.filter((reaction) => reaction !== existingReaction)
-        );
       } catch (error) {
+        alert(`Error removing reaction: ${error}`);
         console.error("Error removing reaction:", error);
       }
     } else {
@@ -55,17 +68,13 @@ const StoryReactions = ({ story }: { story: DocumentData }) => {
         createdAt: new Date().toISOString()
       };
 
-      setReactions((prev) => [...prev, newReaction]);
-
       try {
         await updateDoc(storyDocRef, {
           reactions: arrayUnion(newReaction)
         });
       } catch (error) {
+        alert(`Error adding reaction: ${error}`);
         console.error("Error adding reaction:", error);
-        setReactions((prev) =>
-          prev.filter((reaction) => reaction !== newReaction)
-        ); // Rollback on failure
       }
     }
   };
