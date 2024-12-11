@@ -63,7 +63,8 @@ const TikTok = observer(() => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
+            width: "100%"
           }}
         >
           <TextField
@@ -72,7 +73,7 @@ const TikTok = observer(() => {
             fullWidth
             value={myProfileState.tiktok}
             onChange={(e) => {
-              myProfileState.setInstagram(e.target.value);
+              myProfileState.setTiktok(e.target.value);
             }}
             slotProps={{
               inputLabel: {

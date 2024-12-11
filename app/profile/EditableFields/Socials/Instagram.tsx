@@ -58,7 +58,8 @@ const Instagram = observer(() => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
+            width: "100%"
           }}
         >
           <TextField
