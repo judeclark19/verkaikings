@@ -13,7 +13,6 @@ export class MyWillemijnStories {
   init(stories: DocumentData[]) {
     this.allStories = stories;
     this.filteredStories = stories;
-    console.log("mywillemijnstories init", stories);
   }
 
   setAllStories(stories: DocumentData[]) {
@@ -33,12 +32,6 @@ export class MyWillemijnStories {
     });
 
     this.filteredStories = filteredStories;
-
-    console.log(
-      "updateFilteredStories",
-      appState.userList.query,
-      filteredStories
-    );
   }
 }
 
