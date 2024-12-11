@@ -39,7 +39,11 @@ const Column = ({ users }: { users: DocumentData[] }) => {
                 marginTop: 1
               }}
             >
-              {user.myWillemijnStory}
+              {
+                appState.myWillemijnStories.filteredStories.find(
+                  (story) => story.authorId === user.id
+                )?.storyContent
+              }
             </Typography>
           </CardContent>
         </Card>
@@ -49,9 +53,13 @@ const Column = ({ users }: { users: DocumentData[] }) => {
 };
 
 const ByStory = observer(() => {
-  const users = userList.filteredUsers
-    .filter((user) => user.myWillemijnStory)
+  const stories = appState.myWillemijnStories.filteredStories
+    .slice()
     .sort(() => Math.random() - 0.5);
+
+  const users = userList.users.filter((user) => {
+    return stories.some((story) => story.authorId === user.id);
+  });
 
   // split into 2 columns
   const half = Math.ceil(users.length / 2);

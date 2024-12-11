@@ -2,21 +2,24 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import { useState } from "react";
 import { Box, Paper, TextField, Typography } from "@mui/material";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditBtn, SaveBtn } from ".";
+import appState from "@/lib/AppState";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const userDoc = doc(db, "users", myProfileState.userId!);
+  const mws = appState.myWillemijnStories.allStories.find(
+    (story) => story.authorId === myProfileState.userId
+  );
   const [temp, setTemp] = useState(
     myProfileState.myWillemijnStory
       ? myProfileState.myWillemijnStory.slice()
       : ""
   );
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (myProfileState.myWillemijnStory === temp) {
@@ -25,20 +28,46 @@ const MyWillemijnStory = observer(() => {
     }
 
     setLoading(true);
-    updateDoc(userDoc, {
-      myWillemijnStory: myProfileState.myWillemijnStory || ""
-    })
-      .then(() => {
-        setTemp(myProfileState.myWillemijnStory || "");
-        console.log("MyWillemijnStory updated");
-      })
-      .catch((error) => {
-        console.error("Error updating document: ", error);
-      })
-      .finally(() => {
-        setLoading(false);
-        setIsEditing(false);
-      });
+
+    try {
+      // Find the myWillemijnStory for the current user
+      const mws = appState.myWillemijnStories.allStories.find(
+        (story) => story.authorId === myProfileState.userId
+      );
+
+      if (mws) {
+        // If the story exists, update it
+        const mwsDocRef = doc(db, "myWillemijnStories", mws.id);
+        await updateDoc(mwsDocRef, {
+          storyContent: myProfileState.myWillemijnStory || "",
+          updatedAt: new Date().toISOString()
+        });
+        console.log("MyWillemijnStory updated successfully.");
+      } else {
+        // If no story exists, create a new one
+        const newStoryDocRef = doc(
+          db,
+          "myWillemijnStories",
+          myProfileState.userId!
+        );
+        await setDoc(newStoryDocRef, {
+          authorId: myProfileState.userId,
+          storyContent: myProfileState.myWillemijnStory || "",
+          createdAt: new Date().toISOString(),
+          comments: [],
+          reactions: []
+        });
+        console.log("MyWillemijnStory created successfully.");
+      }
+
+      // Update local state after successful update
+      setTemp(myProfileState.myWillemijnStory || "");
+    } catch (error) {
+      console.error("Error updating or creating MyWillemijnStory: ", error);
+    } finally {
+      setLoading(false);
+      setIsEditing(false);
+    }
   };
 
   return (
@@ -55,7 +84,6 @@ const MyWillemijnStory = observer(() => {
             display: "flex",
             flexDirection: "column",
             gap: 2
-            // maxWidth: "500px"
           }}
         >
           <TextField
