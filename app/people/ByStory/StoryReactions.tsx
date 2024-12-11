@@ -142,14 +142,27 @@ const StoryReactions = ({ story }: { story: DocumentData }) => {
             >
               <Button
                 sx={{
-                  px: 1
+                  px: 1,
+                  color:
+                    type === "love" && reactionCount > 0
+                      ? "primary.dark"
+                      : (type === "like" || type === "laugh") &&
+                        reactionCount > 0
+                      ? "warning.main"
+                      : "text.secondary"
                 }}
                 startIcon={icon}
                 onClick={() =>
                   handleReaction(type as "like" | "love" | "laugh")
                 }
               >
-                {reactionCount}
+                <Typography
+                  sx={{
+                    color: reactionCount > 0 ? "text.primary" : "text.secondary" // Reaction count color
+                  }}
+                >
+                  {reactionCount}
+                </Typography>
               </Button>
             </Tooltip>
           );
