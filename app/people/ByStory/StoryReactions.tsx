@@ -1,6 +1,12 @@
 import { EmojiEmotions, Favorite, ThumbUp } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Tooltip, Typography } from "@mui/material";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  DocumentData
+} from "firebase/firestore";
 import { useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
@@ -11,7 +17,7 @@ type Reaction = {
   createdAt: string;
 };
 
-const StoryReactions = ({ story }: { story: any }) => {
+const StoryReactions = ({ story }: { story: DocumentData }) => {
   const [reactions, setReactions] = useState<Reaction[]>(story.reactions || []);
 
   const handleReaction = async (reactionType: "like" | "love" | "laugh") => {

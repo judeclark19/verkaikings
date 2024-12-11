@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { EditBtn, SaveBtn } from ".";
+import { EditBtn } from ".";
 import appState from "@/lib/AppState";
 import StoryComments from "@/app/people/ByStory/StoryComments";
 import StoryReactions from "@/app/people/ByStory/StoryReactions";
