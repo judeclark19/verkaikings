@@ -1,11 +1,21 @@
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import { useState } from "react";
-import { Box, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Fab,
+  CircularProgress,
+  Paper,
+  TextField,
+  Typography
+} from "@mui/material";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditBtn, SaveBtn } from ".";
 import appState from "@/lib/AppState";
+import StoryComments from "@/app/people/ByStory/StoryComments";
+import StoryReactions from "@/app/people/ByStory/StoryReactions";
+import SaveIcon from "@mui/icons-material/Save";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
@@ -30,11 +40,6 @@ const MyWillemijnStory = observer(() => {
     setLoading(true);
 
     try {
-      // Find the myWillemijnStory for the current user
-      const mws = appState.myWillemijnStories.allStories.find(
-        (story) => story.authorId === myProfileState.userId
-      );
-
       if (mws) {
         // If the story exists, update it
         const mwsDocRef = doc(db, "myWillemijnStories", mws.id);
@@ -73,67 +78,62 @@ const MyWillemijnStory = observer(() => {
   return (
     <>
       <Typography variant="h2">My Willemijn Story</Typography>
-      <Typography variant="h4">
-        How did you first become a fan of Willemijn?
-      </Typography>
-      {isEditing ? (
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2
-          }}
-        >
-          <TextField
-            label="My Willemijn Story"
-            multiline
-            rows={4}
-            fullWidth
-            value={myProfileState.myWillemijnStory}
-            onChange={(e) => myProfileState.setMyWillemijnStory(e.target.value)}
-            variant="outlined"
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end"
-            }}
-          >
-            <SaveBtn loading={loading} />
-          </div>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2
-          }}
-        >
-          <Paper>
-            <Typography
-              sx={{
-                minHeight: "125px",
-                padding: "16px 14px"
-              }}
-            >
-              {myProfileState.myWillemijnStory}
-            </Typography>
-          </Paper>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              paddingRight: "24px"
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between"
+        }}
+      >
+        <Typography variant="h4">
+          How did you first become a fan of Willemijn?
+        </Typography>
+        {isEditing ? (
+          <Fab
+            onClick={handleSubmit}
+            color="secondary"
+            size="small"
+            aria-label="save"
+            sx={{
+              flexShrink: 0
             }}
           >
-            <EditBtn setIsEditing={setIsEditing} />
-          </div>
-        </Box>
+            {loading ? (
+              <CircularProgress color="secondary" size={24} />
+            ) : (
+              <SaveIcon />
+            )}
+          </Fab>
+        ) : (
+          <EditBtn setIsEditing={setIsEditing} />
+        )}
+      </Box>
+
+      {isEditing ? (
+        <TextField
+          label="My Willemijn Story"
+          multiline
+          rows={10}
+          fullWidth
+          value={myProfileState.myWillemijnStory}
+          onChange={(e) => myProfileState.setMyWillemijnStory(e.target.value)}
+          variant="outlined"
+        />
+      ) : (
+        <Paper>
+          <Typography
+            sx={{
+              minHeight: "125px",
+              padding: "16px 14px"
+            }}
+          >
+            {myProfileState.myWillemijnStory}
+          </Typography>
+        </Paper>
       )}
+
+      {mws && <StoryReactions story={mws} />}
+      {mws && <StoryComments story={mws} />}
     </>
   );
 });

@@ -7,16 +7,19 @@ import {
   ListItem,
   TextField,
   Typography,
-  Link
+  Link,
+  IconButton
 } from "@mui/material";
 import { doc, DocumentData, updateDoc } from "firebase/firestore";
 import { useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type Comment = {
   authorId: string;
   createdAt: string;
   text: string;
 };
+
 const StoryComments = ({ story }: { story: DocumentData }) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>(story.comments || []);
@@ -24,7 +27,6 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (commentText.trim()) {
-      console.log("Submitted Comment:", commentText);
       if (!appState.loggedInUser) {
         console.error("Must be logged in to comment");
         return;
@@ -55,6 +57,23 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
     }
   };
 
+  const handleDelete = async (commentToDelete: Comment) => {
+    try {
+      // Update the story document in Firestore
+      const storyDocRef = doc(db, "myWillemijnStories", story.id);
+      const updatedComments = comments.filter(
+        (comment) => comment !== commentToDelete
+      );
+
+      await updateDoc(storyDocRef, { comments: updatedComments });
+
+      // Update local state to remove the comment immediately
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
   return (
     <Box sx={{ mt: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -76,6 +95,8 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
             const commentAuthor = appState.userList.users.find(
               (user) => user.id === comment.authorId
             );
+            const isOwnComment = comment.authorId === appState.loggedInUser?.id;
+
             return (
               <ListItem
                 key={index}
@@ -83,12 +104,13 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
-                  mb: 1
+                  mb: 1,
+                  position: "relative"
                 }}
               >
                 <Typography variant="body2" fontWeight="bold">
                   <Link
-                    href={`/profile/${commentAuthor!.username}`}
+                    href={`/profile/${commentAuthor?.username || "#"}`}
                     sx={{
                       textDecoration: "none",
                       color: "inherit",
@@ -97,7 +119,7 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
                       }
                     }}
                   >
-                    {commentAuthor!.firstName} {commentAuthor!.lastName}
+                    {commentAuthor?.firstName} {commentAuthor?.lastName}
                   </Link>
                 </Typography>
                 <Typography
@@ -109,6 +131,22 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   {comment.text}
                 </Typography>
+
+                {isOwnComment && (
+                  <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => handleDelete(comment)}
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: "8px",
+                      color: "red"
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
               </ListItem>
             );
           })

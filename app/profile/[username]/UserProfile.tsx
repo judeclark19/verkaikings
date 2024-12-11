@@ -18,6 +18,8 @@ import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import { getEmojiFlag } from "countries-list";
 import SocialsList from "./SocialsList";
 import { observer } from "mobx-react-lite";
+import StoryComments from "@/app/people/ByStory/StoryComments";
+import StoryReactions from "@/app/people/ByStory/StoryReactions";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
@@ -26,7 +28,8 @@ const UserProfile = observer(
     const [isSelf, setIsSelf] = useState(false);
     const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
     const [error, setError] = useState(""); // Error state
-    const [usersWillemijnStory, setUsersWillemijnStory] = useState("");
+    const [usersWillemijnStory, setUsersWillemijnStory] =
+      useState<DocumentData | null>(null);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
@@ -59,7 +62,7 @@ const UserProfile = observer(
         (story) => story.authorId === userInfo.id
       );
       if (userStory) {
-        setUsersWillemijnStory(userStory.storyContent);
+        setUsersWillemijnStory(userStory);
       }
 
       setError("");
@@ -281,8 +284,17 @@ const UserProfile = observer(
                       padding: "15px 13px"
                     }}
                   >
-                    {usersWillemijnStory}
+                    {usersWillemijnStory.storyContent}
                   </Typography>
+                  <Box
+                    sx={{
+                      p: 1,
+                      mt: -3
+                    }}
+                  >
+                    <StoryReactions story={usersWillemijnStory} />
+                    <StoryComments story={usersWillemijnStory} />
+                  </Box>
                 </Paper>
               </>
             )}
