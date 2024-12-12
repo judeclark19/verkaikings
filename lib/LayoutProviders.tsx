@@ -69,6 +69,7 @@ export default function LayoutProviders({
             ...doc.data()
           }));
           appState.myWillemijnStories.setAllStories(updatedStories);
+          appState.myWillemijnStories.updateFilteredStories();
         }
       );
     }

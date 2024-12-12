@@ -33,6 +33,8 @@ const UserProfile = observer(
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
+      if (!appState.isInitialized) return;
+
       // Set document title based on user state
       if (user) {
         document.title = `${user.username}'s Profile | Willemijn's World Website`;
@@ -50,7 +52,7 @@ const UserProfile = observer(
           }
 
           // Find and set the user's Willemijn story if it exists
-          const userStory = appState.myWillemijnStories.filteredStories.find(
+          const userStory = appState.myWillemijnStories.allStories.find(
             (story) => story.authorId === userInfo.id
           );
           if (userStory) {
@@ -65,7 +67,13 @@ const UserProfile = observer(
       } else {
         document.title = "Loading Profile...";
       }
-    }, [user, username, appState.userList.users, decodedToken.email]);
+    }, [
+      appState.isInitialized,
+      user,
+      username,
+      appState.userList.users,
+      decodedToken.email
+    ]);
 
     if (error) {
       return <div>{error}</div>;
@@ -267,7 +275,7 @@ const UserProfile = observer(
             </Box>
 
             {/* SECOND SECTION - MY WILLEMIJN STORY */}
-            {usersWillemijnStory && (
+            {usersWillemijnStory && usersWillemijnStory.storyContent && (
               <>
                 <Typography variant="h2">My Willemijn Story</Typography>
                 <Paper>

@@ -125,16 +125,22 @@ const MyWillemijnStory = observer(() => {
           <Typography
             sx={{
               minHeight: "125px",
-              padding: "16px 14px"
+              padding: "16px 14px",
+              color: myProfileState.myWillemijnStory
+                ? "text.primary"
+                : "text.secondary",
+              fontStyle: myProfileState.myWillemijnStory ? "normal" : "italic"
             }}
           >
-            {myProfileState.myWillemijnStory}
+            {myProfileState.myWillemijnStory
+              ? myProfileState.myWillemijnStory
+              : "(Click the edit button above to add your story)"}
           </Typography>
         </Paper>
       )}
 
-      {mws && <StoryReactions story={mws} />}
-      {mws && <StoryComments story={mws} />}
+      {mws && mws.storyContent && <StoryReactions story={mws} />}
+      {mws && mws.storyContent && <StoryComments story={mws} />}
     </>
   );
 });
