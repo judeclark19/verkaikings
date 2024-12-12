@@ -7,11 +7,14 @@ import { PeopleViews } from "../PeopleList";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const hasInitializedRef = useRef(false); // Track if initialization has occurred
 
   useEffect(() => {
-    if (!mapRef.current || !appState.userMap) return;
+    if (!mapRef.current || !appState.userMap || hasInitializedRef.current)
+      return;
 
     async function initialize() {
+      hasInitializedRef.current = true; // Prevent further initialization
       if (window.google) {
         // Initialize the map
         appState.userMap?.initializeMap(mapRef.current as HTMLElement);

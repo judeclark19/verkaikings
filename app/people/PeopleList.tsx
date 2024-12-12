@@ -44,15 +44,29 @@ const PeopleList = observer(() => {
 
   useEffect(() => {
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
+    const queryParam = searchParams.get("query") || "";
     if (!Object.values(PeopleViews).includes(viewByParam as PeopleViews)) {
       viewByParam = PeopleViews.NAME;
     }
+
+    if (queryParam) {
+      userList.setQuery(queryParam); // Initialize `userList.query`
+      userList.filterUsersByQuery(queryParam, viewByParam as PeopleViews);
+    }
+
     setViewingBy(viewByParam as PeopleViews);
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    router.replace(`?viewBy=${viewingBy.toLowerCase()}`);
+    if (userList.query) {
+      router.replace(
+        `?viewBy=${viewingBy.toLowerCase()}&query=${userList.query}`
+      );
+    } else {
+      router.replace(`?viewBy=${viewingBy.toLowerCase()}`);
+    }
+
     if (viewingBy === "story") {
       setSearchPlaceholderText("Search users or stories...");
     } else {
@@ -152,6 +166,16 @@ const PeopleList = observer(() => {
           value={userList.query}
           onChange={(e) => {
             userList.setQuery(e.target.value);
+
+            // Update the URL with new query parameters
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set("query", e.target.value);
+            const newPath = `${
+              window.location.pathname
+            }?${currentParams.toString()}`;
+
+            window.history.pushState({}, "", newPath);
+
             userList.filterUsersByQuery(e.target.value, viewingBy);
           }}
           slotProps={{
@@ -167,6 +191,18 @@ const PeopleList = observer(() => {
                     aria-label="clear search"
                     onClick={() => {
                       userList.setQuery("");
+
+                      // Update the URL with new query parameters
+                      const currentParams = new URLSearchParams(
+                        window.location.search
+                      );
+                      currentParams.delete("query");
+                      const newPath = `${
+                        window.location.pathname
+                      }?${currentParams.toString()}`;
+
+                      window.history.pushState({}, "", newPath);
+
                       userList.filterUsersByQuery("", viewingBy);
                     }}
                   >

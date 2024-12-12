@@ -177,6 +177,7 @@ const MyProfile = observer(() => {
               <ReadOnlyContactItem
                 value={myProfileState.user.phoneNumber}
                 icon={<FaWhatsapp size={24} />}
+                height="76px"
               />
               <DateOfBirth />
               <Pronouns />

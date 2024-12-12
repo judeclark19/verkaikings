@@ -33,46 +33,39 @@ const UserProfile = observer(
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-      // Ensure the user list is populated before running the logic
-      if (!appState.userList.users.length) {
-        return;
+      // Set document title based on user state
+      if (user) {
+        document.title = `${user.username}'s Profile | Willemijn's World Website`;
+      } else if (appState.userList.users.length && !user) {
+        const userInfo = appState.userList.users.find(
+          (u) => u.username === username
+        );
+
+        if (userInfo) {
+          setUser(userInfo);
+
+          // Check if the current user is viewing their own profile
+          if (userInfo.email === decodedToken.email) {
+            setIsSelf(true);
+          }
+
+          // Find and set the user's Willemijn story if it exists
+          const userStory = appState.myWillemijnStories.filteredStories.find(
+            (story) => story.authorId === userInfo.id
+          );
+          if (userStory) {
+            setUsersWillemijnStory(userStory);
+          }
+
+          document.title = `${userInfo.username}'s Profile | Willemijn's World Website`;
+        } else {
+          setError(`User with username ${username} not found.`);
+          document.title = "Profile Not Found | Willemijn's World Website";
+        }
+      } else {
+        document.title = "Loading Profile...";
       }
-
-      const userInfo = appState.userList.users.find(
-        (user) => user.username === username
-      );
-
-      if (!userInfo) {
-        setError(`User with username ${username} not found.`);
-        return;
-      }
-
-      setUser(userInfo);
-
-      // Check if the current user is viewing their own profile
-      if (userInfo.email === decodedToken.email) {
-        setIsSelf(true);
-      }
-
-      // Set the document title
-      document.title = `${userInfo.username}'s Profile | Willemijn's World Website`;
-
-      // Find and set the user's Willemijn story if it exists
-      const userStory = appState.myWillemijnStories.filteredStories.find(
-        (story) => story.authorId === userInfo.id
-      );
-      if (userStory) {
-        setUsersWillemijnStory(userStory);
-      }
-
-      setError("");
-    }, [username, appState.userList.users]);
-
-    useEffect(() => {
-      if (!user) {
-        document.title = `Loading Profile...`;
-      }
-    }, [user]);
+    }, [user, username, appState.userList.users, decodedToken.email]);
 
     if (error) {
       return <div>{error}</div>;
