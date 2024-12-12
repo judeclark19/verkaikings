@@ -20,11 +20,12 @@ type Comment = {
   text: string;
 };
 
-const StoryComments = ({ story }: { story: DocumentData }) => {
+const StoryComments = ({ story }: { story?: DocumentData }) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState<Comment[]>(story.comments || []);
+  const [comments, setComments] = useState<Comment[]>(story?.comments || []);
 
   useEffect(() => {
+    if (!story) return;
     const storyDocRef = doc(db, "myWillemijnStories", story.id);
 
     const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
@@ -37,8 +38,9 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
     return () => {
       unsubscribe();
     };
-  }, [story.id]);
+  }, [story?.id]);
 
+  if (!story) return null;
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (commentText.trim()) {
@@ -196,6 +198,9 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
             type="submit"
             variant="contained"
             size="small"
+            sx={{
+              height: 40
+            }}
             disabled={!commentText.trim()} // Disable button if input is empty
           >
             Post

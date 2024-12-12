@@ -17,6 +17,7 @@ import StoryComments from "./StoryComments";
 import StoryReactions from "./StoryReactions";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const Column = observer(({ users }: { users: DocumentData[] }) => {
   const [stories, setStories] = useState<Record<string, DocumentData>>({});
@@ -61,22 +62,15 @@ const Column = observer(({ users }: { users: DocumentData[] }) => {
 
         return (
           <Card
-            sx={{
-              width: 600,
-              maxWidth: "100%",
-              mb: 3
-            }}
+            sx={{ width: 600, maxWidth: "100%", mb: 3 }}
             key={user.username}
           >
             <CardContent>
-              {/* Story Author and Content */}
               <UserListItem user={user} />
-              <Typography
-                sx={{
-                  marginTop: 1
-                }}
-              >
-                {story?.storyContent || "Loading..."}
+              <Typography sx={{ marginTop: 1 }}>
+                {story?.storyContent || (
+                  <Skeleton variant="text" width="100%" height={150} />
+                )}
               </Typography>
 
               {story && <StoryReactions story={storyDoc!} />}
@@ -90,88 +84,89 @@ const Column = observer(({ users }: { users: DocumentData[] }) => {
 });
 
 const ByStory = observer(() => {
-  const stories = appState.myWillemijnStories.filteredStories;
+  const [shuffledUsers, setShuffledUsers] = useState<DocumentData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = userList.users
-    .slice()
-    .sort(() => Math.random() - 0.5)
-    .filter((user) => {
-      return stories.some((story) => story.authorId === user.id);
-    });
+  useEffect(() => {
+    if (!appState.isInitialized) {
+      setLoading(true);
+      return;
+    }
 
-  // split into 2 columns
-  const half = Math.ceil(users.length / 2);
-  const column1 = users.slice(0, half);
-  const column2 = users.slice(half);
+    const stories = appState.myWillemijnStories.filteredStories;
+    const filteredUsers = userList.users.filter((user) =>
+      stories.some((story) => story.authorId === user.id)
+    );
+
+    // Shuffle users and set state
+    const shuffled = filteredUsers.slice().sort(() => Math.random() - 0.5);
+    setShuffledUsers(shuffled);
+    setLoading(false);
+  }, [appState.isInitialized, userList.users, userList.filteredUsers]);
+
+  // Split into 2 columns
+  const half = Math.ceil(shuffledUsers.length / 2);
+  const column1 = shuffledUsers.slice(0, half);
+  const column2 = shuffledUsers.slice(half);
 
   return (
     <>
-      <Typography
-        variant="h1"
-        sx={{
-          textAlign: "center"
-        }}
-      >
+      <Typography variant="h1" sx={{ textAlign: "center" }}>
         Willemijn Stories
       </Typography>
 
-      <Typography
-        variant="h3"
-        sx={{
-          textAlign: "center",
-          mb: 6
-        }}
-      >
+      <Typography variant="h3" sx={{ textAlign: "center", mb: 6 }}>
         How we became her fans
       </Typography>
 
-      {!appState.isInitialized && (
+      {loading ? (
         <Skeleton variant="rectangular" width="100%" height="100vh" />
-      )}
+      ) : (
+        <>
+          {userList.query && (
+            <Alert
+              sx={{
+                my: 2,
+                display: "flex",
+                alignItems: "center"
+              }}
+              severity={shuffledUsers.length === 0 ? "error" : "info"}
+            >
+              {shuffledUsers.length === 0
+                ? `No users or stories found with `
+                : `Showing results for `}
+              the search query: &ldquo;{userList.query}&rdquo;.
+              <Button
+                onClick={() => {
+                  userList.setQuery("");
+                  userList.filterUsersByQuery("", PeopleViews.STORY, true);
+                  deleteQueryParam();
+                }}
+                sx={{
+                  ml: 2
+                }}
+                variant="contained"
+                color="primary"
+              >
+                Clear search
+              </Button>
+            </Alert>
+          )}
 
-      {userList.query && (
-        <Alert
-          sx={{
-            my: 2,
-            display: "flex",
-            alignItems: "center"
-          }}
-          severity={users.length === 0 ? "error" : "info"}
-        >
-          {users.length === 0
-            ? `No users or stories found with `
-            : `Showing results for `}
-          the search query: &ldquo;
-          {userList.query}&rdquo;.
-          <Button
-            onClick={() => {
-              userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.STORY);
-            }}
-            sx={{
-              ml: 2
-            }}
-            variant="contained"
-            color="primary"
-          >
-            Clear search
-          </Button>
-        </Alert>
-      )}
-
-      {users.length > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-            justifyContent: "center"
-          }}
-        >
-          <Column users={column1} />
-
-          <Column users={column2} />
-        </Box>
+          {shuffledUsers.length > 0 && (
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                justifyContent: "center"
+              }}
+            >
+              <Column users={column1} />
+              <Column users={column2} />
+            </Box>
+          )}
+        </>
       )}
     </>
   );

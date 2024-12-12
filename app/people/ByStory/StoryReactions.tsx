@@ -18,10 +18,14 @@ type Reaction = {
   createdAt: string;
 };
 
-const StoryReactions = ({ story }: { story: DocumentData }) => {
-  const [reactions, setReactions] = useState<Reaction[]>(story.reactions || []);
+const StoryReactions = ({ story }: { story?: DocumentData }) => {
+  const [reactions, setReactions] = useState<Reaction[]>(
+    story?.reactions || []
+  );
 
   useEffect(() => {
+    if (!story) return;
+
     const storyDocRef = doc(db, "myWillemijnStories", story.id);
 
     const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
@@ -34,7 +38,9 @@ const StoryReactions = ({ story }: { story: DocumentData }) => {
     return () => {
       unsubscribe();
     };
-  }, [story.id]);
+  }, [story?.id]);
+
+  if (!story) return null;
 
   const handleReaction = async (reactionType: "like" | "love" | "laugh") => {
     if (!appState.loggedInUser) {

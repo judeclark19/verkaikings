@@ -123,3 +123,10 @@ export function cleanNameString(input: string) {
     .replace(/[\u0300-\u036f]/g, "") // Remove the accents
     .replace(/\s+/g, "_"); // Replace internal spaces with underscores
 }
+
+export const deleteQueryParam = () => {
+  const currentParams = new URLSearchParams(window.location.search);
+  currentParams.delete("query");
+  const newPath = `${window.location.pathname}?${currentParams.toString()}`;
+  window.history.pushState({}, "", newPath);
+};

@@ -3,11 +3,13 @@ import { Link, Typography } from "@mui/material";
 function ReadOnlyContactItem({
   value,
   icon,
-  link
+  link,
+  height
 }: {
   value: string;
   icon?: React.ReactNode;
   link?: string;
+  height?: string;
 }) {
   return (
     <div
@@ -15,7 +17,7 @@ function ReadOnlyContactItem({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        height: "76px"
+        height: height || "60px"
       }}
     >
       <div

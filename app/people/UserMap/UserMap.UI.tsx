@@ -4,14 +4,18 @@ import { Alert, Button, Skeleton, Typography } from "@mui/material";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 import { PeopleViews } from "../PeopleList";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const hasInitializedRef = useRef(false); // Track if initialization has occurred
 
   useEffect(() => {
-    if (!mapRef.current || !appState.userMap) return;
+    if (!mapRef.current || !appState.userMap || hasInitializedRef.current)
+      return;
 
     async function initialize() {
+      hasInitializedRef.current = true; // Prevent further initialization
       if (window.google) {
         // Initialize the map
         appState.userMap?.initializeMap(mapRef.current as HTMLElement);
@@ -27,11 +31,6 @@ const UserMap = observer(() => {
 
     initialize();
   }, [appState.userMap]);
-
-  const clearSearch = () => {
-    userList.setQuery("");
-    userList.filterUsersByQuery("", PeopleViews.MAP);
-  };
 
   const hasQuery = !!userList.query;
   const hasVisibleMarkers =
@@ -72,7 +71,11 @@ const UserMap = observer(() => {
             : `No users to show based on `}
           the query &ldquo;{userList.query}&rdquo;.
           <Button
-            onClick={clearSearch}
+            onClick={() => {
+              userList.setQuery("");
+              userList.filterUsersByQuery("", PeopleViews.MAP, true);
+              deleteQueryParam();
+            }}
             sx={{
               ml: 2
             }}
