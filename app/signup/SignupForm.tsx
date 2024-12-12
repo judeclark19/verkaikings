@@ -87,7 +87,7 @@ const SignupForm = () => {
       setError("There is already an account signed up with this phone number.");
     } else {
       setError(
-        "Sorry, that phone number was not found on our members list. If you think this may be a mistake, please message Jude Clark in WhatsApp."
+        `Sorry, that phone number was not found on our members list. If you think this may be a mistake, please send a message in the "Verkaikings Website" of our WhatsApp community.`
       );
     }
     setChecking(false);
@@ -216,18 +216,21 @@ const SignupForm = () => {
                     "Submit Phone Number"
                   )}
                 </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  onClick={() => {
-                    setError(
-                      "Sorry, that phone number was not found on our members list. If you think this may be a mistake, please message Jude Clark in WhatsApp."
-                    );
-                  }}
-                >
-                  Simulate Rejection
-                </Button>
+
+                {process.env.NODE_ENV === "development" && (
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={() => {
+                      setError(
+                        `Sorry, that phone number was not found on our members list. If you think this may be a mistake, please send a message in the "Verkaikings Website" of our WhatsApp community.`
+                      );
+                    }}
+                  >
+                    Simulate Rejection
+                  </Button>
+                )}
               </form>
               {error && (
                 <Alert

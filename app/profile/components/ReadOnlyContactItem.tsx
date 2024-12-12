@@ -15,7 +15,7 @@ function ReadOnlyContactItem({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        height: "76px"
+        height: "60px"
       }}
     >
       <div
