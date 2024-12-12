@@ -1,5 +1,5 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
 
@@ -29,14 +29,14 @@ export class UserList {
     if (!users) return;
     this.users = users;
     this.setUsersByCountry(users);
-    this.setUsersByBirthday(users, "setUsers");
+    this.setUsersByBirthday(users);
     appState.initUserMap();
   }
 
   setFilteredUsers(users: DocumentData[]) {
     this.filteredUsers = users;
     this.setUsersByCountry(users);
-    this.setUsersByBirthday(users, "setFilteredUsers");
+    this.setUsersByBirthday(users);
     appState.myWillemijnStories.updateFilteredStories();
     appState.userMap?.updateMarkerVisibility(users);
   }
@@ -64,7 +64,7 @@ export class UserList {
     });
   }
 
-  setUsersByBirthday(users: DocumentData[], reason?: string) {
+  setUsersByBirthday(users: DocumentData[]) {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
 

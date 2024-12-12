@@ -68,7 +68,7 @@ class AppState {
       this.userList.setUsersByCountry(users);
 
       if (!appState.userList.query) {
-        this.userList.setUsersByBirthday(users, "app state init");
+        this.userList.setUsersByBirthday(users);
       }
       this.setPDCinDB();
       myProfileState.init(this.loggedInUser!, userId);
