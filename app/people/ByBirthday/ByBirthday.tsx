@@ -7,6 +7,7 @@ import ByMonth from "./ByMonth";
 import userList from "@/lib/UserList";
 import { useEffect } from "react";
 import { PeopleViews } from "../PeopleList";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const ByBirthday = observer(() => {
   useEffect(() => {
@@ -27,14 +28,16 @@ const ByBirthday = observer(() => {
         List of Birthdays
       </Typography>
 
-      {!appState.isInitialized && (
-        <Skeleton
-          variant="rectangular"
-          width="100%"
-          height="70vh"
-          sx={{ borderRadius: 1 }}
-        />
-      )}
+      {!appState.isInitialized ||
+        (!userList.query &&
+          Object.keys(userList.usersByBirthday).length === 0 && (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="70vh"
+              sx={{ borderRadius: 1 }}
+            />
+          ))}
 
       {userList.query && (
         <Alert
@@ -57,7 +60,8 @@ const ByBirthday = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.BIRTHDAY);
+              userList.filterUsersByQuery("", PeopleViews.BIRTHDAY, true);
+              deleteQueryParam();
             }}
             sx={{
               ml: 2

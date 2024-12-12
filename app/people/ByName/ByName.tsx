@@ -6,6 +6,7 @@ import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 import ByLetter from "./ByLetter";
 import { PeopleViews } from "../PeopleList";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const ByName = observer(() => {
   const groupedUsers = userList.filteredUsers
@@ -60,7 +61,8 @@ const ByName = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.NAME);
+              userList.filterUsersByQuery("", PeopleViews.NAME, true);
+              deleteQueryParam();
             }}
             sx={{
               ml: 2

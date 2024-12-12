@@ -6,6 +6,7 @@ import { Alert, Box, Button, Skeleton, Typography } from "@mui/material";
 import userList from "@/lib/UserList";
 import ByCountry from "./ByCountry";
 import { PeopleViews } from "../PeopleList";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const ByLocation = observer(() => {
   // Sort countries by user count
@@ -41,23 +42,25 @@ const ByLocation = observer(() => {
         List of Users by Country and City
       </Typography>
 
-      {!appState.isInitialized && (
-        <Skeleton
-          variant="rectangular"
-          width="1016px"
-          sx={{
-            margin: "auto",
-            maxWidth: "100%",
-            borderRadius: 1,
-            height: {
-              xs: "650px",
-              md: "350px"
-            }
-          }}
-        />
-      )}
+      {!appState.isInitialized ||
+        (!appState.userList.query &&
+          Object.keys(userList.usersByCountry).length === 0 && (
+            <Skeleton
+              variant="rectangular"
+              width="1016px"
+              sx={{
+                margin: "auto",
+                maxWidth: "100%",
+                borderRadius: 1,
+                height: {
+                  xs: "650px",
+                  md: "350px"
+                }
+              }}
+            />
+          ))}
 
-      {userList.query && (
+      {userList.query && appState.isInitialized && (
         <Alert
           sx={{
             my: 2,
@@ -74,7 +77,8 @@ const ByLocation = observer(() => {
           <Button
             onClick={() => {
               userList.setQuery("");
-              userList.filterUsersByQuery("", PeopleViews.LOCATION);
+              userList.filterUsersByQuery("", PeopleViews.LOCATION, true);
+              deleteQueryParam();
             }}
             sx={{
               ml: 2

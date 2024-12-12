@@ -1,5 +1,5 @@
 import { DocumentData } from "firebase/firestore";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
 
@@ -29,14 +29,14 @@ export class UserList {
     if (!users) return;
     this.users = users;
     this.setUsersByCountry(users);
-    this.setUsersByBirthday(users);
+    this.setUsersByBirthday(users, "setUsers");
     appState.initUserMap();
   }
 
   setFilteredUsers(users: DocumentData[]) {
     this.filteredUsers = users;
     this.setUsersByCountry(users);
-    this.setUsersByBirthday(users);
+    this.setUsersByBirthday(users, "setFilteredUsers");
     appState.myWillemijnStories.updateFilteredStories();
     appState.userMap?.updateMarkerVisibility(users);
   }
@@ -64,7 +64,7 @@ export class UserList {
     });
   }
 
-  setUsersByBirthday(users: DocumentData[]) {
+  setUsersByBirthday(users: DocumentData[], reason?: string) {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
 
@@ -99,7 +99,11 @@ export class UserList {
     this.query = query;
   }
 
-  filterUsersByQuery(query: string, viewingBy: PeopleViews) {
+  filterUsersByQuery(
+    query: string,
+    viewingBy: PeopleViews,
+    skipDebounce = false
+  ) {
     const fieldsToSearch = ["firstName", "lastName", "username"];
     if (viewingBy === PeopleViews.NAME) {
       fieldsToSearch.push("phoneNumber");
@@ -113,46 +117,51 @@ export class UserList {
       clearTimeout(this.debounceTimeout);
     }
 
-    this.debounceTimeout = setTimeout(() => {
-      const lowerCaseQuery = query.toLowerCase();
+    this.debounceTimeout = setTimeout(
+      () => {
+        const lowerCaseQuery = query.toLowerCase();
 
-      if (!lowerCaseQuery.trim()) {
-        this.setFilteredUsers(this.users);
-        return;
-      }
-
-      const result = this.users.filter((user) => {
-        // Check individual fields
-        const matchesField = fieldsToSearch.some((key) =>
-          String(user[key]).toLowerCase().includes(lowerCaseQuery)
-        );
-
-        // Check combined firstName + lastName
-        const fullName = `${user.firstName || ""} ${
-          user.lastName || ""
-        }`.trim();
-        const matchesFullName = fullName.toLowerCase().includes(lowerCaseQuery);
-
-        // Check city and country names
-        const cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
-        const countryName =
-          appState.countryNames[user.countryAbbr]?.toLowerCase() || "";
-        const matchesLocation =
-          cityName.includes(lowerCaseQuery) ||
-          countryName.includes(lowerCaseQuery);
-
-        if (
-          viewingBy === PeopleViews.LOCATION ||
-          viewingBy === PeopleViews.MAP
-        ) {
-          return matchesField || matchesFullName || matchesLocation;
-        } else {
-          return matchesField || matchesFullName;
+        if (!lowerCaseQuery.trim()) {
+          this.setFilteredUsers(this.users);
+          return;
         }
-      });
 
-      this.setFilteredUsers(result);
-    }, 300); // 300ms debounce
+        const result = this.users.filter((user) => {
+          // Check individual fields
+          const matchesField = fieldsToSearch.some((key) =>
+            String(user[key]).toLowerCase().includes(lowerCaseQuery)
+          );
+
+          // Check combined firstName + lastName
+          const fullName = `${user.firstName || ""} ${
+            user.lastName || ""
+          }`.trim();
+          const matchesFullName = fullName
+            .toLowerCase()
+            .includes(lowerCaseQuery);
+
+          // Check city and country names
+          const cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
+          const countryName =
+            appState.countryNames[user.countryAbbr]?.toLowerCase() || "";
+          const matchesLocation =
+            cityName.includes(lowerCaseQuery) ||
+            countryName.includes(lowerCaseQuery);
+
+          if (
+            viewingBy === PeopleViews.LOCATION ||
+            viewingBy === PeopleViews.MAP
+          ) {
+            return matchesField || matchesFullName || matchesLocation;
+          } else {
+            return matchesField || matchesFullName;
+          }
+        });
+
+        this.setFilteredUsers(result);
+      },
+      skipDebounce ? 0 : 300
+    );
   }
 }
 

@@ -17,6 +17,7 @@ import StoryComments from "./StoryComments";
 import StoryReactions from "./StoryReactions";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 const Column = observer(({ users }: { users: DocumentData[] }) => {
   const [stories, setStories] = useState<Record<string, DocumentData>>({});
@@ -138,7 +139,8 @@ const ByStory = observer(() => {
               <Button
                 onClick={() => {
                   userList.setQuery("");
-                  userList.filterUsersByQuery("", PeopleViews.STORY);
+                  userList.filterUsersByQuery("", PeopleViews.STORY, true);
+                  deleteQueryParam();
                 }}
                 sx={{
                   ml: 2

@@ -19,12 +19,13 @@ import {
 import ByName from "./ByName/ByName";
 import ByLocation from "./ByLocation/ByLocation";
 import ByBirthday from "./ByBirthday/ByBirthday";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import UserMap from "./UserMap/UserMap.UI";
 import ByStory from "./ByStory/ByStory";
 import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
 import { ClearIcon } from "@mui/x-date-pickers/icons";
+import { deleteQueryParam } from "@/lib/clientUtils";
 
 export enum PeopleViews {
   NAME = "name",
@@ -36,55 +37,44 @@ export enum PeopleViews {
 
 const PeopleList = observer(() => {
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [searchPlaceholderText, setSearchPlaceholderText] =
     useState("Search users...");
   const [viewingBy, setViewingBy] = useState<PeopleViews>(PeopleViews.NAME);
 
   useEffect(() => {
+    if (!userList.users || userList.users.length === 0) return;
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
     const queryParam = searchParams.get("query") || "";
+
     if (!Object.values(PeopleViews).includes(viewByParam as PeopleViews)) {
       viewByParam = PeopleViews.NAME;
     }
 
     if (queryParam) {
-      userList.setQuery(queryParam); // Initialize `userList.query`
+      userList.setQuery(queryParam);
       userList.filterUsersByQuery(queryParam, viewByParam as PeopleViews);
     }
 
     setViewingBy(viewByParam as PeopleViews);
     setLoading(false);
-  }, []);
+  }, [userList.users]);
 
-  useEffect(() => {
-    if (userList.query) {
-      router.replace(
-        `?viewBy=${viewingBy.toLowerCase()}&query=${userList.query}`
-      );
-    } else {
-      router.replace(`?viewBy=${viewingBy.toLowerCase()}`);
-    }
+  const handleViewChange = (view: PeopleViews) => {
+    setViewingBy(view);
+
+    userList.filterUsersByQuery(userList.query, view, true);
+
+    const currentParams = new URLSearchParams(window.location.search);
+    currentParams.set("viewBy", view);
+    const newPath = `${window.location.pathname}?${currentParams.toString()}`;
+    window.history.pushState({}, "", newPath);
 
     if (viewingBy === "story") {
       setSearchPlaceholderText("Search users or stories...");
     } else {
       setSearchPlaceholderText("Search users...");
     }
-    userList.filterUsersByQuery(userList.query, viewingBy);
-  }, [viewingBy]);
-
-  const handleViewChange = (view: PeopleViews) => {
-    setViewingBy(view);
-    userList.filterUsersByQuery(userList.query, view);
-  };
-
-  const deleteQueryParam = () => {
-    const currentParams = new URLSearchParams(window.location.search);
-    currentParams.delete("query");
-    const newPath = `${window.location.pathname}?${currentParams.toString()}`;
-    window.history.pushState({}, "", newPath);
   };
 
   if (loading) {
