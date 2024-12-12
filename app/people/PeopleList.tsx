@@ -80,6 +80,13 @@ const PeopleList = observer(() => {
     userList.filterUsersByQuery(userList.query, view);
   };
 
+  const deleteQueryParam = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+    currentParams.delete("query");
+    const newPath = `${window.location.pathname}?${currentParams.toString()}`;
+    window.history.pushState({}, "", newPath);
+  };
+
   if (loading) {
     return (
       <Box
@@ -169,12 +176,16 @@ const PeopleList = observer(() => {
 
             // Update the URL with new query parameters
             const currentParams = new URLSearchParams(window.location.search);
-            currentParams.set("query", e.target.value);
-            const newPath = `${
-              window.location.pathname
-            }?${currentParams.toString()}`;
 
-            window.history.pushState({}, "", newPath);
+            if (e.target.value) {
+              currentParams.set("query", e.target.value);
+              const newPath = `${
+                window.location.pathname
+              }?${currentParams.toString()}`;
+              window.history.pushState({}, "", newPath);
+            } else {
+              deleteQueryParam();
+            }
 
             userList.filterUsersByQuery(e.target.value, viewingBy);
           }}
@@ -191,18 +202,7 @@ const PeopleList = observer(() => {
                     aria-label="clear search"
                     onClick={() => {
                       userList.setQuery("");
-
-                      // Update the URL with new query parameters
-                      const currentParams = new URLSearchParams(
-                        window.location.search
-                      );
-                      currentParams.delete("query");
-                      const newPath = `${
-                        window.location.pathname
-                      }?${currentParams.toString()}`;
-
-                      window.history.pushState({}, "", newPath);
-
+                      deleteQueryParam();
                       userList.filterUsersByQuery("", viewingBy);
                     }}
                   >

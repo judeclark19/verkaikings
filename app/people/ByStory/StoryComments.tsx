@@ -20,7 +20,9 @@ type Comment = {
   text: string;
 };
 
-const StoryComments = ({ story }: { story: DocumentData }) => {
+const StoryComments = ({ story }: { story?: DocumentData }) => {
+  if (!story) return null;
+
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>(story.comments || []);
 

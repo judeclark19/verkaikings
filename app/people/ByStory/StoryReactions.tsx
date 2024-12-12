@@ -18,7 +18,9 @@ type Reaction = {
   createdAt: string;
 };
 
-const StoryReactions = ({ story }: { story: DocumentData }) => {
+const StoryReactions = ({ story }: { story?: DocumentData }) => {
+  if (!story) return null;
+
   const [reactions, setReactions] = useState<Reaction[]>(story.reactions || []);
 
   useEffect(() => {

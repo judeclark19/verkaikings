@@ -101,7 +101,7 @@ const ByStory = observer(() => {
     const shuffled = filteredUsers.slice().sort(() => Math.random() - 0.5);
     setShuffledUsers(shuffled);
     setLoading(false);
-  }, [appState.isInitialized, userList.users]);
+  }, [appState.isInitialized, userList.users, userList.filteredUsers]);
 
   // Split into 2 columns
   const half = Math.ceil(shuffledUsers.length / 2);
