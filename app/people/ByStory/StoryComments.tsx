@@ -196,6 +196,9 @@ const StoryComments = ({ story }: { story: DocumentData }) => {
             type="submit"
             variant="contained"
             size="small"
+            sx={{
+              height: 40
+            }}
             disabled={!commentText.trim()} // Disable button if input is empty
           >
             Post

@@ -2,7 +2,7 @@ import appState from "@/lib/AppState";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
-class MyProfileState {
+export class MyProfileState {
   isFetched = false;
   user: DocumentData | null = null;
   userId: string | null = null;

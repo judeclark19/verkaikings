@@ -2,10 +2,12 @@ import { Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../../MyProfile.state";
 import { Email as EmailIcon } from "@mui/icons-material";
-import { Instagram, Duolingo, BeReal } from "./index";
 import EmailChangeModal from "../../components/EmailChangeModal/EmailChangeModal";
-import TikTok from "./TikTok";
-
+import TikTokIcon from "../../../../public/images/icons8-tiktok-24.svg";
+import SocialMediaInput from "./SocialMediaInput";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import DuolingoIcon from "../../../../public/images/icons8-duolingo-24.svg";
+import BeRealIcon from "../../../../public/images/icons8-bereal-24.svg";
 const SocialsList = observer(() => {
   return (
     <Paper
@@ -55,10 +57,57 @@ const SocialsList = observer(() => {
         </div>
         <EmailChangeModal />
       </div>
-      <Instagram />
-      <TikTok />
-      <Duolingo />
-      <BeReal />
+      <SocialMediaInput
+        platformName="TikTok"
+        platformIcon={<InstagramIcon />}
+        stateKey="instagram"
+        profileStateSetter={(value) => myProfileState.setInstagram(value)}
+        linkPrefix="https://www.instagram.com/"
+      />
+      <SocialMediaInput
+        platformName="TikTok"
+        platformIcon={
+          <TikTokIcon
+            size={24}
+            style={{
+              flexShrink: 0
+            }}
+          />
+        }
+        stateKey="tiktok"
+        profileStateSetter={(value) => myProfileState.setTiktok(value)}
+        linkPrefix="https://www.tiktok.com/@"
+      />
+
+      <SocialMediaInput
+        platformName="Duolingo"
+        platformIcon={
+          <DuolingoIcon
+            size={24}
+            style={{
+              flexShrink: 0
+            }}
+          />
+        }
+        stateKey="duolingo"
+        profileStateSetter={(value) => myProfileState.setDuolingo(value)}
+        linkPrefix="https://www.duolingo.com/profile/"
+      />
+
+      <SocialMediaInput
+        platformName="BeReal"
+        platformIcon={
+          <BeRealIcon
+            size={24}
+            style={{
+              flexShrink: 0
+            }}
+          />
+        }
+        stateKey="beReal"
+        profileStateSetter={(value) => myProfileState.setBeReal(value)}
+        linkPrefix="https://bere.al/"
+      />
     </Paper>
   );
 });
