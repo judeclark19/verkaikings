@@ -2,6 +2,7 @@ import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
+import { app } from "firebase-admin";
 
 type CountryUsersType = {
   countryName: string;
@@ -30,11 +31,13 @@ export class UserList {
     this.users = users;
 
     // Fetch city details for any new city IDs
-    users.forEach((user) => {
-      if (user.cityId && !appState.cityNames[user.cityId]) {
-        appState.fetchCityDetails(user.cityId); // Fetch details for new city
-      }
-    });
+    if (Object.keys(appState.cityNames).length) {
+      users.forEach((user) => {
+        if (user.cityId && !appState.cityNames[user.cityId]) {
+          appState.fetchCityDetails(user.cityId); // Fetch details for new city
+        }
+      });
+    }
 
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
