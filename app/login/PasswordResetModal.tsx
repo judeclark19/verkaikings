@@ -124,7 +124,11 @@ export default function PasswordResetModal({ email }: { email: string }) {
                 fullWidth
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={14} /> : "Send reset link"}
+                {loading ? (
+                  <CircularProgress color="inherit" size={14} />
+                ) : (
+                  "Send reset link"
+                )}
               </Button>
             </Box>
           </Box>

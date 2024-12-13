@@ -118,6 +118,11 @@ const MyWillemijnStory = observer(() => {
           fullWidth
           value={myProfileState.myWillemijnStory}
           onChange={(e) => myProfileState.setMyWillemijnStory(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              handleSubmit(e);
+            }
+          }}
           variant="outlined"
         />
       ) : (

@@ -32,6 +32,12 @@ const UserMap = observer(() => {
     initialize();
   }, [appState.userMap]);
 
+  useEffect(() => {
+    if (appState.isInitialized) {
+      userList.filterUsersByQuery(userList.query, PeopleViews.MAP, true);
+    }
+  }, [userList.users]);
+
   const hasQuery = !!userList.query;
   const hasVisibleMarkers =
     appState.userMap && appState.userMap.visibleMarkerCount > 0;

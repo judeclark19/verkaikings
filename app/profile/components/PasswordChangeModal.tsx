@@ -148,7 +148,11 @@ export default function PasswordChangeModal() {
                 fullWidth
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={14} /> : "Update Password"}
+                {loading ? (
+                  <CircularProgress color="inherit" size={14} />
+                ) : (
+                  "Update Password"
+                )}
               </Button>
             </Box>
           </Box>

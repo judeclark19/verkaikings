@@ -31,6 +31,10 @@ const UserProfile = observer(
     const [usersWillemijnStory, setUsersWillemijnStory] =
       useState<DocumentData | null>(null);
 
+    const userInfo = appState.userList.users.find(
+      (u) => u.username === username
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
       if (!appState.isInitialized) return;
@@ -39,10 +43,6 @@ const UserProfile = observer(
       if (user) {
         document.title = `${user.username}'s Profile | Willemijn's World Website`;
       } else if (appState.userList.users.length && !user) {
-        const userInfo = appState.userList.users.find(
-          (u) => u.username === username
-        );
-
         if (userInfo) {
           setUser(userInfo);
 
@@ -74,6 +74,25 @@ const UserProfile = observer(
       appState.userList.users,
       decodedToken.email
     ]);
+
+    useEffect(() => {
+      if (!appState.isInitialized || !userInfo) {
+        return;
+      }
+
+      // Find and set the user's Willemijn story if it exists
+      const userStory = appState.myWillemijnStories.allStories.find(
+        (story) => story.authorId === userInfo.id
+      );
+      if (userStory) {
+        setUsersWillemijnStory(userStory);
+      }
+    }, [appState.myWillemijnStories.allStories]);
+
+    useEffect(() => {
+      if (!appState.isInitialized) return;
+      setUser(userInfo!);
+    }, [appState.userList.users]);
 
     if (error) {
       return <div>{error}</div>;
@@ -150,7 +169,7 @@ const UserProfile = observer(
                 textAlign: "center"
               }}
             >
-              {user.firstName} {user.lastName} {""}
+              {user.firstName} {user.lastName}{" "}
               {checkIfBirthdayToday(user.birthday) && "🎂"}
             </Typography>
 
@@ -162,9 +181,10 @@ const UserProfile = observer(
                 }
               }}
             >
-              {(user.instagram || user.duolingo || user.beReal) && (
-                <SocialsList user={user} />
-              )}
+              {(user.instagram ||
+                user.duolingo ||
+                user.beReal ||
+                user.tiktok) && <SocialsList user={user} />}
             </Box>
           </Box>
           {/* MAIN CONTENT */}
