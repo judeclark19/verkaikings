@@ -206,12 +206,10 @@ const MyProfile = observer(() => {
           {/* THIRD SECTION - SUPPORT*/}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
               mt: 3
             }}
           >
+            <Typography variant="h2">Change Password</Typography>
             <PasswordChangeModal />
           </Box>
         </Box>

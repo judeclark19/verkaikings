@@ -22,12 +22,13 @@ export class MyWillemijnStories {
   updateFilteredStories() {
     const filteredStories = this.allStories.filter((story) => {
       return (
-        story.storyContent
+        (story.storyContent
           .toLowerCase()
           .includes(appState.userList.query.toLowerCase()) ||
-        appState.userList.filteredUsers.some((user) => {
-          return user.id === story.authorId;
-        })
+          appState.userList.filteredUsers.some((user) => {
+            return user.id === story.authorId;
+          })) &&
+        story.storyContent
       );
     });
 
