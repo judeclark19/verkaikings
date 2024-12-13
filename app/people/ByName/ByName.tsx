@@ -7,6 +7,7 @@ import userList from "@/lib/UserList";
 import ByLetter from "./ByLetter";
 import { PeopleViews } from "../PeopleList";
 import { deleteQueryParam } from "@/lib/clientUtils";
+import { useEffect } from "react";
 
 const ByName = observer(() => {
   const groupedUsers = userList.filteredUsers
@@ -20,6 +21,12 @@ const ByName = observer(() => {
       groups[firstLetter].push(user);
       return groups;
     }, {} as Record<string, typeof userList.filteredUsers>);
+
+  useEffect(() => {
+    if (appState.isInitialized) {
+      userList.filterUsersByQuery(userList.query, PeopleViews.NAME, true);
+    }
+  }, [userList.users]);
 
   return (
     <div>

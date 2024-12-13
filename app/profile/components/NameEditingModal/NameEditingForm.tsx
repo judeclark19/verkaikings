@@ -2,7 +2,7 @@ import { Box, Button, CircularProgress, TextField } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import myProfileState from "../../MyProfile.state";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { cleanNameString } from "@/lib/clientUtils";
@@ -36,6 +36,14 @@ const NameEditingForm = observer(
               lastName
             )}`
           });
+
+          const userDocSnapshot = await getDoc(userDoc);
+          if (userDocSnapshot.exists()) {
+            // Access the document data
+            const userData = userDocSnapshot.data();
+            console.log("User data:", userData);
+            myProfileState.setUser(userData);
+          }
           console.log("Firebase displayName updated successfully");
         }
 
@@ -101,7 +109,7 @@ const NameEditingForm = observer(
             Cancel
           </Button>
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            {loading ? <CircularProgress size={14} /> : "Save"}
+            {loading ? <CircularProgress color="inherit" size={14} /> : "Save"}
           </Button>
         </Box>
       </Box>
