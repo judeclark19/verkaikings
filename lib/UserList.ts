@@ -2,7 +2,6 @@ import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
-import { app } from "firebase-admin";
 
 type CountryUsersType = {
   countryName: string;
