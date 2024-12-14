@@ -41,7 +41,7 @@ class UserMapState {
   }
 
   initializeMap(mapContainer: HTMLElement) {
-    if (!window.google) return;
+    if (!window.google || !appState.isInitialized) return;
     console.log("Initializing map...");
 
     this.map = new window.google.maps.Map(mapContainer, {

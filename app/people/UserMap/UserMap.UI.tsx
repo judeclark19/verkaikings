@@ -11,7 +11,12 @@ const UserMap = observer(() => {
   const hasInitializedRef = useRef(false); // Track if initialization has occurred
 
   useEffect(() => {
-    if (!mapRef.current || !appState.userMap || hasInitializedRef.current)
+    if (
+      !mapRef.current ||
+      !appState.userMap ||
+      hasInitializedRef.current ||
+      !appState.isInitialized
+    )
       return;
 
     async function initialize() {
@@ -30,13 +35,7 @@ const UserMap = observer(() => {
     }
 
     initialize();
-  }, [appState.userMap]);
-
-  useEffect(() => {
-    if (appState.isInitialized) {
-      userList.filterUsersByQuery(userList.query, PeopleViews.MAP, true);
-    }
-  }, [userList.users]);
+  }, [appState.userMap, appState.isInitialized]);
 
   const hasQuery = !!userList.query;
   const hasVisibleMarkers =
