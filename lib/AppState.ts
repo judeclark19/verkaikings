@@ -54,7 +54,7 @@ class AppState {
         if (!cityIdOfUser) continue;
 
         if (!this.cityNames[cityIdOfUser] || !this.cityDetails[cityIdOfUser]) {
-          await this.fetchCityDetails(cityIdOfUser, "appstate init");
+          await this.fetchCityDetails(cityIdOfUser);
         }
       }
 
