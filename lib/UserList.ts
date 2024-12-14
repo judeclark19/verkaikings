@@ -30,7 +30,7 @@ export class UserList {
     this.users = users;
 
     // Fetch city details for any new city IDs
-    if (Object.keys(appState.cityNames).length) {
+    if (Object.keys(appState.cityNames).length > 0) {
       users.forEach((user) => {
         if (user.cityId && !appState.cityNames[user.cityId]) {
           appState.fetchCityDetails(user.cityId); // Fetch details for new city

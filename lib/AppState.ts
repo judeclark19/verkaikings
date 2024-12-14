@@ -49,12 +49,12 @@ class AppState {
       await this.loadPDCfromDB();
 
       // Fetch city names and details
-      const cityIds = users.map((user) => user.cityId);
-      for (const cityId of cityIds) {
-        if (!cityId) continue;
+      const cityIdsOfUsers = users.map((user) => user.cityId);
+      for (const cityIdOfUser of cityIdsOfUsers) {
+        if (!cityIdOfUser) continue;
 
-        if (!this.cityNames[cityId] || !this.cityDetails[cityId]) {
-          await this.fetchCityDetails(cityId);
+        if (!this.cityNames[cityIdOfUser] || !this.cityDetails[cityIdOfUser]) {
+          await this.fetchCityDetails(cityIdOfUser);
         }
       }
 
@@ -88,6 +88,7 @@ class AppState {
   }
 
   async loadPDCfromDB() {
+    console.log("Loading place data cache from database...", this.language);
     try {
       const pdcDocRef = doc(db, "placeDataCache", this.language);
       const pdcSnapshot = await getDoc(pdcDocRef);
@@ -115,7 +116,13 @@ class AppState {
 
       // Load cached data
       this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
+      console.log("city names fetched from db:", toJS(this.cityNames));
+
       this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
+      console.log(
+        "city details fetched from db:",
+        JSON.parse(pdcSnapshot.data()?.cityDetails)
+      );
     } catch (error) {
       console.error("Error loading from database:", error);
     }

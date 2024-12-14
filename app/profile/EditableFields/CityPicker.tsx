@@ -2,7 +2,13 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { TextField } from "@mui/material";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
@@ -106,20 +112,33 @@ const CityPicker = observer(
         cityId: myProfileState.placeId,
         countryAbbr: country?.toLowerCase() || null
       })
-        .then(() => {
-          fetchUsers().then((users) => {
-            userList.setUsers(users);
-          });
+        .then(async () => {
+          // Fetch the updated document
+          const updatedDoc = await getDoc(userDoc);
+          const updatedUserData = updatedDoc.data();
 
-          // check if country was changed, if so update myProfileStae.countryName
-          if (country && country !== myProfileState.countryAbbr) {
-            myProfileState.setCountryAbbr(country.toLowerCase());
-            myProfileState.setCountryName(country);
+          if (updatedUserData) {
+            // Update the user list with the fetched users
+            fetchUsers().then((users) => {
+              userList.setUsers(users);
+            });
+
+            // Update MyProfile state with new document data
+            myProfileState.setUser(updatedUserData);
+
+            // Check if the country was changed, and update country details in MyProfile state
+            if (country && country !== myProfileState.countryAbbr) {
+              myProfileState.setCountryAbbr(country.toLowerCase());
+              myProfileState.setCountryName(country);
+            }
+
+            console.log(
+              "User's city updated successfully",
+              updatedUserData.cityName
+            );
+          } else {
+            console.error("No data found in the updated document.");
           }
-          console.log(
-            "User's city updated successfully",
-            myProfileState.cityName
-          );
         })
         .catch((error) => {
           console.error("Error updating user's city: ", error);
