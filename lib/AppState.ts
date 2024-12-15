@@ -4,8 +4,11 @@ import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserList } from "./UserList";
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc
@@ -24,9 +27,29 @@ class AppState {
   countryNames: Record<string, string> = {};
   userMap: UserMapState | null = null;
   initPromise: Promise<void> | null = null;
+  userUnsubscribe: (() => void) | null = null;
+  storyUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  async initializeSnapshots(isLoggedIn: boolean, userId?: string) {
+    if (isLoggedIn) {
+      if (!this.isInitialized) {
+        const users = await getDocs(collection(db, "users"));
+        const stories = await getDocs(collection(db, "myWillemijnStories"));
+        this.init(
+          users.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+          userId!,
+          stories.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+      }
+      this.subscribeToUsers();
+      this.subscribeToStories();
+    } else {
+      this.unsubscribeFromSnapshots();
+    }
   }
 
   async init(users: DocumentData[], userId: string, stories: DocumentData[]) {
@@ -85,6 +108,41 @@ class AppState {
   async waitForInitialization() {
     if (this.isInitialized) return;
     if (this.initPromise) await this.initPromise;
+  }
+
+  subscribeToUsers() {
+    this.userUnsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+      const updatedUsers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      this.userList.setUsers(updatedUsers);
+    });
+  }
+
+  subscribeToStories() {
+    this.storyUnsubscribe = onSnapshot(
+      collection(db, "myWillemijnStories"),
+      (snapshot) => {
+        const updatedStories = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        this.myWillemijnStories.setAllStories(updatedStories);
+        this.myWillemijnStories.updateFilteredStories();
+      }
+    );
+  }
+
+  unsubscribeFromSnapshots() {
+    if (this.userUnsubscribe) {
+      this.userUnsubscribe();
+      this.userUnsubscribe = null;
+    }
+    if (this.storyUnsubscribe) {
+      this.storyUnsubscribe();
+      this.storyUnsubscribe = null;
+    }
   }
 
   async loadPDCfromDB() {
