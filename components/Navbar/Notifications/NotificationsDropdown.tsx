@@ -11,7 +11,8 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import notificationsState from "@/app/profile/Notifications.state";
+import notificationsState from "@/app/notifications/Notifications.state";
+import NotificationsMenuItem from "./NotificationsMenuItem";
 
 const NotificationsDropdown = observer(() => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -23,18 +24,6 @@ const NotificationsDropdown = observer(() => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const markAsRead = async (notifId: string) => {
-    const userId = myProfileState.userId;
-    if (!userId) return;
-
-    try {
-      const notifRef = doc(db, `users/${userId}/notifications`, notifId);
-      await updateDoc(notifRef, { read: true });
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
   };
 
   return (
@@ -102,7 +91,7 @@ const NotificationsDropdown = observer(() => {
           }
         }}
       >
-        {notificationsState.unreadNotifications.length === 0 ? (
+        {notificationsState.notifications.length === 0 ? (
           <MenuItem
             sx={{
               fontSize: "14px",
@@ -119,36 +108,13 @@ const NotificationsDropdown = observer(() => {
           </MenuItem>
         ) : (
           notificationsState.notifications
-            .filter((notif) => !notif.read)
             .slice(0, 5)
-            .map((notif) => (
-              <MenuItem
-                key={notif.id}
-                onClick={() => {
-                  markAsRead(notif.id); // Mark notification as read
-                  if (notif.url) handleClose();
-                }}
-                component={notif.url ? Link : "div"}
-                href={notif.url}
-                sx={{
-                  fontSize: "14px",
-                  fontWeight: notif.read ? "normal" : "bold", // Bold if unread
-                  transition: "background-color 0.3s ease",
-                  color: "background.default",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  "&:hover": {
-                    textDecoration: notif.url ? "underline" : "none",
-                    backgroundColor: "primary.main"
-                  },
-                  padding: "0.75rem 1.5rem"
-                }}
-              >
-                <span>{notif.title.toUpperCase()}</span>
-                <span style={{ fontSize: "12px", color: "text.secondary" }}>
-                  {notif.body}
-                </span>
-              </MenuItem>
+            .map((notification) => (
+              <NotificationsMenuItem
+                key={notification.id}
+                notification={notification}
+                handleClose={handleClose}
+              />
             ))
         )}
 

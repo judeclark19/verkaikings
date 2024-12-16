@@ -8,7 +8,9 @@ import {
   query
 } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-import notificationsState, { NotificationsState } from "./Notifications.state";
+import notificationsState, {
+  NotificationsState
+} from "../notifications/Notifications.state";
 
 export class MyProfileState {
   isFetched = false;

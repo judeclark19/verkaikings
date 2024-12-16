@@ -24,7 +24,7 @@ import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
-import NotificationsDropdown from "./NotificationsDropdown";
+import NotificationsDropdown from "./Notifications/NotificationsDropdown";
 
 const NavbarUI = observer(
   ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {

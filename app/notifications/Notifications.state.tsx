@@ -1,15 +1,64 @@
 import { db } from "@/lib/firebase";
 import {
   collection,
+  doc,
   DocumentData,
   onSnapshot,
   orderBy,
-  query
+  query,
+  updateDoc
 } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
+import myProfileState from "../profile/MyProfile.state";
+
+class Notification {
+  id: string;
+  read: boolean;
+  title: string;
+  body: string | null = null;
+
+  constructor(notification: DocumentData) {
+    makeAutoObservable(this);
+    this.read = notification.read;
+    this.id = notification.id;
+    this.title = notification.title;
+    this.body = notification.body;
+  }
+
+  async markAsRead() {
+    const userId = myProfileState.userId;
+    if (!userId) return;
+
+    try {
+      const notifRef = doc(db, `users/${userId}/notifications`, this.id);
+      await updateDoc(notifRef, { read: true });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  }
+
+  async markAsUnread() {
+    const userId = myProfileState.userId;
+    if (!userId) return;
+    try {
+      const notifRef = doc(db, `users/${userId}/notifications`, this.id);
+      await updateDoc(notifRef, { read: false });
+    } catch (error) {
+      console.error("Error marking notification as unread:", error);
+    }
+  }
+
+  toggleRead() {
+    if (this.read) {
+      this.markAsUnread();
+    } else {
+      this.markAsRead();
+    }
+  }
+}
 
 export class NotificationsState {
-  notifications: DocumentData[] = [];
+  notifications: Notification[] = [];
   unsubscribeNotifications: (() => void) | null = null;
 
   constructor() {
@@ -54,7 +103,9 @@ export class NotificationsState {
   }
 
   setNotifications(notifications: DocumentData[]) {
-    this.notifications = notifications;
+    this.notifications = notifications.map(
+      (notification) => new Notification(notification)
+    );
   }
 
   unsubscribeFromNotifications() {

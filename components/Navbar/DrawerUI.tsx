@@ -20,7 +20,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "styled-components";
 import myProfileState from "@/app/profile/MyProfile.state";
-import notificationsState from "@/app/profile/Notifications.state";
+import notificationsState from "@/app/notifications/Notifications.state";
 
 const ListStyle = styled(List)`
   a,
