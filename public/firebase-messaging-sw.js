@@ -1,6 +1,23 @@
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    fetch("/api/firebaseConfig")
+    fetch("/api/getSecret")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch shared secret");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("DATA", data);
+        const sharedSecret = data.sharedSecret;
+
+        // Use the fetched secret in subsequent requests
+        return fetch("/api/firebaseConfig", {
+          headers: {
+            "x-app-secret": sharedSecret
+          }
+        });
+      })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch Firebase config");

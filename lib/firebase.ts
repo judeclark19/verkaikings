@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { isSupported, getMessaging, getToken } from "firebase/messaging";
 
@@ -40,7 +40,7 @@ if (typeof window !== "undefined") {
   });
 }
 
-export const requestNotificationPermission = async () => {
+export const requestNotificationPermission = async (userId: string) => {
   if (!messaging) {
     console.warn("Messaging not initialized or unsupported.");
     return;
@@ -53,8 +53,10 @@ export const requestNotificationPermission = async () => {
     });
     if (token) {
       console.log("FCM Token:", token);
+      const tokenRef = doc(db, "users", userId, "fcmTokens", token);
+      await setDoc(tokenRef, { token, createdAt: new Date() });
     } else {
-      console.log("No registration token available.");
+      console.warn("No registration token available.");
     }
   } else {
     console.warn("Notification permission not granted.");

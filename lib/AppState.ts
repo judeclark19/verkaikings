@@ -71,7 +71,7 @@ class AppState {
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
-      requestNotificationPermission().catch((err) =>
+      requestNotificationPermission(userId).catch((err) =>
         console.error("Error requesting notification permission:", err)
       );
 
@@ -209,11 +209,19 @@ class AppState {
 
   async fetchCityDetails(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
+    if (!process.env.NEXT_APP_SECRET) {
+      throw new Error("NEXT_APP_SECRET is not defined");
+    }
 
     if (cityId) {
       try {
         const response = await fetch(
-          `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`
+          `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`,
+          {
+            headers: {
+              "x-app-secret": process.env.NEXT_APP_SECRET
+            }
+          }
         );
         const data = await response.json();
 

@@ -1,6 +1,4 @@
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { Button, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { NavLinkType } from "./navLinks";

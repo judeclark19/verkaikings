@@ -24,6 +24,7 @@ import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
+import NotificationsDropdown from "./NotificationsDropdown";
 
 const NavbarUI = observer(
   ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {
@@ -176,6 +177,21 @@ const NavbarUI = observer(
                     </Fragment>
                   );
                 })}
+
+              {isLoggedIn && (
+                <>
+                  <NotificationsDropdown />
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                      borderColor: "background.default",
+                      margin: "0 8px"
+                    }}
+                  />
+                </>
+              )}
+
               <Button
                 color="inherit"
                 onClick={
@@ -185,6 +201,7 @@ const NavbarUI = observer(
               >
                 {isLoggedIn ? "Log Out" : "Log In"}
               </Button>
+
               {!isLoggedIn && (
                 <>
                   <Divider
