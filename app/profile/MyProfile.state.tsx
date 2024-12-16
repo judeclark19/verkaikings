@@ -3,12 +3,12 @@ import { db } from "@/lib/firebase";
 import {
   collection,
   DocumentData,
-  getDocs,
   onSnapshot,
   orderBy,
   query
 } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
+import notificationsState, { NotificationsState } from "./Notifications.state";
 
 export class MyProfileState {
   isFetched = false;
@@ -25,8 +25,9 @@ export class MyProfileState {
   beReal: string | null = null;
   pronouns: string | null = null;
   myWillemijnStory: string | null = null;
-  notifications: DocumentData[] = [];
-  unsubscribeNotifications: (() => void) | null = null;
+  notificationsState: NotificationsState | null = null;
+  // notifications: DocumentData[] = [];
+  // unsubscribeNotifications: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -48,7 +49,8 @@ export class MyProfileState {
     this.setBeReal(user.beReal);
     this.setPronouns(user.pronouns);
 
-    this.subscribeToNotifications(userId);
+    this.notificationsState = notificationsState;
+    this.notificationsState.subscribeToNotifications(userId);
 
     this.setMyWillemijnStory(
       appState.myWillemijnStories.allStories.find(
@@ -122,43 +124,8 @@ export class MyProfileState {
     this.myWillemijnStory = myWillemijnStory;
   }
 
-  subscribeToNotifications(userId: string) {
-    const notificationsRef = collection(db, `users/${userId}/notifications`);
-    const notificationsQuery = query(
-      notificationsRef,
-      orderBy("createdAt", "desc")
-    );
-
-    // Set up Firestore subscription
-    this.unsubscribeNotifications = onSnapshot(
-      notificationsQuery,
-      (snapshot) => {
-        const notifications = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        console.log("Live Notifications:", notifications);
-
-        // You can store this in `appState`, or add a property here to track notifications
-        this.setNotifications(notifications);
-      }
-    );
-  }
-
-  setNotifications(notifications: DocumentData[]) {
-    this.notifications = notifications;
-  }
-
-  unsubscribeFromNotifications() {
-    if (this.unsubscribeNotifications) {
-      this.unsubscribeNotifications();
-      this.unsubscribeNotifications = null;
-    }
-  }
-
   signOut() {
-    this.unsubscribeFromNotifications();
+    this.notificationsState?.unsubscribeFromNotifications();
 
     this.setUser(null);
     this.setUserId(null);

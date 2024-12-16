@@ -9,14 +9,15 @@ import NotificationsIcon from "@mui/icons-material/Notifications"; // Regular be
 // Or import NotificationsActiveIcon for a ringing bell
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
-import { collection, doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import notificationsState from "@/app/profile/Notifications.state";
 
 const NotificationsDropdown = observer(() => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const unreadNotifications = myProfileState.notifications.filter(
+  const unreadNotifications = notificationsState.notifications.filter(
     (notif) => !notif.read
   );
 
@@ -67,7 +68,7 @@ const NotificationsDropdown = observer(() => {
           />
         }
       >
-        {myProfileState.notifications.some((notif) => !notif.read) ? (
+        {notificationsState.notifications.some((notif) => !notif.read) ? (
           <NotificationsActiveIcon sx={{ fontSize: 24 }} />
         ) : (
           <NotificationsIcon sx={{ fontSize: 24 }} />
@@ -108,7 +109,7 @@ const NotificationsDropdown = observer(() => {
             No unread notifications
           </MenuItem>
         ) : (
-          myProfileState.notifications
+          notificationsState.notifications
             .filter((notif) => !notif.read)
             .slice(0, 5)
             .map((notif) => (
