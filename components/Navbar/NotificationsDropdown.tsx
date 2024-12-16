@@ -1,5 +1,5 @@
 import myProfileState from "@/app/profile/MyProfile.state";
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Badge, Button, Menu, MenuItem } from "@mui/material";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
@@ -16,10 +16,6 @@ import notificationsState from "@/app/profile/Notifications.state";
 const NotificationsDropdown = observer(() => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  const unreadNotifications = notificationsState.notifications.filter(
-    (notif) => !notif.read
-  );
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +65,20 @@ const NotificationsDropdown = observer(() => {
         }
       >
         {notificationsState.notifications.some((notif) => !notif.read) ? (
-          <NotificationsActiveIcon sx={{ fontSize: 24 }} />
+          <Badge
+            badgeContent={notificationsState.unreadNotifications.length}
+            color="error"
+            sx={{
+              "& .MuiBadge-badge": {
+                right: 4,
+                top: 4,
+                backgroundColor: "secondary.dark",
+                color: "white"
+              }
+            }}
+          >
+            <NotificationsActiveIcon sx={{ fontSize: 24 }} />
+          </Badge>
         ) : (
           <NotificationsIcon sx={{ fontSize: 24 }} />
         )}
@@ -93,7 +102,7 @@ const NotificationsDropdown = observer(() => {
           }
         }}
       >
-        {unreadNotifications.length === 0 ? (
+        {notificationsState.unreadNotifications.length === 0 ? (
           <MenuItem
             sx={{
               fontSize: "14px",

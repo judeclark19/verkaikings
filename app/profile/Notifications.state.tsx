@@ -63,6 +63,10 @@ export class NotificationsState {
       this.unsubscribeNotifications = null;
     }
   }
+
+  get unreadNotifications() {
+    return this.notifications.filter((notif) => !notif.read);
+  }
 }
 
 const notificationsState = new NotificationsState();

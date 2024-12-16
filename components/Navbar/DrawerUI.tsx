@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Link,
   List,
@@ -167,10 +168,22 @@ function DrawerUI({
                 minWidth: "40px"
               }}
             >
-              {/* <NotificationsIcon /> */}
               {notificationsState.notifications.filter((notif) => !notif.read)
                 .length > 0 ? (
-                <NotificationsActiveIcon />
+                <Badge
+                  badgeContent={notificationsState.unreadNotifications.length}
+                  color="error"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      right: 4,
+                      top: 4,
+                      backgroundColor: "secondary.dark",
+                      color: "white"
+                    }
+                  }}
+                >
+                  <NotificationsActiveIcon sx={{ fontSize: 24 }} />
+                </Badge>
               ) : (
                 <NotificationsIcon />
               )}
