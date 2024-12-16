@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { isSupported, getMessaging, getToken } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -24,6 +25,41 @@ export const db = getFirestore(app); // Initialize Firestore
 
 // Storage
 export const storage = getStorage(app);
+
+// Messaging
+
+let messaging: ReturnType<typeof getMessaging> | null = null;
+
+if (typeof window !== "undefined") {
+  isSupported().then((supported) => {
+    if (supported) {
+      messaging = getMessaging(app);
+    } else {
+      console.warn("Firebase Messaging is not supported in this browser.");
+    }
+  });
+}
+
+export const requestNotificationPermission = async () => {
+  if (!messaging) {
+    console.warn("Messaging not initialized or unsupported.");
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    const token = await getToken(messaging, {
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+    });
+    if (token) {
+      console.log("FCM Token:", token);
+    } else {
+      console.log("No registration token available.");
+    }
+  } else {
+    console.warn("Notification permission not granted.");
+  }
+};
 
 // Auth listener for state changes
 export const authListener = (callback: (user: User | null) => void) => {

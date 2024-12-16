@@ -13,7 +13,7 @@ import {
   setDoc,
   updateDoc
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
 
 class AppState {
@@ -70,6 +70,10 @@ class AppState {
       this.myWillemijnStories.init(stories);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
+
+      requestNotificationPermission().catch((err) =>
+        console.error("Error requesting notification permission:", err)
+      );
 
       // Fetch city names and details
       const cityIdsOfUsers = users.map((user) => user.cityId);
