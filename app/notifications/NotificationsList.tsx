@@ -21,56 +21,38 @@ const NotificationsList = observer(() => {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
-    if (notificationsState.isInitialized && !hasInitialized) {
-      // On first initialization, store the IDs preserving their initial category.
-      const unreadIds = notificationsState.unreadNotifications.map(
-        (n: DocumentData) => n.id
+    if (!notificationsState.isInitialized) return;
+
+    // Initialize IDs if not set
+    if (!hasInitialized) {
+      setInitiallyUnreadIds(
+        notificationsState.unreadNotifications.map((n: DocumentData) => n.id)
       );
-      const readIds = notificationsState.readNotifications.map(
-        (n: DocumentData) => n.id
+      setInitiallyReadIds(
+        notificationsState.readNotifications.map((n: DocumentData) => n.id)
       );
-      setInitiallyUnreadIds(unreadIds);
-      setInitiallyReadIds(readIds);
       setHasInitialized(true);
     }
-  }, [notificationsState.isInitialized, hasInitialized]);
 
-  // Effect to handle new notifications coming in after initialization
-  useEffect(() => {
-    if (!notificationsState.isInitialized || !hasInitialized) return;
-
-    const knownUnread = new Set(initiallyUnreadIds);
-    const knownRead = new Set(initiallyReadIds);
-
-    // Check for new unread notifications
+    // Listen for changes and update only when there are new notifications
     const currentUnreadIds = notificationsState.unreadNotifications.map(
       (n: DocumentData) => n.id
     );
-    const newUnread = currentUnreadIds.filter(
-      (id) => !knownUnread.has(id) && !knownRead.has(id)
-    );
-    if (newUnread.length > 0) {
-      // Prepend new unread IDs so newer ones appear at the top
-      setInitiallyUnreadIds((prev) => [...newUnread, ...prev]);
-    }
-
-    // Check for new read notifications
     const currentReadIds = notificationsState.readNotifications.map(
       (n: DocumentData) => n.id
     );
-    const newRead = currentReadIds.filter(
-      (id) => !knownUnread.has(id) && !knownRead.has(id)
-    );
-    if (newRead.length > 0) {
-      // Keep read notifications appended at the bottom as before
-      setInitiallyReadIds((prev) => [...prev, ...newRead]);
-    }
-  }, [
-    notificationsState.notifications.length,
-    notificationsState.isInitialized,
-    hasInitialized
-  ]);
 
+    // Update if lengths don't match (new notification added or removed)
+    setInitiallyUnreadIds((prev) =>
+      prev.length !== currentUnreadIds.length ? currentUnreadIds : prev
+    );
+    setInitiallyReadIds((prev) =>
+      prev.length !== currentReadIds.length ? currentReadIds : prev
+    );
+  }, [
+    notificationsState.isInitialized,
+    notificationsState.notifications.length
+  ]);
   return (
     <>
       <Button
@@ -124,6 +106,7 @@ const NotificationsList = observer(() => {
                 notificationsState.deleteAll();
                 setInitiallyReadIds([]);
                 setInitiallyUnreadIds([]);
+                setHasInitialized(false);
               }}
             >
               Delete all
