@@ -1,19 +1,15 @@
 import * as admin from "firebase-admin";
 
 // Decode the Base64-encoded service account key from the environment variable
-const serviceAccount = process.env.NEXT_PUBLIC_FIREBASE_ADMIN_64
-  ? JSON.parse(
-      Buffer.from(process.env.NEXT_PUBLIC_FIREBASE_ADMIN_64, "base64").toString(
-        "utf-8"
-      )
-    )
+const serviceAccount = process.env.NEXT_PUBLIC_FIREBASE_ADMIN_JSON
+  ? JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_ADMIN_JSON)
   : null;
 
 // Check if Firebase Admin app is already initialized
 if (!admin.apps.length) {
   const credential = serviceAccount
-    ? admin.credential.cert(serviceAccount as admin.ServiceAccount) // Use the decoded service account if available
-    : admin.credential.applicationDefault(); // Fallback to default credentials
+    ? admin.credential.cert(serviceAccount as admin.ServiceAccount)
+    : admin.credential.applicationDefault();
 
   admin.initializeApp({
     credential,
