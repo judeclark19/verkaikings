@@ -78,7 +78,9 @@ const MyWillemijnStory = observer(() => {
 
   return (
     <>
-      <Typography variant="h2">My Willemijn Story</Typography>
+      <Typography variant="h2" id="myWillemijnStory">
+        My Willemijn Story
+      </Typography>
 
       <Box
         sx={{

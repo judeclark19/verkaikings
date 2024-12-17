@@ -130,3 +130,35 @@ export const deleteQueryParam = () => {
   const newPath = `${window.location.pathname}?${currentParams.toString()}`;
   window.history.pushState({}, "", newPath);
 };
+
+export const sendNotification = async (
+  recipientId: string,
+  title: string,
+  body: string,
+  url: string
+) => {
+  const response = await fetch("/api/sendNotification", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-app-secret": process.env.NEXT_PUBLIC_APP_SECRET!
+    },
+    body: JSON.stringify({
+      userId: recipientId,
+      notification: {
+        title,
+        body,
+        url
+      }
+    })
+  });
+
+  if (!response.ok) {
+    // const errorData = await response.json();
+    // console.error("Failed to send notification:", errorData.error);
+    return;
+  }
+
+  // const responseData = await response.json();
+  // console.log("Notification sent successfully:", responseData);
+};

@@ -11,7 +11,8 @@ import {
   Box,
   Divider,
   Avatar,
-  CircularProgress
+  CircularProgress,
+  Badge
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
@@ -24,6 +25,8 @@ import SubmenuDropdown from "./SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
+import NotificationsDropdown from "./Notifications/NotificationsDropdown";
+import notificationsState from "@/app/notifications/Notifications.state";
 
 const NavbarUI = observer(
   ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {
@@ -85,7 +88,20 @@ const NavbarUI = observer(
               onClick={handleDrawerToggle}
               sx={{ display: { md: "none" }, mr: 2 }}
             >
-              <MenuIcon />
+              <Badge
+                badgeContent={notificationsState.unreadNotifications.length}
+                color="error"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    right: 4,
+                    top: 4,
+                    backgroundColor: "secondary.dark",
+                    color: "white"
+                  }
+                }}
+              >
+                <MenuIcon />
+              </Badge>
             </IconButton>
             <Typography
               variant="h3"
@@ -154,11 +170,11 @@ const NavbarUI = observer(
                                 }`}
                             </Avatar>
                           </>
-                        ) : link.title === "Profile" ? (
+                        ) : link.title === "My Profile" ? (
                           <CircularProgress
-                            size={28}
+                            size={24}
                             sx={{
-                              color: "background.default"
+                              color: "inherit"
                             }}
                           />
                         ) : (
@@ -176,6 +192,21 @@ const NavbarUI = observer(
                     </Fragment>
                   );
                 })}
+
+              {isLoggedIn && (
+                <>
+                  <NotificationsDropdown />
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                      borderColor: "background.default",
+                      margin: "0 8px"
+                    }}
+                  />
+                </>
+              )}
+
               <Button
                 color="inherit"
                 onClick={
@@ -185,6 +216,7 @@ const NavbarUI = observer(
               >
                 {isLoggedIn ? "Log Out" : "Log In"}
               </Button>
+
               {!isLoggedIn && (
                 <>
                   <Divider

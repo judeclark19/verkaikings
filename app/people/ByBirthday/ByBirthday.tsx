@@ -11,7 +11,6 @@ import { deleteQueryParam } from "@/lib/clientUtils";
 
 const ByBirthday = observer(() => {
   useEffect(() => {
-    // if production environment is dev
     if (process.env.NODE_ENV === "development") {
       console.log("ByBirthday useEffect");
     }
