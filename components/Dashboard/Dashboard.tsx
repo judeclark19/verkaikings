@@ -5,7 +5,8 @@ import {
   checkIfBirthdaySoon,
   checkIfBirthdayToday
 } from "@/lib/clientUtils";
-import { Box, Button, Link, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
+import Link from "next/link";
 import { DocumentData } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
