@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -20,6 +19,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "styled-components";
 import notificationsState from "@/app/notifications/Notifications.state";
+import Link from "next/link";
 
 const ListStyle = styled(List)`
   a,

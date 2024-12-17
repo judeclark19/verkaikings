@@ -46,20 +46,24 @@ export const requestNotificationPermission = async (userId: string) => {
     return;
   }
 
-  const permission = await Notification.requestPermission();
-  if (permission === "granted") {
-    const token = await getToken(messaging, {
-      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
-    });
-    if (token) {
-      console.log("FCM Token:", token);
-      const tokenRef = doc(db, "users", userId, "fcmTokens", token);
-      await setDoc(tokenRef, { token, createdAt: new Date() });
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const token = await getToken(messaging, {
+        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+      });
+      if (token) {
+        console.log("FCM Token:", token);
+        const tokenRef = doc(db, "users", userId, "fcmTokens", token);
+        await setDoc(tokenRef, { token, createdAt: new Date() });
+      } else {
+        console.warn("No registration token available.");
+      }
     } else {
-      console.warn("No registration token available.");
+      console.warn("Notification permission not granted.");
     }
-  } else {
-    console.warn("Notification permission not granted.");
+  } catch (err) {
+    console.error("Error requesting notification permission:", err);
   }
 };
 
