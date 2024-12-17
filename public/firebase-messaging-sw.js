@@ -13,14 +13,15 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log("[Service Worker] Background message received:", payload);
+// messaging.onBackgroundMessage((payload) => {
+//   console.log("[Service Worker] Background message received:", payload);
 
-  const notificationTitle = payload.notification?.title || "Default Title";
-  const notificationOptions = {
-    body: payload.notification?.body || "Default Body",
-    icon: "/android-chrome-512x512.png",
-  };
+//   const notificationTitle = payload.notification?.title || "Default Title";
+//   const notificationOptions = {
+//     body: payload.notification?.body || "Default Body",
+//     icon: "/android-chrome-512x512.png",
+//   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+//   self.registration.showNotification(notificationTitle, notificationOptions);
+// });
+
