@@ -72,7 +72,7 @@ class AppState {
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
-      await registerPushNotifications();
+      registerPushNotifications().catch(console.error);
       await requestNotificationPermission(userId);
 
       // Fetch city names and details
