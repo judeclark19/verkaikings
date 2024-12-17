@@ -170,7 +170,7 @@ export const registerPushNotifications = async () => {
         "/firebase-messaging-sw.js"
       );
 
-      console.log("Service Worker registered:", registration.scope);
+      // console.log("Service Worker registered:", registration.scope);
     } catch (err) {
       console.error("Service Worker registration failed:", err);
     }
