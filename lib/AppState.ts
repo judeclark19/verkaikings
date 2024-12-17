@@ -72,9 +72,9 @@ class AppState {
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
-      requestNotificationPermission(userId).catch((err) =>
-        console.error("Error requesting notification permission:", err)
-      );
+      // await registerPushNotifications();
+
+      await requestNotificationPermission(userId);
 
       // Fetch city names and details
       const cityIdsOfUsers = users.map((user) => user.cityId);
