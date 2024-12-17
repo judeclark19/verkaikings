@@ -4,13 +4,16 @@ import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserList } from "./UserList";
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
 
 class AppState {
@@ -24,9 +27,29 @@ class AppState {
   countryNames: Record<string, string> = {};
   userMap: UserMapState | null = null;
   initPromise: Promise<void> | null = null;
+  userUnsubscribe: (() => void) | null = null;
+  storyUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  async initializeSnapshots(isLoggedIn: boolean, userId?: string) {
+    if (isLoggedIn) {
+      if (!this.isInitialized) {
+        const users = await getDocs(collection(db, "users"));
+        const stories = await getDocs(collection(db, "myWillemijnStories"));
+        this.init(
+          users.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+          userId!,
+          stories.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+      }
+      this.subscribeToUsers();
+      this.subscribeToStories();
+    } else {
+      this.unsubscribeFromSnapshots();
+    }
   }
 
   async init(users: DocumentData[], userId: string, stories: DocumentData[]) {
@@ -40,6 +63,7 @@ class AppState {
     }
 
     this.initPromise = (async () => {
+      console.log("INIT PROMISE");
       this.language = navigator.language || "en";
       this.userList = userList;
       this.userList.init(users);
@@ -47,6 +71,10 @@ class AppState {
       this.myWillemijnStories.init(stories);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
+
+      requestNotificationPermission(userId).catch((err) =>
+        console.error("Error requesting notification permission:", err)
+      );
 
       // Fetch city names and details
       const cityIdsOfUsers = users.map((user) => user.cityId);
@@ -87,6 +115,41 @@ class AppState {
     if (this.initPromise) await this.initPromise;
   }
 
+  subscribeToUsers() {
+    this.userUnsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+      const updatedUsers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      this.userList.setUsers(updatedUsers);
+    });
+  }
+
+  subscribeToStories() {
+    this.storyUnsubscribe = onSnapshot(
+      collection(db, "myWillemijnStories"),
+      (snapshot) => {
+        const updatedStories = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        this.myWillemijnStories.setAllStories(updatedStories);
+        this.myWillemijnStories.updateFilteredStories();
+      }
+    );
+  }
+
+  unsubscribeFromSnapshots() {
+    if (this.userUnsubscribe) {
+      this.userUnsubscribe();
+      this.userUnsubscribe = null;
+    }
+    if (this.storyUnsubscribe) {
+      this.storyUnsubscribe();
+      this.storyUnsubscribe = null;
+    }
+  }
+
   async loadPDCfromDB() {
     console.log("Loading place data cache from database...", this.language);
     try {
@@ -116,13 +179,13 @@ class AppState {
 
       // Load cached data
       this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
-      console.log("city names fetched from db:", toJS(this.cityNames));
+      // console.log("city names fetched from db:", toJS(this.cityNames));
 
       this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
-      console.log(
-        "city details fetched from db:",
-        JSON.parse(pdcSnapshot.data()?.cityDetails)
-      );
+      // console.log(
+      //   "city details fetched from db:",
+      //   JSON.parse(pdcSnapshot.data()?.cityDetails)
+      // );
     } catch (error) {
       console.error("Error loading from database:", error);
     }
@@ -147,11 +210,19 @@ class AppState {
 
   async fetchCityDetails(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
+    if (!process.env.NEXT_PUBLIC_APP_SECRET) {
+      throw new Error("NEXT_PUBLIC_APP_SECRET is not defined");
+    }
 
     if (cityId) {
       try {
         const response = await fetch(
-          `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`
+          `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`,
+          {
+            headers: {
+              "x-app-secret": process.env.NEXT_PUBLIC_APP_SECRET
+            }
+          }
         );
         const data = await response.json();
 

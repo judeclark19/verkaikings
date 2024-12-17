@@ -13,6 +13,8 @@ import {
 import { doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import myProfileState from "@/app/profile/MyProfile.state";
+import { sendNotification } from "@/lib/clientUtils";
 
 type Comment = {
   authorId: string;
@@ -63,6 +65,16 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
           comments: [...comments, newComment]
         });
 
+        // Send a notification to the story author
+        sendNotification(
+          story.authorId,
+          "New comment on your story",
+          `${myProfileState.user!.firstName} ${
+            myProfileState.user!.lastName
+          } left a comment`,
+          "/profile"
+        );
+
         setCommentText(""); // Clear the input
       } catch (error) {
         alert(`Error adding comment: ${error}`);
@@ -97,8 +109,6 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
       {/* Comments List */}
       <List
         sx={{
-          maxHeight: 200,
-          overflowY: "auto",
           bgcolor: "background.paper",
           borderRadius: 1,
           mb: 2

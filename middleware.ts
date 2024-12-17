@@ -14,5 +14,10 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/people/:path*", "/dashboard/:path*"] // Routes to protect
+  matcher: [
+    "/profile/:path*",
+    "/people/:path*",
+    "/dashboard/:path*",
+    "/notifcations/:path*"
+  ] // Routes to protect
 };

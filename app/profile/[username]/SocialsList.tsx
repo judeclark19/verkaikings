@@ -73,6 +73,7 @@ function SocialsList({ user }: { user: DocumentData }) {
               }}
             />
           }
+          link={`https://bere.al/${user.beReal}`}
         />
       )}
     </Paper>

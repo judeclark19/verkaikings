@@ -1,6 +1,9 @@
 import appState from "@/lib/AppState";
 import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
+import notificationsState, {
+  NotificationsState
+} from "../notifications/Notifications.state";
 
 export class MyProfileState {
   isFetched = false;
@@ -17,6 +20,7 @@ export class MyProfileState {
   beReal: string | null = null;
   pronouns: string | null = null;
   myWillemijnStory: string | null = null;
+  notificationsState: NotificationsState | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,6 +41,9 @@ export class MyProfileState {
     this.setDuolingo(user.duolingo);
     this.setBeReal(user.beReal);
     this.setPronouns(user.pronouns);
+
+    this.notificationsState = notificationsState;
+    this.notificationsState.subscribeToNotifications(userId);
 
     this.setMyWillemijnStory(
       appState.myWillemijnStories.allStories.find(
@@ -111,6 +118,8 @@ export class MyProfileState {
   }
 
   signOut() {
+    this.notificationsState?.unsubscribeFromNotifications();
+
     this.setUser(null);
     this.setUserId(null);
     this.setPlaceId(null);
