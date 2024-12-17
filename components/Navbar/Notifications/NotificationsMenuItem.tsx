@@ -1,9 +1,5 @@
-import notificationsState from "@/app/notifications/Notifications.state";
-import myProfileState from "@/app/profile/MyProfile.state";
-import { db } from "@/lib/firebase";
 import { Box, Checkbox, MenuItem } from "@mui/material";
 import { DocumentData } from "firebase-admin/firestore";
-import { doc, updateDoc } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 

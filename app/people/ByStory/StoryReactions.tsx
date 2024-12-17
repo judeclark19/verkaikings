@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
-import { reaction } from "mobx";
 import { sendNotification } from "@/lib/clientUtils";
 
 type Reaction = {

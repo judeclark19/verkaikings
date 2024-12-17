@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: Request) {
   const secret = req.headers.get("x-app-secret");
 
   if (secret !== process.env.NEXT_PUBLIC_APP_SECRET) {

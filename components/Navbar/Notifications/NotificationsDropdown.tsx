@@ -1,16 +1,10 @@
-import myProfileState from "@/app/profile/MyProfile.state";
 import { Badge, Button, CircularProgress, Menu, MenuItem } from "@mui/material";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
 import Link from "next/link";
-
-import NotificationsIcon from "@mui/icons-material/Notifications"; // Regular bell icon
-// Or import NotificationsActiveIcon for a ringing bell
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
-
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import notificationsState from "@/app/notifications/Notifications.state";
 import NotificationsMenuItem from "./NotificationsMenuItem";
 

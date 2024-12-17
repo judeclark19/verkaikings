@@ -13,6 +13,7 @@ import notificationsState from "./Notifications.state";
 import { useEffect, useState } from "react";
 import { DocumentData } from "firebase/firestore";
 import NotificationListItem from "./NotificationsListItem";
+import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 
 const NotificationsList = observer(() => {
   const [initiallyUnreadIds, setInitiallyUnreadIds] = useState<string[]>([]);
@@ -70,104 +71,116 @@ const NotificationsList = observer(() => {
     hasInitialized
   ]);
 
-  if (!notificationsState.isInitialized) {
-    return (
-      <Box
-        sx={{
-          padding: "1rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-          height: "500px"
-        }}
-      >
-        <Skeleton variant="rectangular" width="100%" height="100%" />
-      </Box>
-    );
-  }
-
-  const getNotificationById = (id: string) => {
-    return notificationsState.notifications.find(
-      (n: DocumentData) => n.id === id
-    );
-  };
-
   return (
-    <Box sx={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
-      <Box
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<ArrowBackIcon />}
+        onClick={() => window.history.back()}
+      >
+        Go Back
+      </Button>
+      <Typography
+        variant="h1"
         sx={{
-          display: "flex",
-          gap: 2,
-          justifyContent: "center",
-          flexWrap: "wrap",
-          marginBottom: "1rem"
+          textAlign: "center"
         }}
       >
-        <Button
-          variant="contained"
-          color="secondary"
+        Notifications
+      </Typography>
+      {notificationsState.isInitialized ? (
+        <Box sx={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginBottom: "3rem"
+            }}
+          >
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{
+                cursor: "pointer"
+              }}
+              disabled={notificationsState.unreadNotifications.length === 0}
+              onClick={() => {
+                notificationsState.markAllAsRead();
+              }}
+            >
+              Mark all as read
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{
+                cursor: "pointer"
+              }}
+              disabled={notificationsState.notifications.length === 0}
+              onClick={() => {
+                notificationsState.deleteAll();
+                setInitiallyReadIds([]);
+                setInitiallyUnreadIds([]);
+              }}
+            >
+              Delete all
+            </Button>
+          </Box>
+
+          {/* Unread Notifications Section */}
+          <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold" }}>
+            Unread Notifications
+          </Typography>
+          {initiallyUnreadIds.length > 0 ? (
+            <List>
+              {initiallyUnreadIds.map((id) => {
+                const notif = notificationsState.getNotificationById(id);
+                if (!notif) return null;
+                return <NotificationListItem notif={notif} key={id} />;
+              })}
+            </List>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No unread notifications.
+            </Typography>
+          )}
+
+          <Divider sx={{ marginY: "1rem" }} />
+
+          {/* Read Notifications Section */}
+          <Typography variant="h3" gutterBottom>
+            Read Notifications
+          </Typography>
+          {initiallyReadIds.length > 0 ? (
+            <List>
+              {initiallyReadIds.map((id) => {
+                const notif = notificationsState.getNotificationById(id);
+                if (!notif) return null;
+                return <NotificationListItem notif={notif} key={id} />;
+              })}
+            </List>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No read notifications.
+            </Typography>
+          )}
+        </Box>
+      ) : (
+        <Box
           sx={{
-            cursor: "pointer"
-          }}
-          disabled={notificationsState.unreadNotifications.length === 0}
-          onClick={() => {
-            notificationsState.markAllAsRead();
+            padding: "1rem",
+            maxWidth: "600px",
+            margin: "0 auto",
+            height: "500px"
           }}
         >
-          Mark all as read
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{
-            cursor: "pointer"
-          }}
-          disabled={notificationsState.notifications.length === 0}
-          onClick={() => {
-            notificationsState.deleteAll();
-          }}
-        >
-          Delete all notifications
-        </Button>
-      </Box>
-
-      {/* Unread Notifications Section */}
-      <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold" }}>
-        Unread Notifications
-      </Typography>
-      {initiallyUnreadIds.length > 0 ? (
-        <List>
-          {initiallyUnreadIds.map((id) => {
-            const notif = getNotificationById(id);
-            if (!notif) return null;
-            return <NotificationListItem notif={notif} key={id} />;
-          })}
-        </List>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          No unread notifications.
-        </Typography>
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+        </Box>
       )}
-
-      <Divider sx={{ marginY: "1rem" }} />
-
-      {/* Read Notifications Section */}
-      <Typography variant="h3" gutterBottom>
-        Read Notifications
-      </Typography>
-      {initiallyReadIds.length > 0 ? (
-        <List>
-          {initiallyReadIds.map((id) => {
-            const notif = getNotificationById(id);
-            if (!notif) return null;
-            return <NotificationListItem notif={notif} key={id} />;
-          })}
-        </List>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          No read notifications.
-        </Typography>
-      )}
-    </Box>
+    </>
   );
 });
 

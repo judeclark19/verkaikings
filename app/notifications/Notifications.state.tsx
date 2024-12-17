@@ -148,6 +148,10 @@ export class NotificationsState {
     return this.notifications.filter((notif) => notif.read);
   }
 
+  getNotificationById(id: string) {
+    return this.notifications.find((n: DocumentData) => n.id === id);
+  }
+
   markAllAsRead() {
     this.notifications.forEach((notif) => {
       if (!notif.read) {

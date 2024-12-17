@@ -1,12 +1,5 @@
 import appState from "@/lib/AppState";
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  DocumentData,
-  onSnapshot,
-  orderBy,
-  query
-} from "firebase/firestore";
+import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import notificationsState, {
   NotificationsState
@@ -28,8 +21,6 @@ export class MyProfileState {
   pronouns: string | null = null;
   myWillemijnStory: string | null = null;
   notificationsState: NotificationsState | null = null;
-  // notifications: DocumentData[] = [];
-  // unsubscribeNotifications: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
