@@ -1,18 +1,8 @@
+import FlagComponent from "@/components/Flag";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { ListItem, ListItemButton, ListItemText, Avatar } from "@mui/material";
-// import { getEmojiFlag } from "countries-list";
 import { DocumentData } from "firebase-admin/firestore";
 import Link from "next/link";
-import Flag from "react-world-flags";
-
-const FlagComponent = ({ countryCode }: { countryCode: string }) => {
-  return (
-    <Flag
-      code={countryCode.toLowerCase()}
-      style={{ width: "1.3rem", height: "1rem" }}
-    />
-  );
-};
 
 function UserListItem({ user }: { user: DocumentData }) {
   return (
@@ -38,7 +28,6 @@ function UserListItem({ user }: { user: DocumentData }) {
         }}
       >
         {/* Flag */}
-        {/* <span>{getEmojiFlag(user.countryAbbr.toUpperCase())}</span> */}
         <FlagComponent countryCode={user.countryAbbr.toLowerCase()} />
 
         {/* Avatar */}

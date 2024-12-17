@@ -15,11 +15,11 @@ import {
   ArrowBack as ArrowBackIcon
 } from "@mui/icons-material";
 import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
-import { getEmojiFlag } from "countries-list";
 import SocialsList from "./SocialsList";
 import { observer } from "mobx-react-lite";
 import StoryComments from "@/app/people/ByStory/StoryComments";
 import StoryReactions from "@/app/people/ByStory/StoryReactions";
+import FlagComponent from "@/components/Flag";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
@@ -271,7 +271,9 @@ const UserProfile = observer(
                   value={appState.countryNames[user.countryAbbr]}
                   icon={
                     appState.countryNames[user.countryAbbr] ? (
-                      <>{getEmojiFlag(user.countryAbbr.toUpperCase())}</>
+                      <FlagComponent
+                        countryCode={user.countryAbbr.toLowerCase()}
+                      />
                     ) : (
                       <PublicIcon />
                     )
