@@ -44,10 +44,10 @@ export async function POST(req: Request) {
         notification: {
           title: notification.title,
           body: notification.body,
-          icon: "/icon.png" // Provide your PWA's icon here
+          icon: "/favicon-32x32.png"
         },
         fcm_options: {
-          link: notification.url || "https://your-site.com"
+          link: notification.url || "https://verkaikings.netlify.app/"
         }
       },
       tokens
