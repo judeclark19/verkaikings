@@ -53,7 +53,7 @@ export const requestNotificationPermission = async (userId: string) => {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
       });
       if (token) {
-        console.log("FCM Token:", token);
+        // console.log("FCM Token:", token);
         const tokenRef = doc(db, "users", userId, "fcmTokens", token);
         await setDoc(tokenRef, { token, createdAt: new Date() });
       } else {
