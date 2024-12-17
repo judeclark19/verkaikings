@@ -162,3 +162,17 @@ export const sendNotification = async (
   // const responseData = await response.json();
   // console.log("Notification sent successfully:", responseData);
 };
+
+export const registerPushNotifications = async () => {
+  if ("serviceWorker" in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js"
+      );
+
+      console.log("Service Worker registered:", registration.scope);
+    } catch (err) {
+      console.error("Service Worker registration failed:", err);
+    }
+  }
+};

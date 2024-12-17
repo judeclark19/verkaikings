@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
+import { registerPushNotifications } from "./clientUtils";
 
 class AppState {
   isInitialized = false;
@@ -72,6 +73,7 @@ class AppState {
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
+      await registerPushNotifications();
       await requestNotificationPermission(userId);
 
       // Fetch city names and details
