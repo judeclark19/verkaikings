@@ -32,18 +32,23 @@ export async function POST(req: Request) {
       .add(notificationDoc);
 
     if (tokens.length === 0) {
-      // No tokens found, so we can't send a push notification
-      // But we have stored the notification for the user to see.
+      // No tokens found, so we can't send a push notification.
+      // The notification is still stored for the user to see in the list.
       return NextResponse.json({
         message: "Notification stored but no FCM tokens found."
       });
     }
 
     const message = {
-      notification: {
-        title: notification.title,
-        body: notification.body,
-        url: notification.url || null
+      webpush: {
+        notification: {
+          title: notification.title,
+          body: notification.body,
+          icon: "/favicon-32x32.png"
+        },
+        fcm_options: {
+          link: notification.url || "https://verkaikings.netlify.app/"
+        }
       },
       tokens
     };
@@ -51,7 +56,6 @@ export async function POST(req: Request) {
     // console.log("Tokens:", tokens);
     // console.log("Message Payload:", JSON.stringify(message, null, 2));
 
-    // Send push notifications
     const response = await adminMessaging.sendEachForMulticast(message);
 
     return NextResponse.json({
