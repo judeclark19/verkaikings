@@ -16,6 +16,6 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json({
-    sharedSecret: process.env.NEXT_APP_SECRET
+    sharedSecret: process.env.NEXT_PUBLIC_APP_SECRET
   });
 }

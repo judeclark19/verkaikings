@@ -1,5 +1,5 @@
 import myProfileState from "@/app/profile/MyProfile.state";
-import { Badge, Button, Menu, MenuItem } from "@mui/material";
+import { Badge, Button, CircularProgress, Menu, MenuItem } from "@mui/material";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
@@ -53,24 +53,32 @@ const NotificationsDropdown = observer(() => {
           />
         }
       >
-        {notificationsState.notifications.some((notif) => !notif.read) ? (
-          <Badge
-            badgeContent={notificationsState.unreadNotifications.length}
-            color="error"
-            sx={{
-              "& .MuiBadge-badge": {
-                right: 4,
-                top: 4,
-                backgroundColor: "secondary.dark",
-                color: "white"
-              }
-            }}
-          >
-            <NotificationsActiveIcon sx={{ fontSize: 24 }} />
-          </Badge>
-        ) : (
-          <NotificationsIcon sx={{ fontSize: 24 }} />
+        {!notificationsState.isInitialized && (
+          <CircularProgress color="inherit" size={24} />
         )}
+
+        {notificationsState.isInitialized &&
+          notificationsState.notifications.some((notif) => !notif.read) && (
+            <Badge
+              badgeContent={notificationsState.unreadNotifications.length}
+              color="error"
+              sx={{
+                "& .MuiBadge-badge": {
+                  right: 4,
+                  top: 4,
+                  backgroundColor: "secondary.dark",
+                  color: "white"
+                }
+              }}
+            >
+              <NotificationsActiveIcon sx={{ fontSize: 24 }} />
+            </Badge>
+          )}
+
+        {notificationsState.isInitialized &&
+          !notificationsState.notifications.some((notif) => !notif.read) && (
+            <NotificationsIcon sx={{ fontSize: 24 }} />
+          )}
       </Button>
       <Menu
         id="basic-menu"

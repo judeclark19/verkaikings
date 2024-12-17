@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase";
 import {
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   onSnapshot,
@@ -16,6 +17,8 @@ class Notification {
   read: boolean;
   title: string;
   body: string | null = null;
+  url: string | null = null;
+  createdAt: string | null = null;
 
   constructor(notification: DocumentData) {
     makeAutoObservable(this);
@@ -23,6 +26,8 @@ class Notification {
     this.id = notification.id;
     this.title = notification.title;
     this.body = notification.body;
+    this.url = notification.url;
+    this.createdAt = notification.createdAt;
   }
 
   async markAsRead() {
@@ -55,9 +60,22 @@ class Notification {
       this.markAsRead();
     }
   }
+
+  async delete() {
+    // console.log("Deleting notification:", this.id);
+    const userId = myProfileState.userId;
+    if (!userId) return;
+    try {
+      const notifRef = doc(db, `users/${userId}/notifications`, this.id);
+      await deleteDoc(notifRef);
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  }
 }
 
 export class NotificationsState {
+  isInitialized = false;
   notifications: Notification[] = [];
   unsubscribeNotifications: (() => void) | null = null;
 
@@ -72,40 +90,47 @@ export class NotificationsState {
       orderBy("createdAt", "desc")
     );
 
-    // Store the original document title
-    const originalTitle = document.title;
-
-    // Set up Firestore subscription
     this.unsubscribeNotifications = onSnapshot(
       notificationsQuery,
       (snapshot) => {
         const notifications: DocumentData[] = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
-        })) as DocumentData[]; // Type assertion to treat data as Notification[]
+        })) as DocumentData[];
 
-        console.log("Live Notifications:", notifications);
+        // console.log("Live Notifications:", notifications);
 
-        // Store notifications in state
         this.setNotifications(notifications);
-
-        // Count unread notifications
-        const unreadCount = notifications.filter((n) => !n.read).length;
-
-        // Update the page title dynamically
-        if (unreadCount > 0) {
-          document.title = `(${unreadCount}) ${originalTitle}`;
-        } else {
-          document.title = originalTitle;
-        }
+        this.updatePageTitle();
       }
     );
+  }
+
+  updatePageTitle() {
+    const unreadCount = this.unreadNotifications.length;
+
+    // Store the original document title
+    let originalTitle = document.title;
+
+    //  if title starts with a notification count (##) remove it
+    if (originalTitle.startsWith("(")) {
+      originalTitle = originalTitle.split(") ")[1];
+    }
+
+    // Update the page title dynamically
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) ${originalTitle}`;
+    } else {
+      document.title = originalTitle;
+    }
   }
 
   setNotifications(notifications: DocumentData[]) {
     this.notifications = notifications.map(
       (notification) => new Notification(notification)
     );
+
+    this.isInitialized = true;
   }
 
   unsubscribeFromNotifications() {
@@ -117,6 +142,24 @@ export class NotificationsState {
 
   get unreadNotifications() {
     return this.notifications.filter((notif) => !notif.read);
+  }
+
+  get readNotifications() {
+    return this.notifications.filter((notif) => notif.read);
+  }
+
+  markAllAsRead() {
+    this.notifications.forEach((notif) => {
+      if (!notif.read) {
+        notif.markAsRead();
+      }
+    });
+  }
+
+  deleteAll() {
+    this.notifications.forEach((notif) => {
+      notif.delete();
+    });
   }
 }
 

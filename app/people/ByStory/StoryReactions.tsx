@@ -11,6 +11,9 @@ import {
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
+import myProfileState from "@/app/profile/MyProfile.state";
+import { reaction } from "mobx";
+import { sendNotification } from "@/lib/clientUtils";
 
 type Reaction = {
   authorId: string;
@@ -78,6 +81,16 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
         await updateDoc(storyDocRef, {
           reactions: arrayUnion(newReaction)
         });
+
+        // send a notification to the author of the story
+        sendNotification(
+          story.authorId,
+          "New reaction on your story",
+          `${myProfileState.user!.firstName} ${
+            myProfileState.user!.lastName
+          } left a "${reactionType}"`,
+          "/profile"
+        );
       } catch (error) {
         alert(`Error adding reaction: ${error}`);
         console.error("Error adding reaction:", error);

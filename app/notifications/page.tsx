@@ -1,4 +1,10 @@
 import { Typography } from "@mui/material";
+import { Metadata } from "next";
+import NotificationsList from "./NotificationsList";
+
+export const metadata: Metadata = {
+  title: "Notifications | Willemijn's World Website"
+};
 
 function Notifications() {
   return (
@@ -11,6 +17,7 @@ function Notifications() {
       >
         Notifications
       </Typography>
+      <NotificationsList />
     </div>
   );
 }

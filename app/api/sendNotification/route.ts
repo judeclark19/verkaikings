@@ -5,11 +5,8 @@ import { Timestamp } from "firebase-admin/firestore";
 export async function POST(req: Request) {
   const secret = req.headers.get("x-app-secret");
 
-  if (secret !== process.env.NEXT_APP_SECRET) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 } // Return a 401 Unauthorized status
-    );
+  if (secret !== process.env.NEXT_PUBLIC_APP_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
@@ -21,38 +18,41 @@ export async function POST(req: Request) {
 
     const tokens = tokensSnapshot.docs.map((doc) => doc.id);
 
-    if (tokens.length === 0) {
-      return NextResponse.json(
-        { message: "No FCM tokens found for user." },
-        { status: 404 }
-      );
-    }
-
-    const message = {
-      notification: {
-        title: notification.title,
-        body: notification.body
-      },
-      tokens
-    };
-
-    console.log("Tokens:", tokens);
-    console.log("Message Payload:", JSON.stringify(message, null, 2));
-
-    // Send push notifications
-    const response = await adminMessaging.sendEachForMulticast(message);
-
-    // Store the notification in Firestore
+    // Store the notification in Firestore regardless of tokens
     const notificationDoc = {
       title: notification.title,
       body: notification.body,
-      url: notification.url || null, // Optional
-      createdAt: Timestamp.now()
+      url: notification.url || null,
+      createdAt: Timestamp.now(),
+      read: false
     };
 
     await adminDb
       .collection(`users/${userId}/notifications`)
       .add(notificationDoc);
+
+    if (tokens.length === 0) {
+      // No tokens found, so we can't send a push notification
+      // But we have stored the notification for the user to see.
+      return NextResponse.json({
+        message: "Notification stored but no FCM tokens found."
+      });
+    }
+
+    const message = {
+      notification: {
+        title: notification.title,
+        body: notification.body,
+        url: notification.url || null
+      },
+      tokens
+    };
+
+    // console.log("Tokens:", tokens);
+    // console.log("Message Payload:", JSON.stringify(message, null, 2));
+
+    // Send push notifications
+    const response = await adminMessaging.sendEachForMulticast(message);
 
     return NextResponse.json({
       successCount: response.successCount,

@@ -8,7 +8,6 @@ self.addEventListener("install", (event) => {
         return response.json();
       })
       .then((data) => {
-        console.log("DATA", data);
         const sharedSecret = data.sharedSecret;
 
         // Use the fetched secret in subsequent requests
@@ -35,8 +34,6 @@ self.addEventListener("install", (event) => {
         const messaging = firebase.messaging();
 
         messaging.onBackgroundMessage((payload) => {
-          console.log("[Service Worker] Background message received:", payload);
-
           const notificationTitle =
             payload.notification?.title || "Default Title";
           const notificationOptions = {

@@ -63,6 +63,7 @@ class AppState {
     }
 
     this.initPromise = (async () => {
+      console.log("INIT PROMISE");
       this.language = navigator.language || "en";
       this.userList = userList;
       this.userList.init(users);
@@ -178,13 +179,13 @@ class AppState {
 
       // Load cached data
       this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
-      console.log("city names fetched from db:", toJS(this.cityNames));
+      // console.log("city names fetched from db:", toJS(this.cityNames));
 
       this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
-      console.log(
-        "city details fetched from db:",
-        JSON.parse(pdcSnapshot.data()?.cityDetails)
-      );
+      // console.log(
+      //   "city details fetched from db:",
+      //   JSON.parse(pdcSnapshot.data()?.cityDetails)
+      // );
     } catch (error) {
       console.error("Error loading from database:", error);
     }
@@ -209,8 +210,8 @@ class AppState {
 
   async fetchCityDetails(cityId: string) {
     console.log("$$$$$ Fetching city details for:", cityId);
-    if (!process.env.NEXT_APP_SECRET) {
-      throw new Error("NEXT_APP_SECRET is not defined");
+    if (!process.env.NEXT_PUBLIC_APP_SECRET) {
+      throw new Error("NEXT_PUBLIC_APP_SECRET is not defined");
     }
 
     if (cityId) {
@@ -219,7 +220,7 @@ class AppState {
           `/api/getPlaceDetails?placeId=${cityId}&language=${this.language}`,
           {
             headers: {
-              "x-app-secret": process.env.NEXT_APP_SECRET
+              "x-app-secret": process.env.NEXT_PUBLIC_APP_SECRET
             }
           }
         );

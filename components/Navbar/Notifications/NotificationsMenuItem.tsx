@@ -15,38 +15,17 @@ const NotificationsMenuItem = observer(
     notification: DocumentData;
     handleClose: () => void;
   }) => {
-    // const markAsRead = async (notifId: string) => {
-    //   const userId = myProfileState.userId;
-    //   if (!userId) return;
-
-    //   try {
-    //     const notifRef = doc(db, `users/${userId}/notifications`, notifId);
-    //     await updateDoc(notifRef, { read: true });
-    //   } catch (error) {
-    //     console.error("Error marking notification as read:", error);
-    //   }
-    // };
-
-    // const markAsUnread = async (notifId: string) => {
-    //   const userId = myProfileState.userId;
-    //   if (!userId) return;
-    //   try {
-    //     const notifRef = doc(db, `users/${userId}/notifications`, notifId);
-    //     await updateDoc(notifRef, { read: false });
-    //   } catch (error) {
-    //     console.error("Error marking notification as unread:", error);
-    //   }
-    // };
-    // const notificationState = notificationsState.notifications.find(
-    //   (n) => n.id === notification.id
-    // );
-
     return (
       <MenuItem
         key={notification.id}
         onClick={() => {
-          notification.toggleRead();
-          if (notification.url) handleClose();
+          if (!notification.url) {
+            notification.toggleRead();
+          }
+          if (notification.url) {
+            handleClose();
+            notification.markAsRead();
+          }
         }}
         component={notification.url ? Link : "div"}
         href={notification.url}
@@ -80,7 +59,8 @@ const NotificationsMenuItem = observer(
           </Box>
           <Box>
             <Checkbox
-              checked={notification.read}
+              checked={!!notification.read}
+              onClick={(e) => e.stopPropagation()}
               sx={{
                 p: 0,
                 "& .MuiSvgIcon-root": {
