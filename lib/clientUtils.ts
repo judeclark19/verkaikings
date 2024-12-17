@@ -165,14 +165,43 @@ export const sendNotification = async (
 
 export const registerPushNotifications = async () => {
   if ("serviceWorker" in navigator) {
-    try {
-      const registration = await navigator.serviceWorker.register(
-        "/firebase-messaging-sw.js"
-      );
-
-      console.log("Service Worker registered:", registration.scope);
-    } catch (err) {
-      console.error("Service Worker registration failed:", err);
+    // Unregister existing Service Workers
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    console.log(
+      "Existing Service Workers:",
+      registrations.map((r) => r.scope)
+    );
+    for (const registration of registrations) {
+      await registration.unregister();
+      console.log(`Unregistered Service Worker: ${registration.scope}`);
     }
+
+    // Register firebase-messaging-sw.js
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js"
+    );
+    console.log("Service Worker registered:", registration.scope);
+
+    // Wait until the Service Worker is activated
+    const serviceWorker =
+      registration.installing || registration.waiting || registration.active;
+    if (serviceWorker) {
+      await new Promise((resolve) => {
+        resolve(true);
+      });
+    }
+
+    console.log(
+      "Service Worker activated. Subscribing for push notifications..."
+    );
+
+    // Subscribe for push notifications
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+    });
+
+    console.log("Push Subscription:", JSON.stringify(subscription));
+    return subscription;
   }
 };
