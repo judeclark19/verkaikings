@@ -19,6 +19,7 @@ class Notification {
   body: string | null = null;
   url: string | null = null;
   createdAt: string | null = null;
+  isFadingOut = false;
 
   constructor(notification: DocumentData) {
     makeAutoObservable(this);
@@ -62,7 +63,6 @@ class Notification {
   }
 
   async delete() {
-    // console.log("Deleting notification:", this.id);
     const userId = myProfileState.userId;
     if (!userId) return;
     try {
@@ -70,6 +70,16 @@ class Notification {
       await deleteDoc(notifRef);
     } catch (error) {
       console.error("Error deleting notification:", error);
+    }
+  }
+
+  setIsFadingOut(value: boolean) {
+    this.isFadingOut = value;
+
+    if (value) {
+      setTimeout(() => {
+        this.markAsRead();
+      }, 300);
     }
   }
 }

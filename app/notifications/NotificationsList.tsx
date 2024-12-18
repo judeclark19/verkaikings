@@ -10,49 +10,10 @@ import {
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import notificationsState from "./Notifications.state";
-import { useEffect, useState } from "react";
-import { DocumentData } from "firebase/firestore";
 import NotificationListItem from "./NotificationsListItem";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 
 const NotificationsList = observer(() => {
-  const [initiallyUnreadIds, setInitiallyUnreadIds] = useState<string[]>([]);
-  const [initiallyReadIds, setInitiallyReadIds] = useState<string[]>([]);
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-  useEffect(() => {
-    if (!notificationsState.isInitialized) return;
-
-    // Initialize IDs if not set
-    if (!hasInitialized) {
-      setInitiallyUnreadIds(
-        notificationsState.unreadNotifications.map((n: DocumentData) => n.id)
-      );
-      setInitiallyReadIds(
-        notificationsState.readNotifications.map((n: DocumentData) => n.id)
-      );
-      setHasInitialized(true);
-    }
-
-    // Listen for changes and update only when there are new notifications
-    const currentUnreadIds = notificationsState.unreadNotifications.map(
-      (n: DocumentData) => n.id
-    );
-    const currentReadIds = notificationsState.readNotifications.map(
-      (n: DocumentData) => n.id
-    );
-
-    // Update if lengths don't match (new notification added or removed)
-    setInitiallyUnreadIds((prev) =>
-      prev.length !== currentUnreadIds.length ? currentUnreadIds : prev
-    );
-    setInitiallyReadIds((prev) =>
-      prev.length !== currentReadIds.length ? currentReadIds : prev
-    );
-  }, [
-    notificationsState.isInitialized,
-    notificationsState.notifications.length
-  ]);
   return (
     <>
       <Button
@@ -104,9 +65,6 @@ const NotificationsList = observer(() => {
               disabled={notificationsState.notifications.length === 0}
               onClick={() => {
                 notificationsState.deleteAll();
-                setInitiallyReadIds([]);
-                setInitiallyUnreadIds([]);
-                setHasInitialized(false);
               }}
             >
               Delete all
@@ -117,13 +75,14 @@ const NotificationsList = observer(() => {
           <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold" }}>
             Unread Notifications
           </Typography>
-          {initiallyUnreadIds.length > 0 ? (
+          {notificationsState.unreadNotifications.length > 0 ? (
             <List>
-              {initiallyUnreadIds.map((id) => {
-                const notif = notificationsState.getNotificationById(id);
-                if (!notif) return null;
-                return <NotificationListItem notif={notif} key={id} />;
-              })}
+              {notificationsState.unreadNotifications.map((notif) => (
+                <NotificationListItem
+                  notif={notif}
+                  key={`${notif.id}-${notif.read}`}
+                />
+              ))}
             </List>
           ) : (
             <Typography variant="body2" color="text.secondary">
@@ -137,13 +96,14 @@ const NotificationsList = observer(() => {
           <Typography variant="h3" gutterBottom>
             Read Notifications
           </Typography>
-          {initiallyReadIds.length > 0 ? (
+          {notificationsState.readNotifications.length > 0 ? (
             <List>
-              {initiallyReadIds.map((id) => {
-                const notif = notificationsState.getNotificationById(id);
-                if (!notif) return null;
-                return <NotificationListItem notif={notif} key={id} />;
-              })}
+              {notificationsState.readNotifications.map((notif) => (
+                <NotificationListItem
+                  notif={notif}
+                  key={`${notif.id}-${notif.read}`}
+                />
+              ))}
             </List>
           ) : (
             <Typography variant="body2" color="text.secondary">
