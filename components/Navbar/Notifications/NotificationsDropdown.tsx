@@ -1,4 +1,12 @@
-import { Badge, Button, CircularProgress, Menu, MenuItem } from "@mui/material";
+import {
+  Badge,
+  Box,
+  Button,
+  CircularProgress,
+  Menu,
+  MenuItem,
+  Typography
+} from "@mui/material";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
@@ -18,6 +26,14 @@ const NotificationsDropdown = observer(() => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const markTheseAsRead = () => {
+    const loopTo = Math.min(5, notificationsState.unreadNotifications.length);
+
+    for (let i = 0; i < loopTo; i++) {
+      notificationsState.unreadNotifications[i].setIsFadingOut(true);
+    }
   };
 
   return (
@@ -85,20 +101,25 @@ const NotificationsDropdown = observer(() => {
         }}
         sx={{
           "& .MuiMenu-paper": {
-            backgroundColor: "primary.dark",
             color: "text.primary"
           },
           "& .MuiMenu-list": {
-            backgroundColor: "primary.dark"
+            width: "250px",
+            backgroundColor: "rgb(75,75,75)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            p: 1
           }
         }}
       >
-        {notificationsState.notifications.length === 0 ? (
+        {notificationsState.unreadNotifications.length === 0 ? (
           <MenuItem
             sx={{
               fontSize: "14px",
               fontWeight: "normal",
-              color: "background.default",
+              backgroundColor: "transparent",
+              color: "text.primary",
               flexDirection: "column",
               alignItems: "flex-start",
               padding: "0.75rem 1.5rem",
@@ -106,10 +127,10 @@ const NotificationsDropdown = observer(() => {
               opacity: 0.7
             }}
           >
-            No unread notifications
+            <Typography component="span">No unread notifications.</Typography>
           </MenuItem>
         ) : (
-          notificationsState.notifications
+          notificationsState.unreadNotifications
             .slice(0, 5)
             .map((notification) => (
               <NotificationsMenuItem
@@ -119,26 +140,38 @@ const NotificationsDropdown = observer(() => {
               />
             ))
         )}
+        <Box>
+          {notificationsState.unreadNotifications.length > 0 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={markTheseAsRead}
+              sx={{
+                cursor: "pointer",
+                width: "100%",
+                padding: "0.5rem"
+              }}
+            >
+              Mark these as read
+            </Button>
+          )}
 
-        <MenuItem
-          onClick={handleClose}
-          component={Link}
-          href="/notifications"
-          sx={{
-            fontWeight: "700",
-            fontSize: "14px",
-            transition: "background-color 0.3s ease",
-            backgroundColor: "primary.dark",
-            color: "background.default",
-            "&:hover": {
-              textDecoration: "underline",
-              backgroundColor: "primary.main"
-            },
-            padding: "0.75rem 1.5rem"
-          }}
-        >
-          See all
-        </MenuItem>
+          <Link href="/notifications">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleClose}
+              sx={{
+                cursor: "pointer",
+                width: "100%",
+                padding: "0.5rem",
+                marginTop: "0.5rem"
+              }}
+            >
+              See all notifications
+            </Button>
+          </Link>
+        </Box>
       </Menu>
     </div>
   );
