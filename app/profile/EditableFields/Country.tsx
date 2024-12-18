@@ -5,7 +5,7 @@ import myProfileState from "../MyProfile.state";
 import CountryPicker from "./CountryPicker";
 import EditBtn from "./EditBtn";
 import { Public as PublicIcon } from "@mui/icons-material";
-import { getEmojiFlag } from "countries-list";
+import FlagComponent from "@/components/Flag";
 
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const Country = observer(() => {
         }}
       >
         {myProfileState.user!.countryAbbr ? (
-          <>{getEmojiFlag(myProfileState.user!.countryAbbr.toUpperCase())}</>
+          <FlagComponent countryCode={myProfileState.user!.countryAbbr} />
         ) : (
           <PublicIcon />
         )}

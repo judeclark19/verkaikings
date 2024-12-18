@@ -1,6 +1,14 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+  where
+} from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { isSupported, getMessaging, getToken } from "firebase/messaging";
 
@@ -40,6 +48,8 @@ if (typeof window !== "undefined") {
   });
 }
 
+let requestAttempts = 0;
+
 export const requestNotificationPermission = async (userId: string) => {
   if (!messaging) {
     console.warn("Messaging not initialized or unsupported.");
@@ -53,17 +63,36 @@ export const requestNotificationPermission = async (userId: string) => {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
       });
       if (token) {
-        // console.log("FCM Token:", token);
-        const tokenRef = doc(db, "users", userId, "fcmTokens", token);
-        await setDoc(tokenRef, { token, createdAt: new Date() });
-      } else {
-        console.warn("No registration token available.");
+        console.log("Generated FCM Token");
+
+        const tokensRef = collection(db, "users", userId, "fcmTokens");
+
+        // Check for existing token
+        const existingTokensQuery = query(
+          tokensRef,
+          where("token", "==", token)
+        );
+        const existingTokensSnapshot = await getDocs(existingTokensQuery);
+
+        if (existingTokensSnapshot.empty) {
+          // Token does not exist, save it
+          const tokenRef = doc(tokensRef, token);
+          await setDoc(tokenRef, { token, createdAt: new Date() });
+          console.log("Saved FCM token to db");
+        } else {
+          console.log("Token already exists. No need to save.");
+        }
       }
     } else {
       console.warn("Notification permission not granted.");
     }
   } catch (err) {
     console.error("Error requesting notification permission:", err);
+
+    if (requestAttempts < 3) {
+      requestAttempts++;
+      setTimeout(() => requestNotificationPermission(userId), 0);
+    }
   }
 };
 
