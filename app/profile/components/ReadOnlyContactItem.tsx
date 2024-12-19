@@ -1,4 +1,5 @@
-import { Link, Typography } from "@mui/material";
+import { Link as MuiLink, Typography } from "@mui/material";
+import Link from "next/link";
 
 function ReadOnlyContactItem({
   value,
@@ -44,7 +45,13 @@ function ReadOnlyContactItem({
               wordBreak: "break-all"
             }}
           >
-            {link ? <Link href={link}>{value}</Link> : <>{value}</>}
+            {link ? (
+              <Link href={link}>
+                <MuiLink>{value}</MuiLink>
+              </Link>
+            ) : (
+              <>{value}</>
+            )}
           </Typography>
         </div>
       </div>

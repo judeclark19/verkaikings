@@ -12,8 +12,23 @@ import { observer } from "mobx-react-lite";
 import notificationsState from "./Notifications.state";
 import NotificationListItem from "./NotificationsListItem";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
 const NotificationsList = observer(() => {
+  const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    const visibilityMap: {
+      [key: string]: boolean;
+    } = {};
+
+    notificationsState.notifications.forEach((notif) => {
+      visibilityMap[notif.id] = true;
+    });
+
+    setVisibility(visibilityMap);
+  }, []);
+
   return (
     <>
       <Button
@@ -51,7 +66,15 @@ const NotificationsList = observer(() => {
               }}
               disabled={notificationsState.unreadNotifications.length === 0}
               onClick={() => {
-                notificationsState.markAllAsRead();
+                const newVisibility = { ...visibility };
+                notificationsState.unreadNotifications.forEach((notif) => {
+                  newVisibility[notif.id] = false;
+                });
+                setVisibility(newVisibility);
+
+                setTimeout(() => {
+                  notificationsState.markAllAsRead();
+                }, 300);
               }}
             >
               Mark all as read
@@ -81,6 +104,8 @@ const NotificationsList = observer(() => {
                 <NotificationListItem
                   notif={notif}
                   key={`${notif.id}-${notif.read}`}
+                  visibility={visibility}
+                  setVisibility={setVisibility}
                 />
               ))}
             </List>
@@ -102,6 +127,8 @@ const NotificationsList = observer(() => {
                 <NotificationListItem
                   notif={notif}
                   key={`${notif.id}-${notif.read}`}
+                  visibility={visibility}
+                  setVisibility={setVisibility}
                 />
               ))}
             </List>

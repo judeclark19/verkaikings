@@ -2,6 +2,10 @@ import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
 
+  :root {
+    --med-pink: #E59AA8;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     color: white;

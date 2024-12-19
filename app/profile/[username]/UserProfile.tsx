@@ -264,6 +264,9 @@ const UserProfile = observer(
                         }}
                       />
                     }
+                    link={`/people?viewBy=map&query=${
+                      appState.cityNames[user.cityId]
+                    }`}
                   />
                 )}
 
