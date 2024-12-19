@@ -39,13 +39,14 @@ const NotificationsMenuItem = observer(
         href={notification.url}
         sx={{
           fontSize: "14px",
-          fontWeight: notification.read ? "normal" : "bold", // Bold if unread
+          fontWeight: notification.read ? "normal" : "bold",
           transition: "all 0.3s ease",
           color: "background.default",
           flexDirection: "column",
+          borderRadius: "4px",
           alignItems: "flex-start",
           padding: "0.75rem",
-          opacity: notificationState!.isFadingOut || isFadingIn ? 0 : 1, // Fade out
+          opacity: notificationState!.isFadingOut || isFadingIn ? 0 : 1,
           backgroundColor: "primary.dark",
 
           transform:
@@ -54,7 +55,7 @@ const NotificationsMenuItem = observer(
               : "translateY(0)",
           "&:hover": {
             textDecoration: notification.url ? "underline" : "none",
-            backgroundColor: "primary.main"
+            backgroundColor: "var(--med-pink)"
           }
         }}
       >
@@ -67,15 +68,27 @@ const NotificationsMenuItem = observer(
           }}
         >
           <Box>
-            <div>{notification.title.toUpperCase()}</div>
+            <Typography
+              variant="h4"
+              sx={{
+                m: 0
+              }}
+            >
+              {notification.title}
+            </Typography>
             <div style={{ fontSize: "12px", color: "text.secondary" }}>
               {notification.body}
             </div>
-            <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+            <Typography variant="caption" display="block">
               {notification.createdAt.toDate().toLocaleString()}
             </Typography>
           </Box>
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
             <Tooltip
               title={notification.read ? "Mark as unread" : "Mark as read"}
               placement="top"
@@ -85,7 +98,7 @@ const NotificationsMenuItem = observer(
                   {
                     name: "offset",
                     options: {
-                      offset: [0, -8] // Adjust this to move it down (X, Y offset)
+                      offset: [0, -8]
                     }
                   }
                 ]

@@ -136,27 +136,22 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
             <Tooltip
               key={type}
               title={
-                reactionCount > 0 ? (
-                  <Box>
-                    <Typography variant="body2" fontWeight="bold">
-                      {label}
+                <Box>
+                  <Typography variant="body2" fontWeight="bold">
+                    {label}
+                  </Typography>
+                  {reactionUsers.map((username, index) => (
+                    <Typography
+                      variant="body2"
+                      key={index}
+                      sx={{ fontSize: 12 }}
+                    >
+                      {username}
                     </Typography>
-                    {reactionUsers.map((username, index) => (
-                      <Typography
-                        variant="body2"
-                        key={index}
-                        sx={{ fontSize: 12 }}
-                      >
-                        {username}
-                      </Typography>
-                    ))}
-                  </Box>
-                ) : (
-                  ""
-                )
+                  ))}
+                </Box>
               }
               arrow
-              disableHoverListener={reactionCount === 0} // Disable tooltip when no reactions
             >
               <Button
                 sx={{
