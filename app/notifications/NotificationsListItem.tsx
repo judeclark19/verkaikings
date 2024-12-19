@@ -187,7 +187,7 @@ const NotificationListItem = observer(
           <IconButton
             aria-label="go"
             size="medium"
-            onClick={(e) => {
+            onClick={() => {
               if (!notif.read) {
                 setMarkReadOnUnmount(true);
               }
