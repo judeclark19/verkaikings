@@ -1,0 +1,9 @@
+[build]
+  command = "npm install && npm run build"
+  publish = ".next"
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["firebase-functions", "firebase-admin"]
+  included_files = ["functions/src/**", "functions/lib/**", "!functions/.eslintrc.js"]
+  
