@@ -169,39 +169,41 @@ const NotificationListItem = observer(
             }}
           />
         </Tooltip>
-        <Tooltip
-          title="Go to source"
-          placement="top"
-          arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, -12]
+        {notif.url && (
+          <Tooltip
+            title="Go to source"
+            placement="top"
+            arrow
+            PopperProps={{
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -12]
+                  }
                 }
-              }
-            ]
-          }}
-        >
-          <IconButton
-            aria-label="go"
-            size="medium"
-            onClick={() => {
-              if (!notif.read) {
-                setMarkReadOnUnmount(true);
-              }
-            }}
-            LinkComponent={Link}
-            href={notif.url}
-            sx={{
-              transition: "color 0.3s",
-              color: notif.read ? "white" : "#232323"
+              ]
             }}
           >
-            <ArrowForward fontSize="large" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              aria-label="go"
+              size="medium"
+              onClick={() => {
+                if (!notif.read) {
+                  setMarkReadOnUnmount(true);
+                }
+              }}
+              LinkComponent={Link}
+              href={notif.url}
+              sx={{
+                transition: "color 0.3s",
+                color: notif.read ? "white" : "#232323"
+              }}
+            >
+              <ArrowForward fontSize="large" />
+            </IconButton>
+          </Tooltip>
+        )}
       </ListItem>
     );
   }

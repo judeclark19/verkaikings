@@ -12,13 +12,7 @@ export async function POST(req: Request) {
   try {
     const { userId, notification } = await req.json();
 
-    const tokensSnapshot = await adminDb
-      .collection(`users/${userId}/fcmTokens`)
-      .get();
-
-    const tokens = tokensSnapshot.docs.map((doc) => doc.id);
-
-    // Store the notification in Firestore regardless of tokens
+    // Store the notification in Firestore
     const notificationDoc = {
       title: notification.title,
       body: notification.body,
@@ -31,14 +25,21 @@ export async function POST(req: Request) {
       .collection(`users/${userId}/notifications`)
       .add(notificationDoc);
 
+    // check for FCM tokens
+
+    const tokensSnapshot = await adminDb
+      .collection(`users/${userId}/fcmTokens`)
+      .get();
+
+    const tokens = tokensSnapshot.docs.map((doc) => doc.id);
+
     if (tokens.length === 0) {
-      // No tokens found, so we can't send a push notification.
-      // The notification is still stored for the user to see in the list.
       return NextResponse.json({
         message: "Notification stored but no FCM tokens found."
       });
     }
 
+    // Pushing notification to all tokens
     const message = {
       webpush: {
         notification: {
