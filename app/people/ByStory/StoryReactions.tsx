@@ -88,7 +88,7 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
           `${myProfileState.user!.firstName} ${
             myProfileState.user!.lastName
           } left a "${reactionType}"`,
-          "/profile"
+          `/profile?notif=story-${reactionType}`
         );
       } catch (error) {
         alert(`Error adding reaction: ${error}`);
@@ -164,6 +164,7 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
                       ? "warning.main"
                       : "text.secondary"
                 }}
+                id={`story-${type}`}
                 startIcon={icon}
                 onClick={() =>
                   handleReaction(type as "like" | "love" | "laugh")

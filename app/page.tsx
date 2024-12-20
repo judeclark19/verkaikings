@@ -28,8 +28,8 @@ export default function Home() {
           priority
         />
       </Box>
-      <Typography variant="h1">Willemijn&apos;s World Website</Typography>
-      <Typography variant="h2">Verkaikings Society</Typography>
+      <Typography variant="h1">Verkaikings Society</Typography>
+      <Typography variant="h2">Willemijn&apos;s World Website</Typography>
       <WelcomeMessage
         isLoggedIn={!!decodedToken}
         email={decodedToken ? decodedToken.email : null}

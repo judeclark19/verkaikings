@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import EditBtn from "./EditBtn";
 import { FaCity } from "react-icons/fa";
+import Link from "next/link";
 
 const City = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -38,7 +39,8 @@ const City = observer(() => {
           <CityPicker setIsEditing={setIsEditing} />
         ) : (
           <Typography
-            component="p"
+            component={Link}
+            href={`/people?viewBy=map&query=${myProfileState.cityName}`}
             sx={{
               color: myProfileState.cityName ? "inherit" : "text.secondary"
             }}

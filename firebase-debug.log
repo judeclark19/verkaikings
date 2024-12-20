@@ -1,0 +1,30 @@
+[debug] [2024-12-20T06:45:37.744Z] ----------------------------------------------------------------------
+[debug] [2024-12-20T06:45:37.746Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions
+[debug] [2024-12-20T06:45:37.746Z] CLI Version:   13.29.1
+[debug] [2024-12-20T06:45:37.746Z] Platform:      darwin
+[debug] [2024-12-20T06:45:37.746Z] Node Version:  v20.10.0
+[debug] [2024-12-20T06:45:37.746Z] Time:          Fri Dec 20 2024 01:45:37 GMT-0500 (Eastern Standard Time)
+[debug] [2024-12-20T06:45:37.746Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-12-20T06:45:37.784Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-12-20T06:45:37.784Z] > authorizing via signed-in user (judeclark2019@gmail.com)
+[debug] [2024-12-20T06:45:37.784Z] [iam] checking project verkaikings for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2024-12-20T06:45:37.785Z] Checked if tokens are valid: true, expires at: 1734679618561
+[debug] [2024-12-20T06:45:37.785Z] Checked if tokens are valid: true, expires at: 1734679618561
+[debug] [2024-12-20T06:45:37.785Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/verkaikings:testIamPermissions [none]
+[debug] [2024-12-20T06:45:37.785Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/verkaikings:testIamPermissions x-goog-quota-user=projects/verkaikings
+[debug] [2024-12-20T06:45:37.785Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/verkaikings:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2024-12-20T06:45:37.917Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/verkaikings:testIamPermissions 200
+[debug] [2024-12-20T06:45:37.918Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/verkaikings:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2024-12-20T06:45:37.918Z] Checked if tokens are valid: true, expires at: 1734679618561
+[debug] [2024-12-20T06:45:37.918Z] Checked if tokens are valid: true, expires at: 1734679618561
+[debug] [2024-12-20T06:45:37.918Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2024-12-20T06:45:37.918Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2024-12-20T06:45:38.061Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions 404
+[debug] [2024-12-20T06:45:38.061Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2024-12-20T06:45:38.062Z] [functions] service account IAM check errored, deploy may fail: Request to https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://iam.googleapis.com/v1/projects/verkaikings/serviceAccounts/verkaikings@appspot.gserviceaccount.com:testIamPermissions had HTTP Error: 404, Unknown service account","status":404}
+[info] 
+[info] === Deploying to 'verkaikings'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint

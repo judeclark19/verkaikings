@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import darkTheme from "@/styles/theme";
 import { useEffect } from "react";
 import appState from "./AppState";
+import { useSearchParams } from "next/navigation";
 
 export default function LayoutProviders({
   children,
@@ -17,6 +18,9 @@ export default function LayoutProviders({
   isLoggedIn: boolean;
   userId?: string;
 }) {
+  const searchParams = useSearchParams();
+  const notifParam = searchParams.get("notif");
+
   useEffect(() => {
     appState.initializeSnapshots(isLoggedIn, userId);
 
@@ -25,6 +29,17 @@ export default function LayoutProviders({
       appState.unsubscribeFromSnapshots();
     };
   }, [isLoggedIn, userId]);
+
+  useEffect(() => {
+    if (notifParam) {
+      const element = document.getElementById(notifParam as string);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.classList.add("highlighted");
+        setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 2s
+      }
+    }
+  }, [notifParam]);
 
   return (
     <StyledComponentsRegistry>
