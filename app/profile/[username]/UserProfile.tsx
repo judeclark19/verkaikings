@@ -302,7 +302,9 @@ const UserProfile = observer(
             {/* SECOND SECTION - MY WILLEMIJN STORY */}
             {usersWillemijnStory && usersWillemijnStory.storyContent && (
               <>
-                <Typography variant="h2">My Willemijn Story</Typography>
+                <Typography variant="h2" id="my-willemijn-story">
+                  My Willemijn Story
+                </Typography>
                 <Paper>
                   <Typography
                     sx={{
