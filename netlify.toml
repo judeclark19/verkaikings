@@ -5,6 +5,5 @@
   directory = "functions"
   node_bundler = "esbuild"
   external_node_modules = ["firebase-functions", "firebase-admin"]
-[functions.excluded_files]
-  files = [".eslintrc.js"]
+  included_files = ["functions/src/**", "functions/lib/**"]
   
