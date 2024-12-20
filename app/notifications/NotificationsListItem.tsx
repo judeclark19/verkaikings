@@ -4,7 +4,8 @@ import {
   ListItemText,
   Checkbox,
   IconButton,
-  Tooltip
+  Tooltip,
+  Box
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { observer } from "mobx-react-lite";
@@ -45,7 +46,14 @@ const NotificationListItem = observer(
         key={notif.id}
         sx={{
           display: "flex",
-          gap: 1,
+          flexDirection: {
+            xs: "column",
+            sm: "row"
+          },
+          gap: {
+            xs: 0,
+            sm: 1
+          },
           backgroundColor: notif.read ? "background.paper" : "primary.dark",
           borderRadius: "4px",
           marginBottom: "0.5rem",
@@ -62,6 +70,12 @@ const NotificationListItem = observer(
         }}
       >
         <ListItemText
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "auto"
+            }
+          }}
           primary={
             <Typography
               display="block"
@@ -104,74 +118,18 @@ const NotificationListItem = observer(
             </>
           }
         />
-        <Tooltip
-          title="Delete"
-          placement="top"
-          arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, -12]
-                }
-              }
-            ]
+        <Box
+          sx={{
+            display: "flex",
+            width: {
+              xs: "100%",
+              sm: "auto"
+            },
+            justifyContent: "flex-end"
           }}
         >
-          <IconButton
-            aria-label="delete"
-            size="medium"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setVisibility((prev) => ({ ...prev, [notif.id]: false }));
-              setTimeout(() => {
-                notif.delete();
-              }, 300);
-            }}
-            sx={{
-              transition: "color 0.3s",
-              color: notif.read ? "white" : "#232323"
-            }}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          title={notif.read ? "Mark as unread" : "Mark as read"}
-          placement="top"
-          arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, -12]
-                }
-              }
-            ]
-          }}
-        >
-          <Checkbox
-            checked={!!notif.read}
-            size="small"
-            onClick={(e) => e.stopPropagation()}
-            onChange={() => {
-              setVisibility((prev) => ({ ...prev, [notif.id]: false }));
-              setTimeout(() => {
-                notif.toggleRead();
-              }, 300);
-            }}
-            sx={{
-              transition: "color 0.3s",
-              color: notif.read ? "white" : "#232323"
-            }}
-          />
-        </Tooltip>
-        {notif.url && (
           <Tooltip
-            title="Go to source"
+            title="Delete"
             placement="top"
             arrow
             PopperProps={{
@@ -186,24 +144,93 @@ const NotificationListItem = observer(
             }}
           >
             <IconButton
-              aria-label="go"
+              aria-label="delete"
               size="medium"
-              onClick={() => {
-                if (!notif.read) {
-                  setMarkReadOnUnmount(true);
-                }
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setVisibility((prev) => ({ ...prev, [notif.id]: false }));
+                setTimeout(() => {
+                  notif.delete();
+                }, 300);
               }}
-              LinkComponent={Link}
-              href={notif.url}
               sx={{
                 transition: "color 0.3s",
-                color: notif.read ? "white" : "#232323"
+                color: notif.read ? "white" : "#232323",
+                width: "50px"
               }}
             >
-              <ArrowForward fontSize="large" />
+              <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-        )}
+          <Tooltip
+            title={notif.read ? "Mark as unread" : "Mark as read"}
+            placement="top"
+            arrow
+            PopperProps={{
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -12]
+                  }
+                }
+              ]
+            }}
+          >
+            <Checkbox
+              checked={!!notif.read}
+              size="small"
+              onClick={(e) => e.stopPropagation()}
+              onChange={() => {
+                setVisibility((prev) => ({ ...prev, [notif.id]: false }));
+                setTimeout(() => {
+                  notif.toggleRead();
+                }, 300);
+              }}
+              sx={{
+                transition: "color 0.3s",
+                color: notif.read ? "white" : "#232323",
+                width: "50px"
+              }}
+            />
+          </Tooltip>
+          {notif.url && (
+            <Tooltip
+              title="Go to source"
+              placement="top"
+              arrow
+              PopperProps={{
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, -12]
+                    }
+                  }
+                ]
+              }}
+            >
+              <IconButton
+                aria-label="go"
+                size="medium"
+                onClick={() => {
+                  if (!notif.read) {
+                    setMarkReadOnUnmount(true);
+                  }
+                }}
+                LinkComponent={Link}
+                href={notif.url}
+                sx={{
+                  transition: "color 0.3s",
+                  color: notif.read ? "white" : "#232323"
+                }}
+              >
+                <ArrowForward fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
       </ListItem>
     );
   }
