@@ -16,6 +16,19 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'DM Serif Display', serif;
   }
 
+  .highlighted {
+  animation: highlight-flash 2s;
+}
+
+@keyframes highlight-flash {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: #ffb74d;
+  }
+}
+
   // styling the Google Maps InfoWindow
   .gm-style-iw-chr {
    position: absolute;

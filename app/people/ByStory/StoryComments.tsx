@@ -10,13 +10,20 @@ import {
   Link,
   IconButton
 } from "@mui/material";
-import { doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  DocumentData,
+  onSnapshot,
+  updateDoc
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
 
 type Comment = {
+  id: string;
   authorId: string;
   createdAt: string;
   text: string;
@@ -53,6 +60,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
 
       // Create a new comment
       const newComment: Comment = {
+        id: doc(collection(db, `myWillemijnStories/${story.id}/comments`)).id,
         authorId: appState.loggedInUser!.id,
         createdAt: new Date().toISOString(),
         text: commentText
@@ -72,7 +80,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
           `${myProfileState.user!.firstName} ${
             myProfileState.user!.lastName
           } left a comment`,
-          "/profile"
+          `/profile?notif=${newComment.id}`
         );
 
         setCommentText(""); // Clear the input
@@ -124,6 +132,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
             return (
               <ListItem
                 key={index}
+                id={comment.id || Math.random().toString()}
                 sx={{
                   display: "flex",
                   flexDirection: "column",

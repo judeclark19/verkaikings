@@ -177,20 +177,20 @@ const SignupForm = () => {
         />
       ) : (
         <>
-          {" "}
-          <Typography
-            gutterBottom
-            sx={{
-              textAlign: "center"
-            }}
-          >
-            This website is only for members of the &ldquo;Willemijn as
-            Always&rdquo; WhatsApp group.
-            <br />
-            Please enter the phone number that you use in WhatsApp to continue.
-          </Typography>
           {signupStage === 1 && (
             <>
+              <Typography
+                gutterBottom
+                sx={{
+                  textAlign: "center"
+                }}
+              >
+                This website is only for members of the &ldquo;Willemijn as
+                Always&rdquo; WhatsApp group.
+                <br />
+                Please enter the phone number that you use in WhatsApp to
+                continue.
+              </Typography>
               <form
                 onSubmit={checkPhoneNumber}
                 style={{ width: "100%", maxWidth: "400px" }}
