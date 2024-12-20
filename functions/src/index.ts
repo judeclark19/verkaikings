@@ -1,7 +1,8 @@
-import { initializeApp } from "firebase-admin/app";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { getMessaging } from "firebase-admin/messaging";
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import {initializeApp} from "firebase-admin/app";
+import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {getMessaging} from "firebase-admin/messaging";
+import {onDocumentCreated} from "firebase-functions/v2/firestore";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 
 initializeApp();
 
@@ -12,9 +13,9 @@ exports.sendWelcomeNotifications = onDocumentCreated(
   "users/{docId}",
   async (event) => {
     const newUserId = event.params.docId;
-    const newUserData = event.data?.data();
+    const newUser = event.data?.data();
 
-    if (!newUserData) {
+    if (!newUser) {
       console.error("No user data found in the event.");
       return;
     }
@@ -23,16 +24,15 @@ exports.sendWelcomeNotifications = onDocumentCreated(
 
     try {
       // Store the notification in Firestore
+      const welcomeNotificationTitle = "Welcome to the Verkaikings Society app";
+      const wnb = `Hi ${newUser.firstName}, thank you for signing up!`;
 
-      const welcomeNotificationDoc = {
-        title: "Welcome to the Verkaikings Society app!",
-        body: `Hi ${newUserData.firstName}, thank you for signing up!`,
+      await adminDb.collection(`users/${newUserId}/notifications`).add({
+        title: welcomeNotificationTitle,
+        body: wnb,
         createdAt: Timestamp.now(),
-        read: false
-      };
-      await adminDb
-        .collection(`users/${newUserId}/notifications`)
-        .add(welcomeNotificationDoc);
+        read: false,
+      });
 
       // check for FCM tokens
       const newUserTokensSnapshot = await adminDb
@@ -42,26 +42,19 @@ exports.sendWelcomeNotifications = onDocumentCreated(
       const newUserTokens = newUserTokensSnapshot.docs.map((doc) => doc.id);
 
       if (newUserTokens.length === 0) {
-        console.log(
-          `No FCM tokens found for new user ${newUserId}. Skipping push notification.`
-        );
+        console.log("No FCM tokens for new user, skipping push notifs.");
       } else {
-        console.log(
-          `Found ${newUserTokens.length} FCM tokens for new user ${newUserId}. Sending welcome notification.`
-        );
+        console.log(`${newUserTokens.length} FCM tokens for new user, pushing`);
 
         const message = {
           webpush: {
             notification: {
-              title: "Welcome to our community!",
-              body: `Hi ${newUserData.firstName}, thank you for signing up!`,
-              icon: "/favicon-32x32.png"
+              title: welcomeNotificationTitle,
+              body: wnb,
+              icon: "/favicon-32x32.png",
             },
-            fcm_options: {
-              link: "/welcome"
-            }
           },
-          tokens: newUserTokens
+          tokens: newUserTokens,
         };
 
         const response = await adminMessaging.sendEachForMulticast(message);
@@ -69,9 +62,7 @@ exports.sendWelcomeNotifications = onDocumentCreated(
         console.log(
           `Welcome notification sent to ${response.successCount} devices.`
         );
-        console.log(
-          `${response.failureCount} devices failed to receive the welcome notification.`
-        );
+        console.log(`Welcome notif failure count: ${response.failureCount}`);
       }
 
       // ALL OTHER USERS ============================================
@@ -80,15 +71,18 @@ exports.sendWelcomeNotifications = onDocumentCreated(
       const otherUserTokens: string[] = [];
 
       // firestore
+      const nsunt = `${newUser.firstName} ${newUser.lastName} just signed up`;
+      const newSignUpNotificationBody = "Click to see their profile.";
+      const newSignUpNotificationUrl = `/profile/${newUser.displayName}`;
       for (const doc of allUsersSnapshot.docs) {
         if (doc.id !== newUserId) {
           // Add a notification to each user's subcollection
           await adminDb.collection(`users/${doc.id}/notifications`).add({
-            title: `${newUserData.firstName} ${newUserData.lastName} just signed up!`,
-            body: `Click to see their profile.`,
-            url: `/profile/${newUserData.displayName}`,
+            title: nsunt,
+            body: newSignUpNotificationBody,
+            url: newSignUpNotificationUrl,
             createdAt: Timestamp.now(),
-            read: false
+            read: false,
           });
 
           const tokensSnapshot = await adminDb
@@ -105,26 +99,26 @@ exports.sendWelcomeNotifications = onDocumentCreated(
         const announcementMessage = {
           webpush: {
             notification: {
-              title: `Welcome, ${newUserData.firstName}!`,
-              body: `${newUserData.firstName} ${newUserData.lastName} just signed up.`,
-              icon: "/favicon-32x32.png"
+              title: nsunt,
+              body: newSignUpNotificationBody,
+              icon: "/favicon-32x32.png",
             },
             fcm_options: {
-              link: `/profile/${newUserId}`
-            }
+              link: newSignUpNotificationUrl,
+            },
           },
-          tokens: otherUserTokens
+          tokens: otherUserTokens,
         };
 
-        const announcementResponse = await adminMessaging.sendEachForMulticast(
+        const res = await adminMessaging.sendEachForMulticast(
           announcementMessage
         );
 
         console.log(
-          `Announcement notification sent to ${announcementResponse.successCount} devices.`
+          `Announcement notification sent to ${res.successCount} devices.`
         );
         console.log(
-          `${announcementResponse.failureCount} devices failed to receive the announcement notification.`
+          `${res.failureCount} failed to receive announcement notif.`
         );
       } else {
         console.log("No FCM tokens found for other users.");
@@ -150,29 +144,33 @@ exports.sendNewStoryNotifications = onDocumentCreated(
 
     try {
       const authorDoc = await adminDb.doc(`users/${newStoryId}`).get();
-      const authorData = authorDoc.data();
-      if (!authorData) {
+      const author = authorDoc.data();
+      if (!author) {
         console.error(
           "No author data found in the event, no notifications sent."
         );
         return;
       }
 
-      // NOTIFICATION GOES TO ALL OTHER USERS ============================================
+      // NOTIFICATION GOES TO ALL OTHER USERS ==================================
 
       const allUsersSnapshot = await adminDb.collection("users").get();
       const otherUserTokens: string[] = [];
 
       // firestore
+      const nsnt = `New story by ${author.firstName} ${author.lastName}`;
+      const nsnb = `${author.firstName} shared their Willemijn story.`;
+      const nsnUrl = `/profile/${author.displayName}?notif=my-willemijn-story`;
+
       for (const userDoc of allUsersSnapshot.docs) {
         if (userDoc.id !== newStoryId) {
           // Add a notification to each user's subcollection
           await adminDb.collection(`users/${userDoc.id}/notifications`).add({
-            title: `New story by ${authorData.firstName} ${authorData.lastName}`,
-            body: `${authorData.firstName} shared their Willemijn story.`,
-            url: `/profile/${newStoryData.displayName}?notif=my-willemijn-story`,
+            title: nsnt,
+            body: nsnb,
+            url: nsnUrl,
             createdAt: Timestamp.now(),
-            read: false
+            read: false,
           });
 
           const tokensSnapshot = await adminDb
@@ -189,32 +187,184 @@ exports.sendNewStoryNotifications = onDocumentCreated(
         const announcementMessage = {
           webpush: {
             notification: {
-              title: `New story by ${authorData.firstName} ${authorData.lastName}`,
-              body: `${authorData.firstName} shared their Willemijn story.`,
-              icon: "/favicon-32x32.png"
+              title: nsnt,
+              body: nsnb,
+              icon: "/favicon-32x32.png",
             },
             fcm_options: {
-              link: `/profile/${newStoryData.displayName}?notif=my-willemijn-story`
-            }
+              link: nsnUrl,
+            },
           },
-          tokens: otherUserTokens
+          tokens: otherUserTokens,
         };
 
-        const announcementResponse = await adminMessaging.sendEachForMulticast(
+        const response = await adminMessaging.sendEachForMulticast(
           announcementMessage
         );
 
         console.log(
-          `New Story notification sent to ${announcementResponse.successCount} devices.`
+          `New Story notification sent to ${response.successCount} devices.`
         );
         console.log(
-          `${announcementResponse.failureCount} devices failed to receive the new story notification.`
+          `${response.failureCount} failed to receive new story notif.`
         );
       } else {
         console.log("No FCM tokens found for other users.");
       }
     } catch (error) {
-      console.error("Error sending notifications:", error);
+      console.error("Error sending story notifications:", error);
     }
+  }
+);
+
+/**
+ * Helper function to get the ordinal suffix of a number.
+ *
+ * @param {number} num - The number to get the ordinal suffix for.
+ * @return {string} The number with its ordinal suffix (e.g., "1st", "2nd").
+ */
+function getOrdinal(num: number): string {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const remainder = num % 100;
+
+  const suffix =
+    remainder >= 11 && remainder <= 13 ? "th" : suffixes[num % 10] || "th";
+
+  return `${num}${suffix}`;
+}
+
+/**
+ * Check for birthdays and send notifications
+ * @return {Promise<void>}
+ */
+async function runBirthdayCheck() {
+  const today = new Date();
+  console.log("Checking for birthdays", today);
+  const todayMonth = today.getMonth() + 1; // January is 0
+  const todayDay = today.getDate();
+  const todayYear = today.getFullYear();
+
+  const allUsersSnapshot = await adminDb.collection("users").get();
+
+  allUsersSnapshot.forEach(async (userDoc) => {
+    const bdayUData = userDoc.data();
+    const birthday = bdayUData.birthday;
+
+    if (!birthday) return;
+
+    const [year, month, day] = birthday.split("-");
+    if (parseInt(month) === todayMonth && parseInt(day) === todayDay) {
+      console.log(`It's ${bdayUData.firstName}'s birthday`);
+      const age = todayYear - parseInt(year);
+
+      try {
+        // BIRTHDAY USER ============================================
+        const birthdayUserNotificationTitle = `Happy ${getOrdinal(
+          age
+        )} Birthday!`;
+        const bunb = "Wishing you a fantastic day!";
+        // Store the notification in Firestore
+        await adminDb.collection(`users/${userDoc.id}/notifications`).add({
+          title: birthdayUserNotificationTitle,
+          body: bunb,
+          createdAt: Timestamp.now(),
+          read: false,
+        });
+
+        // check for FCM tokens
+        const birthdayUserTokensSnapshot = await adminDb
+          .collection(`users/${userDoc.id}/fcmTokens`)
+          .get();
+
+        const birthdayUserTokens = birthdayUserTokensSnapshot.docs.map(
+          (doc) => doc.id
+        );
+
+        if (birthdayUserTokens.length > 0) {
+          const message = {
+            webpush: {
+              notification: {
+                title: birthdayUserNotificationTitle,
+                body: bunb,
+                icon: "/favicon-32x32.png",
+              },
+            },
+            tokens: birthdayUserTokens,
+          };
+
+          await adminMessaging.sendEachForMulticast(message);
+        } else {
+          console.log("No tokens found for bday user");
+        }
+
+        // ALL OTHER USERS ============================================
+        const ount = `Happy birthday to ${bdayUData.firstName}`;
+        const otherUsersNotificationBody = `It's ${bdayUData.firstName} ${
+          bdayUData.lastName
+        }'s ${getOrdinal(age)} birthday today.`;
+        const ounUrl = `/profile/${bdayUData.displayName}`;
+
+        for (const otherUserDoc of allUsersSnapshot.docs) {
+          if (otherUserDoc.id !== userDoc.id) {
+            // Add a notification to each user's subcollection
+            await adminDb
+              .collection(`users/${otherUserDoc.id}/notifications`)
+              .add({
+                title: ount,
+                body: otherUsersNotificationBody,
+                createdAt: Timestamp.now(),
+                read: false,
+                url: ounUrl,
+              });
+
+            // push notifications
+
+            const otherUserTokensSnapshot = await adminDb
+              .collection(`users/${otherUserDoc.id}/fcmTokens`)
+              .get();
+
+            const otherUserTokens = otherUserTokensSnapshot.docs.map(
+              (doc) => doc.id
+            );
+
+            if (otherUserTokens.length > 0) {
+              const message = {
+                webpush: {
+                  notification: {
+                    title: ount,
+                    otherUsersNotificationBody,
+                    icon: "/favicon-32x32.png",
+                  },
+                  fcm_options: {
+                    link: ounUrl,
+                  },
+                },
+                tokens: otherUserTokens,
+              };
+
+              await adminMessaging.sendEachForMulticast(message);
+            } else {
+              console.log(
+                `No FCM tokens found for ${
+                  otherUserDoc.data().firstName
+                }. Skipping push notification`
+              );
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error sending birthday notifications:", error);
+      }
+    }
+  });
+}
+
+exports.birthdayCheck = onSchedule(
+  {
+    schedule: "every day 08:00",
+    timeZone: "Europe/Berlin",
+  },
+  async () => {
+    runBirthdayCheck();
   }
 );
