@@ -4,6 +4,5 @@
 [functions]
   directory = "functions"
   node_bundler = "esbuild"
-
-  # Ensure Netlify installs the required dependencies
+  included_files = ["!functions/.eslintrc"]
   external_node_modules = ["firebase-functions", "firebase-admin"]
