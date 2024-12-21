@@ -73,7 +73,7 @@ exports.sendWelcomeNotifications = onDocumentCreated(
       // firestore
       const nsunt = `${newUser.firstName} ${newUser.lastName} just signed up`;
       const newSignUpNotificationBody = "Click to see their profile.";
-      const newSignUpNotificationUrl = `/profile/${newUser.displayName}`;
+      const newSignUpNotificationUrl = `/profile/${newUser.username}`;
       for (const doc of allUsersSnapshot.docs) {
         if (doc.id !== newUserId) {
           // Add a notification to each user's subcollection
@@ -160,7 +160,7 @@ exports.sendNewStoryNotifications = onDocumentCreated(
       // firestore
       const nsnt = `New story by ${author.firstName} ${author.lastName}`;
       const nsnb = `${author.firstName} shared their Willemijn story.`;
-      const nsnUrl = `/profile/${author.displayName}?notif=my-willemijn-story`;
+      const nsnUrl = `/profile/${author.username}?notif=my-willemijn-story`;
 
       for (const userDoc of allUsersSnapshot.docs) {
         if (userDoc.id !== newStoryId) {
@@ -302,7 +302,7 @@ async function runBirthdayCheck() {
         const otherUsersNotificationBody = `It's ${bdayUData.firstName} ${
           bdayUData.lastName
         }'s ${getOrdinal(age)} birthday today.`;
-        const ounUrl = `/profile/${bdayUData.displayName}`;
+        const ounUrl = `/profile/${bdayUData.username}`;
 
         for (const otherUserDoc of allUsersSnapshot.docs) {
           if (otherUserDoc.id !== userDoc.id) {
