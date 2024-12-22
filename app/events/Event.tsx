@@ -1,15 +1,48 @@
-import { Box, Link, List, Paper, Typography, Button } from "@mui/material";
+// need to make editing possible
+// check editing modal in mobile to see if it overflows
+
+import {
+  Box,
+  Link as MuiLink,
+  List,
+  Paper,
+  Typography,
+  Button,
+  Divider
+} from "@mui/material";
 import { EventType } from "./Events.state";
 import { formatFullBirthday } from "@/lib/clientUtils";
 import userList from "@/lib/UserList";
 import UserListItem from "../people/UserListItem";
 import appState from "@/lib/AppState";
+import { Add as AddIcon, Close as CloseIcon } from "@mui/icons-material";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import Link from "next/link";
 
-const Event = ({ event }: { event: EventType }) => {
+const Event = ({
+  event,
+  showTitle = true
+}: {
+  event: EventType;
+  showTitle?: boolean;
+}) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);
 
-  function updateAttendance() {
-    console.log("idk");
+  async function updateAttendance() {
+    try {
+      const eventDocRef = doc(db, "events", event.id);
+
+      const updatedAttendees = imGoing
+        ? event.attendees.filter((id) => id !== appState.loggedInUser!.id) // Remove the current user
+        : [...event.attendees, appState.loggedInUser!.id]; // Add the current user
+
+      await updateDoc(eventDocRef, {
+        attendees: updatedAttendees
+      });
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+    }
   }
 
   return (
@@ -18,23 +51,44 @@ const Event = ({ event }: { event: EventType }) => {
       sx={{
         p: 2
       }}
+      id={event.id}
     >
-      <Typography
-        variant="h3"
-        sx={{
-          marginTop: 0,
-          fontSize: "2rem",
-          color: "secondary.dark"
-        }}
-      >
-        {event.title} - {formatFullBirthday(event.date)}
-      </Typography>
+      {showTitle && (
+        <>
+          <Link
+            href={`/events/${event.id}`}
+            passHref
+            style={{
+              color: "#A3AE6A",
+              textDecoration: "underline", // Ensures underline is applied
+              textDecorationColor: "#A3AE6A" // Matches underline color to text color
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                marginTop: 0,
+                fontSize: "2rem",
+                color: "secondary.dark"
+              }}
+            >
+              {event.title} - {formatFullBirthday(event.date)}
+            </Typography>
+          </Link>
+          <Divider
+            sx={{
+              mb: 2
+            }}
+          />
+        </>
+      )}
+
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
-            sm: "1fr 1fr"
+            sm: "1fr 1fr 1fr"
           },
           columnGap: 2,
           rowGap: 2
@@ -60,9 +114,9 @@ const Event = ({ event }: { event: EventType }) => {
           </Typography>
           <Typography>
             <strong>Location:</strong>{" "}
-            <Link href={event.locationUrl} target="_blank">
+            <MuiLink href={event.locationUrl} target="_blank">
               {event.locationName}
-            </Link>
+            </MuiLink>
           </Typography>
           {event.description && (
             <Typography>
@@ -70,6 +124,23 @@ const Event = ({ event }: { event: EventType }) => {
             </Typography>
           )}
         </Box>
+        <Divider
+          orientation="vertical"
+          sx={{
+            display: {
+              xs: "none",
+              sm: "block"
+            }
+          }}
+        />
+        <Divider
+          sx={{
+            display: {
+              xs: "block",
+              sm: "none"
+            }
+          }}
+        />
         <Box>
           <Typography
             variant="h4"
@@ -103,11 +174,11 @@ const Event = ({ event }: { event: EventType }) => {
               })}
             </List>
           )}
-          {/* <br /> */}
           <Button
             variant="contained"
             color={imGoing ? "secondary" : "primary"}
             onClick={updateAttendance}
+            startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
           >
             {imGoing ? "I'm not going." : "I'm going!"}
           </Button>

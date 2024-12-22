@@ -76,8 +76,11 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
+      this.userList = userList;
       this.userList.init(users);
+      this.myWillemijnStories = myWillemijnStories;
       this.myWillemijnStories.init(stories);
+      this.events = eventsState;
       this.events.setAllEvents(events);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();

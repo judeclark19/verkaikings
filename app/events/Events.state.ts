@@ -2,6 +2,7 @@ import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable } from "mobx";
 
 export type EventType = {
+  id: string;
   creatorId: string;
   createdAt: string;
   title: string;

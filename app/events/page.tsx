@@ -23,9 +23,3 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
-
-// creator id
-// title
-// date
-// description
-// list of attendees
