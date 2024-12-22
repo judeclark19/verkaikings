@@ -16,12 +16,14 @@ import {
 import { db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
 import { registerPushNotifications } from "./clientUtils";
+import eventsState, { Events, EventType } from "@/app/events/Events.state";
 
 class AppState {
   isInitialized = false;
   language: string = "en";
   userList: UserList = userList;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
+  events: Events = eventsState;
   loggedInUser: DocumentData | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
@@ -30,6 +32,7 @@ class AppState {
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;
+  eventsUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -40,20 +43,28 @@ class AppState {
       if (!this.isInitialized) {
         const users = await getDocs(collection(db, "users"));
         const stories = await getDocs(collection(db, "myWillemijnStories"));
+        const events = await getDocs(collection(db, "events"));
         this.init(
           users.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
           userId!,
-          stories.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          stories.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+          events.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
         );
       }
       this.subscribeToUsers();
       this.subscribeToStories();
+      this.subscribeToEvents();
     } else {
       this.unsubscribeFromSnapshots();
     }
   }
 
-  async init(users: DocumentData[], userId: string, stories: DocumentData[]) {
+  async init(
+    users: DocumentData[],
+    userId: string,
+    stories: DocumentData[],
+    events: DocumentData[]
+  ) {
     if (this.isInitialized) {
       return;
     }
@@ -65,10 +76,9 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
-      this.userList = userList;
       this.userList.init(users);
-      this.myWillemijnStories = myWillemijnStories;
       this.myWillemijnStories.init(stories);
+      this.events.setAllEvents(events);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
@@ -138,6 +148,19 @@ class AppState {
     );
   }
 
+  subscribeToEvents() {
+    this.eventsUnsubscribe = onSnapshot(
+      collection(db, "events"),
+      (snapshot) => {
+        const updatedEvents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        this.events.setAllEvents(updatedEvents);
+      }
+    );
+  }
+
   unsubscribeFromSnapshots() {
     if (this.userUnsubscribe) {
       this.userUnsubscribe();
@@ -146,6 +169,10 @@ class AppState {
     if (this.storyUnsubscribe) {
       this.storyUnsubscribe();
       this.storyUnsubscribe = null;
+    }
+    if (this.eventsUnsubscribe) {
+      this.eventsUnsubscribe();
+      this.eventsUnsubscribe = null;
     }
   }
 
