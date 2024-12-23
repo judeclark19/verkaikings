@@ -1,4 +1,6 @@
+import { db } from "@/lib/firebase";
 import { DocumentData } from "firebase-admin/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
 export type EventType = {
@@ -52,6 +54,16 @@ export class Events {
       });
 
     this.isInitialized = true;
+  }
+
+  async deleteEvent(eventId: string) {
+    const eventDocRef = doc(db, "events", eventId);
+    try {
+      await deleteDoc(eventDocRef); // Use deleteDoc to delete the document
+      console.log("Event deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   }
 }
 

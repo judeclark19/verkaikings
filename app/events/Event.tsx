@@ -19,7 +19,7 @@ import {
   Close as CloseIcon,
   Delete as DeleteIcon
 } from "@mui/icons-material";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import EditEventModal from "./EditEventModal";
@@ -34,7 +34,7 @@ const Event = ({
 }) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);
   const isOwn = event.creatorId === appState.loggedInUser?.id;
-  const isPast = eventsState.pastEvents.includes(event);
+  const isPast = eventsState.pastEvents.find((e) => e.id === event.id);
   const creator = userList.users.find((user) => user.id === event.creatorId);
 
   async function updateAttendance() {
@@ -71,14 +71,7 @@ const Event = ({
 
   async function deleteEvent() {
     if (confirm("Are you sure you want to delete this event?")) {
-      // Locate the event in Firestore database and delete it
-      const eventDocRef = doc(db, "events", event.id);
-      try {
-        await deleteDoc(eventDocRef); // Use deleteDoc to delete the document
-        console.log("Event deleted successfully!");
-      } catch (error) {
-        console.error("Error deleting event:", error);
-      }
+      await eventsState.deleteEvent(event.id);
     }
   }
 
@@ -102,26 +95,23 @@ const Event = ({
               alignItems: "center"
             }}
           >
-            <Link
+            <Typography
+              variant="h3"
+              component={Link}
               href={`/events/${event.id}`}
-              passHref
-              style={{
-                color: "#A3AE6A",
-                textDecoration: "underline", // Ensures underline is applied
-                textDecorationColor: "#A3AE6A" // Matches underline color to text color
+              sx={{
+                marginTop: 0,
+                fontSize: "2rem",
+                color: "secondary.dark",
+                textDecoration: "none",
+
+                "&:hover": {
+                  textDecoration: "underline"
+                }
               }}
             >
-              <Typography
-                variant="h3"
-                sx={{
-                  marginTop: 0,
-                  fontSize: "2rem",
-                  color: "secondary.dark"
-                }}
-              >
-                {event.title} - {formatFullBirthday(event.date)}
-              </Typography>
-            </Link>
+              {event.title} - {formatFullBirthday(event.date)}
+            </Typography>
             {isOwn && isPast && (
               <Fab
                 size="small"
@@ -142,11 +132,9 @@ const Event = ({
       {creator && (
         <Typography>
           Event created by{" "}
-          <Link href={`/profile/${creator?.username}`} passHref>
-            <MuiLink>
-              {creator?.firstName} {creator?.lastName}
-            </MuiLink>
-          </Link>
+          <MuiLink component={Link} href={`/profile/${creator?.username}`}>
+            {creator?.firstName} {creator?.lastName}
+          </MuiLink>
         </Typography>
       )}
 
@@ -190,9 +178,22 @@ const Event = ({
           </Typography>
           <Typography>
             <strong>Location:</strong>{" "}
-            <MuiLink href={event.locationUrl} target="_blank">
-              {event.locationName}
-            </MuiLink>
+            {event.locationUrl ? (
+              <MuiLink href={event.locationUrl} target="_blank">
+                {event.locationName}
+              </MuiLink>
+            ) : (
+              event.locationName || (
+                <span
+                  style={{
+                    fontStyle: "italic",
+                    color: "rgba(255, 255, 255, 0.7)"
+                  }}
+                >
+                  (None)
+                </span>
+              )
+            )}
           </Typography>
           {event.description && (
             <Typography>
@@ -266,7 +267,11 @@ const Event = ({
               sx={{
                 width: "100%",
                 display: "flex",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
+                marginLeft: {
+                  xs: "auto",
+                  md: "-1rem"
+                }
               }}
             >
               {event.attendees.map((attendee) => {
@@ -283,7 +288,9 @@ const Event = ({
                       display: "flex",
                       alignItems: "center"
                     }}
+                    key={attendee}
                   >
+                    <UserListItem key={attendee} user={user} />
                     {!isPast && user.id === appState.loggedInUser!.id && (
                       <Tooltip
                         title="Remove yourself from this event"
@@ -307,7 +314,8 @@ const Event = ({
                             padding: "4px",
                             minWidth: 0,
                             width: "30px",
-                            height: "30px"
+                            height: "30px",
+                            marginLeft: "0.5rem"
                           }}
                           onClick={updateAttendance}
                         >
@@ -315,7 +323,6 @@ const Event = ({
                         </Button>
                       </Tooltip>
                     )}
-                    <UserListItem key={attendee} user={user} />
                   </Box>
                 );
               })}
@@ -333,7 +340,7 @@ const Event = ({
           )}
         </Box>
       </Box>
-      <EventComments event={event} readOnly={isPast} />
+      <EventComments event={event} readOnly={!!isPast} />
     </Paper>
   );
 };

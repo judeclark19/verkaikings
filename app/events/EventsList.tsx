@@ -66,7 +66,7 @@ const EventsList = observer(() => {
             }}
           >
             {eventsState.upcomingEvents.map((event) => (
-              <Event key={event.title} event={event as EventType} />
+              <Event key={event.id} event={event as EventType} />
             ))}
           </Box>
         )}
@@ -101,7 +101,7 @@ const EventsList = observer(() => {
               }}
             >
               {eventsState.pastEvents.map((event) => (
-                <Event key={event.title} event={event as EventType} />
+                <Event key={event.id} event={event as EventType} />
               ))}
             </Box>
           </>

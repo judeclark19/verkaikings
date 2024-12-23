@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
+import eventsState from "./Events.state";
 
 type Comment = {
   id: string;
@@ -40,6 +41,7 @@ const EventComments = ({
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>(event?.comments || []);
   const eventDocRef = doc(db, "events", event!.id);
+  const isPast = event && eventsState.pastEvents.find((e) => e.id === event.id);
 
   useEffect(() => {
     if (!event) return;
@@ -80,14 +82,16 @@ const EventComments = ({
         });
 
         // Send a notification to the story author
-        sendNotification(
-          event.creatorId,
-          "New comment on your event",
-          `${myProfileState.user!.firstName} ${
-            myProfileState.user!.lastName
-          } left a comment`,
-          `/events/${event.id}?notif=${newComment.id}`
-        );
+        if (event.creatorId !== appState.loggedInUser!.id) {
+          sendNotification(
+            event.creatorId,
+            "New comment on your event",
+            `${myProfileState.user!.firstName} ${
+              myProfileState.user!.lastName
+            } left a comment`,
+            `/events/${event.id}?notif=${newComment.id}`
+          );
+        }
 
         setCommentText(""); // Clear the input
       } catch (error) {
@@ -183,7 +187,7 @@ const EventComments = ({
                     {comment.text}
                   </Typography>
 
-                  {isOwnComment && (
+                  {isOwnComment && !isPast && (
                     <IconButton
                       aria-label="delete"
                       size="small"
@@ -247,7 +251,7 @@ const EventComments = ({
             </Box>
           </form>
         )}
-      </Box>{" "}
+      </Box>
     </>
   );
 };

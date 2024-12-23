@@ -20,6 +20,7 @@ import { observer } from "mobx-react-lite";
 import StoryComments from "@/app/people/ByStory/StoryComments";
 import StoryReactions from "@/app/people/ByStory/StoryReactions";
 import FlagComponent from "@/components/Flag";
+import EventsList from "../EventsList";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
@@ -186,6 +187,7 @@ const UserProfile = observer(
                 user.beReal ||
                 user.tiktok) && <SocialsList user={user} />}
             </Box>
+            <EventsList user={user} />
           </Box>
           {/* MAIN CONTENT */}
           <Box
@@ -208,7 +210,14 @@ const UserProfile = observer(
               {user.firstName} {user.lastName}{" "}
               {checkIfBirthdayToday(user.birthday) && "🎂"}
             </Typography>
-            <Paper elevation={6} sx={{ px: 3 }}>
+            <Paper
+              elevation={6}
+              sx={{
+                px: 3,
+
+                mb: 3
+              }}
+            >
               <Box
                 sx={{
                   display: "grid",
@@ -299,7 +308,10 @@ const UserProfile = observer(
               )}
             </Box>
 
-            {/* SECOND SECTION - MY WILLEMIJN STORY */}
+            {/* SECOND SECTION - EVENTS */}
+            {/* <EventsList user={user} /> */}
+
+            {/* THIRD SECTION - MY WILLEMIJN STORY */}
             {usersWillemijnStory && usersWillemijnStory.storyContent && (
               <>
                 <Typography variant="h2" id="my-willemijn-story">

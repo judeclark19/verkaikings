@@ -46,9 +46,9 @@ function ReadOnlyContactItem({
             }}
           >
             {link ? (
-              <Link href={link}>
-                <MuiLink>{value}</MuiLink>
-              </Link>
+              <MuiLink component={Link} href={link}>
+                {value}
+              </MuiLink>
             ) : (
               <>{value}</>
             )}

@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
 import { CircularProgress, Alert, TextField } from "@mui/material";
-import { auth, db } from "@/lib/firebase"; // Adjust path to your Firebase setup
+import { auth, db } from "@/lib/firebase";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -12,6 +12,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import LocationPicker from "./LocationPicker";
 import { collection, doc, setDoc } from "firebase/firestore";
+import { Add as AddIcon } from "@mui/icons-material";
 
 const style = {
   position: "absolute",
@@ -42,8 +43,7 @@ export default function NewEventModal() {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState<Dayjs | null>(dayjs().hour(20).minute(0)); // Default to today, 20:00
   const [date, setDate] = useState<Dayjs | null>(dayjs());
-  const [locationData, setLocationData] =
-    useState<google.maps.places.PlaceResult | null>(null);
+  const [locationUrl, setLocationUrl] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [locationName, setLocationName] = useState("");
 
@@ -73,7 +73,7 @@ export default function NewEventModal() {
         date: date!.format("YYYY-MM-DD"),
         time: time!.format("HH:mm"),
         locationName,
-        locationUrl: locationData?.url || "",
+        locationUrl,
         description,
         attendees: [user.uid]
       };
@@ -103,7 +103,12 @@ export default function NewEventModal() {
 
   return (
     <div>
-      <Button variant="contained" color="secondary" onClick={handleOpen}>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleOpen}
+        startIcon={<AddIcon />}
+      >
         Add new event
       </Button>
       <Modal
@@ -160,7 +165,7 @@ export default function NewEventModal() {
             </LocalizationProvider>
 
             <LocationPicker
-              setLocationData={setLocationData}
+              setLocationUrl={setLocationUrl}
               locationName={locationName}
               setLocationName={setLocationName}
             />

@@ -26,6 +26,7 @@ import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
+import EventsList from "./EventsList";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -128,6 +129,23 @@ const MyProfile = observer(() => {
           >
             <SocialsList />
           </Box>
+
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block"
+              },
+              mt: 3
+            }}
+          >
+            <EventsList
+              user={{
+                ...myProfileState.user,
+                id: myProfileState.userId
+              }}
+            />
+          </Box>
         </Box>
         {/* MAIN CONTENT */}
         <Box
@@ -157,7 +175,13 @@ const MyProfile = observer(() => {
             </Typography>
             <NameEditingModal />
           </Box>
-          <Paper elevation={6} sx={{ px: 3 }}>
+          <Paper
+            elevation={8}
+            sx={{
+              px: 3,
+              mb: 3
+            }}
+          >
             <Box
               sx={{
                 display: "grid",
@@ -199,11 +223,51 @@ const MyProfile = observer(() => {
           >
             <SocialsList />
           </Box>
+          {/* <Divider
+            sx={{
+              mt: 3,
+              display: {
+                xs: "block",
+                md: "none"
+              }
+            }}
+          /> */}
+          <Box
+            sx={{
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
+            }}
+          >
+            <EventsList
+              user={{
+                ...myProfileState.user,
+                id: myProfileState.userId
+              }}
+            />
+          </Box>
 
-          {/* SECOND SECTION - MY WILLEMIJN STORY */}
+          <Divider
+            sx={{
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
+            }}
+          />
+
+          {/* THIRD SECTION - MY WILLEMIJN STORY */}
           <MyWillemijnStory />
 
-          {/* THIRD SECTION - SUPPORT*/}
+          {/* FOURTH SECTION - SUPPORT*/}
+          <Divider
+            sx={{
+              mt: 3
+            }}
+          />
           <Box
             sx={{
               mt: 3

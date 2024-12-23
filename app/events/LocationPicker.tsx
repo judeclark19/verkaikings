@@ -1,13 +1,13 @@
 import { TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { getDetails } from "use-places-autocomplete";
 
 const LocationPicker = ({
-  setLocationData,
+  setLocationUrl,
   locationName,
   setLocationName
 }: {
-  setLocationData: (location: any | null) => void;
+  setLocationUrl: Dispatch<SetStateAction<string | null>>;
   locationName: string;
   setLocationName: (locationName: string) => void;
 }) => {
@@ -37,8 +37,9 @@ const LocationPicker = ({
   const handleSelect = async (placeId: string) => {
     try {
       const details = await getDetails({ placeId });
-      if (typeof details !== "string" && details.name) {
-        setLocationData(details);
+      if (typeof details !== "string" && details.name && details.url) {
+        setLocationName(details.name);
+        setLocationUrl(details.url);
         console.log("Selected place details:", details);
       } else {
         console.error("Details fetched are invalid or missing name");
@@ -57,7 +58,8 @@ const LocationPicker = ({
         fullWidth
         onChange={(e) => {
           if (!e.target.value) {
-            setLocationData(null);
+            setLocationName("");
+            setLocationUrl(null);
           }
           setLocationName(e.target.value);
         }}
@@ -68,22 +70,6 @@ const LocationPicker = ({
           }
         }}
       />
-      {/* {location && (
-        <div>
-          <h3>Selected Theater</h3>
-          <p>{location.name}</p>
-          <p>{location.formatted_address}</p>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-              location.name
-            )}&query_place_id=${location.place_id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open in Google Maps
-          </a>
-        </div>
-      )} */}
     </div>
   );
 };

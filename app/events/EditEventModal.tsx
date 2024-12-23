@@ -61,11 +61,11 @@ export default function EditEventModal({
     dayjs().hour(initialHour).minute(initialMinute)
   );
   const [date, setDate] = useState<Dayjs | null>(dayjs(event.date));
-  const [locationData, setLocationData] =
-    useState<google.maps.places.PlaceResult | null>(null);
   const [description, setDescription] = useState("");
   const [locationName, setLocationName] = useState(event.locationName);
-
+  const [locationUrl, setLocationUrl] = useState<string | null>(
+    event.locationUrl
+  );
   // Form state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,8 +91,8 @@ export default function EditEventModal({
         createdAt: new Date().toISOString(),
         date: date!.format("YYYY-MM-DD"),
         time: time!.format("HH:mm"),
-        locationName: locationData?.name || "",
-        locationUrl: locationData?.url || "",
+        locationName,
+        locationUrl,
         description,
         attendees: [user.uid]
       };
@@ -209,7 +209,7 @@ export default function EditEventModal({
             </LocalizationProvider>
 
             <LocationPicker
-              setLocationData={setLocationData}
+              setLocationUrl={setLocationUrl}
               locationName={locationName}
               setLocationName={setLocationName}
             />
@@ -256,7 +256,7 @@ export default function EditEventModal({
                 {loading ? (
                   <CircularProgress color="inherit" size={14} />
                 ) : (
-                  "Submit new event"
+                  "Update event"
                 )}
               </Button>
             </Box>

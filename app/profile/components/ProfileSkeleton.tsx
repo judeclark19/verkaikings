@@ -1,4 +1,4 @@
-import { Box, Divider, Skeleton, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 
 function ProfileSkeleton() {
   return (
@@ -13,12 +13,34 @@ function ProfileSkeleton() {
       {/* SIDEBAR */}
       <Box
         sx={{
-          flexShrink: 0,
           width: { xs: "100%", md: "300px" },
-          maxWidth: "100%"
+          maxWidth: "100%",
+          height: {
+            xs: "490px",
+            md: "800px"
+          }
         }}
       >
-        <Skeleton width="100%" height="700px" />
+        <Skeleton
+          sx={{
+            width: "100%",
+            height: "100%",
+            marginTop: {
+              xs: "-110px",
+              md: "-135px"
+            }
+          }}
+        />
+        <Skeleton
+          sx={{
+            width: "100%",
+            height: "300px",
+            marginTop: {
+              xs: "-140px",
+              md: "-190px"
+            }
+          }}
+        />
       </Box>
 
       {/* MAIN CONTENT */}
@@ -56,9 +78,15 @@ function ProfileSkeleton() {
             ))}
         </Box>
 
-        <Divider sx={{ my: 3 }} />
+        {/* <Divider sx={{ my: 3 }} /> */}
 
-        {/* SECOND SECTION - MY WILLEMIJN STORY */}
+        {/* SECOND SECTION - EVENTS */}
+        {/* <Typography variant="h2">
+          <Skeleton width="120px" />
+        </Typography>
+        <Skeleton variant="rectangular" height="200px" /> */}
+
+        {/* THIRD SECTION - MY WILLEMIJN STORY */}
         <Box>
           <Typography variant="h2" sx={{ marginBottom: 2 }}>
             <Skeleton width="40%" />

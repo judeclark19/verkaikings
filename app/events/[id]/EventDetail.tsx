@@ -8,6 +8,8 @@ import appState from "@/lib/AppState";
 import { Box, Button, Skeleton, Typography } from "@mui/material";
 import Link from "next/link";
 import EditEventModal from "../EditEventModal";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const EventDetail = observer(() => {
   const params = useParams();
@@ -15,6 +17,13 @@ const EventDetail = observer(() => {
 
   const eventInfo = eventsState.allEvents.find((e) => e.id === id);
   const isPast = eventsState.pastEvents.find((e) => e.id === id);
+
+  async function deleteEvent() {
+    if (!eventInfo) return;
+    if (confirm("Are you sure you want to delete this event?")) {
+      await eventsState.deleteEvent(eventInfo.id);
+    }
+  }
 
   if (!eventsState.isInitialized) {
     return (
@@ -45,18 +54,24 @@ const EventDetail = observer(() => {
       <Typography variant="h1" sx={{ textAlign: "center" }}>
         {eventInfo.title}
       </Typography>
-      <Event event={eventInfo as EventType} showTitle={false} />
+
       <Box
         sx={{
           mt: 3,
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          gap: 3,
           alignItems: "center"
         }}
       >
+        <Event event={eventInfo as EventType} showTitle={false} />
         {eventInfo.creatorId === appState.loggedInUser?.id && !isPast && (
           <EditEventModal buttonType="button" event={eventInfo as EventType} />
+        )}
+        {eventInfo.creatorId === appState.loggedInUser?.id && isPast && (
+          <Button variant="contained" color="secondary" onClick={deleteEvent}>
+            Delete this event
+          </Button>
         )}
 
         <Link href="/events" passHref>
