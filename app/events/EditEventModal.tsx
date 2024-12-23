@@ -3,7 +3,13 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
-import { CircularProgress, Alert, TextField } from "@mui/material";
+import {
+  CircularProgress,
+  Alert,
+  TextField,
+  Fab,
+  Tooltip
+} from "@mui/material";
 import { auth, db } from "@/lib/firebase"; // Adjust path to your Firebase setup
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -11,7 +17,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import LocationPicker from "./LocationPicker";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+import EditIcon from "@mui/icons-material/Edit";
+import { EventType } from "./Events.state";
 
 const style = {
   position: "absolute",
@@ -28,7 +36,13 @@ const style = {
   overflow: "auto"
 };
 
-export default function NewEventModal() {
+export default function EditEventModal({
+  buttonType = "fab",
+  event
+}: {
+  buttonType?: "fab" | "button";
+  event: EventType;
+}) {
   // Modal state
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -38,14 +52,19 @@ export default function NewEventModal() {
     setSuccess(null);
   };
 
+  const initialHour = parseInt(event.time.split(":")[0]);
+  const initialMinute = parseInt(event.time.split(":")[1]);
+
   // Form fields
-  const [title, setTitle] = useState("");
-  const [time, setTime] = useState<Dayjs | null>(dayjs().hour(20).minute(0)); // Default to today, 20:00
-  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [title, setTitle] = useState(event.title);
+  const [time, setTime] = useState<Dayjs | null>(
+    dayjs().hour(initialHour).minute(initialMinute)
+  );
+  const [date, setDate] = useState<Dayjs | null>(dayjs(event.date));
   const [locationData, setLocationData] =
     useState<google.maps.places.PlaceResult | null>(null);
   const [description, setDescription] = useState("");
-  const [locationName, setLocationName] = useState("");
+  const [locationName, setLocationName] = useState(event.locationName);
 
   // Form state
   const [loading, setLoading] = useState(false);
@@ -66,25 +85,24 @@ export default function NewEventModal() {
     }
     try {
       // do stuff
-      const newEvent = {
+      const updatedEventInfo = {
         creatorId: user.uid,
         title,
         createdAt: new Date().toISOString(),
         date: date!.format("YYYY-MM-DD"),
         time: time!.format("HH:mm"),
-        locationName,
+        locationName: locationData?.name || "",
         locationUrl: locationData?.url || "",
         description,
         attendees: [user.uid]
       };
-      console.log("new event: ", newEvent);
 
-      // create a new event in the database
-      const eventsCollectionRef = collection(db, "events");
-      const newEventDocRef = doc(eventsCollectionRef); // Automatically generates a unique ID
-      await setDoc(newEventDocRef, newEvent);
+      // update the event in the database
+      const eventDocRef = doc(db, "events", event.id);
+      await setDoc(eventDocRef, updatedEventInfo, { merge: true });
 
-      setSuccess("Event created successfully.");
+      console.log("updated info: ", updatedEventInfo);
+      setSuccess("Event updated successfully.");
 
       setTimeout(() => {
         setSuccess(null);
@@ -103,9 +121,40 @@ export default function NewEventModal() {
 
   return (
     <div>
-      <Button variant="contained" color="secondary" onClick={handleOpen}>
-        Add new event
-      </Button>
+      {buttonType === "fab" ? (
+        <Tooltip
+          title="Edit this event"
+          placement="top"
+          arrow
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, -8]
+                }
+              }
+            ]
+          }}
+        >
+          <Fab
+            size="small"
+            color="secondary"
+            aria-label="edit"
+            onClick={handleOpen}
+            sx={{
+              flexShrink: 0
+            }}
+          >
+            <EditIcon />
+          </Fab>
+        </Tooltip>
+      ) : (
+        <Button variant="contained" color="secondary" onClick={handleOpen}>
+          Edit this event
+        </Button>
+      )}
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -114,10 +163,10 @@ export default function NewEventModal() {
       >
         <Box sx={style}>
           <Typography id="new-event-modal-title" variant="h2" sx={{ mt: 0 }}>
-            New Event
+            Update Event
           </Typography>
           <Typography id="new-event-modal-description" sx={{ mt: 2 }}>
-            Enter new event details below
+            Update the event details below
           </Typography>
 
           <Box
@@ -173,7 +222,6 @@ export default function NewEventModal() {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              //   required
               autoComplete="description"
             />
 

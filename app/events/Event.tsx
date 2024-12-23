@@ -1,6 +1,3 @@
-// need to make editing possible
-// check editing modal in mobile to see if it overflows
-
 import {
   Box,
   Link as MuiLink,
@@ -8,17 +5,25 @@ import {
   Paper,
   Typography,
   Button,
-  Divider
+  Divider,
+  Tooltip,
+  Fab
 } from "@mui/material";
-import { EventType } from "./Events.state";
-import { formatFullBirthday } from "@/lib/clientUtils";
+import eventsState, { EventType } from "./Events.state";
+import { formatFullBirthday, sendNotification } from "@/lib/clientUtils";
 import userList from "@/lib/UserList";
 import UserListItem from "../people/UserListItem";
 import appState from "@/lib/AppState";
-import { Add as AddIcon, Close as CloseIcon } from "@mui/icons-material";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  Add as AddIcon,
+  Close as CloseIcon,
+  Delete as DeleteIcon
+} from "@mui/icons-material";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
+import EditEventModal from "./EditEventModal";
+import EventComments from "./EventComments";
 
 const Event = ({
   event,
@@ -28,10 +33,15 @@ const Event = ({
   showTitle?: boolean;
 }) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);
+  const isOwn = event.creatorId === appState.loggedInUser?.id;
+  const isPast = eventsState.pastEvents.includes(event);
+  const creator = userList.users.find((user) => user.id === event.creatorId);
 
   async function updateAttendance() {
     try {
       const eventDocRef = doc(db, "events", event.id);
+
+      const notify = !imGoing && !isOwn;
 
       const updatedAttendees = imGoing
         ? event.attendees.filter((id) => id !== appState.loggedInUser!.id) // Remove the current user
@@ -40,8 +50,35 @@ const Event = ({
       await updateDoc(eventDocRef, {
         attendees: updatedAttendees
       });
+
+      // send notification to the creator
+      if (notify) {
+        sendNotification(
+          event.creatorId,
+          `${appState.loggedInUser!.firstName} ${
+            appState.loggedInUser!.lastName
+          } is going to your event.`,
+          `${appState.loggedInUser!.firstName} is going to your event: ${
+            event.title
+          }`,
+          `/events/${event.id}`
+        );
+      }
     } catch (error) {
       console.error("Error updating attendance:", error);
+    }
+  }
+
+  async function deleteEvent() {
+    if (confirm("Are you sure you want to delete this event?")) {
+      // Locate the event in Firestore database and delete it
+      const eventDocRef = doc(db, "events", event.id);
+      try {
+        await deleteDoc(eventDocRef); // Use deleteDoc to delete the document
+        console.log("Event deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting event:", error);
+      }
     }
   }
 
@@ -49,59 +86,98 @@ const Event = ({
     <Paper
       elevation={5}
       sx={{
-        p: 2
+        p: 2,
+        width: "100%",
+        maxWidth: 670,
+        height: "fit-content"
       }}
       id={event.id}
     >
       {showTitle && (
         <>
-          <Link
-            href={`/events/${event.id}`}
-            passHref
-            style={{
-              color: "#A3AE6A",
-              textDecoration: "underline", // Ensures underline is applied
-              textDecorationColor: "#A3AE6A" // Matches underline color to text color
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
             }}
           >
-            <Typography
-              variant="h3"
-              sx={{
-                marginTop: 0,
-                fontSize: "2rem",
-                color: "secondary.dark"
+            <Link
+              href={`/events/${event.id}`}
+              passHref
+              style={{
+                color: "#A3AE6A",
+                textDecoration: "underline", // Ensures underline is applied
+                textDecorationColor: "#A3AE6A" // Matches underline color to text color
               }}
             >
-              {event.title} - {formatFullBirthday(event.date)}
-            </Typography>
-          </Link>
-          <Divider
-            sx={{
-              mb: 2
-            }}
-          />
+              <Typography
+                variant="h3"
+                sx={{
+                  marginTop: 0,
+                  fontSize: "2rem",
+                  color: "secondary.dark"
+                }}
+              >
+                {event.title} - {formatFullBirthday(event.date)}
+              </Typography>
+            </Link>
+            {isOwn && isPast && (
+              <Fab
+                size="small"
+                color="secondary"
+                aria-label="edit"
+                onClick={deleteEvent}
+                sx={{
+                  flexShrink: 0
+                }}
+              >
+                <DeleteIcon />
+              </Fab>
+            )}
+            {isOwn && !isPast && <EditEventModal event={event} />}
+          </Box>
         </>
+      )}
+      {creator && (
+        <Typography>
+          Event created by{" "}
+          <Link href={`/profile/${creator?.username}`} passHref>
+            <MuiLink>
+              {creator?.firstName} {creator?.lastName}
+            </MuiLink>
+          </Link>
+        </Typography>
       )}
 
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "1fr 1fr 1fr"
-          },
-          columnGap: 2,
-          rowGap: 2
+          display: "flex",
+          columnGap: 4,
+          rowGap: 2,
+          mt: 2,
+          mb: 2,
+          flexDirection: {
+            xs: "column",
+            sm: "row"
+          }
         }}
       >
-        <Box>
+        <Box
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "50%"
+            }
+          }}
+        >
           <Typography
             variant="h4"
             sx={{
               marginTop: 0,
               marginBottom: 0.5,
 
-              fontSize: "1.5rem"
+              fontSize: "1.7rem"
             }}
           >
             Event Details
@@ -120,12 +196,27 @@ const Event = ({
           </Typography>
           {event.description && (
             <Typography>
-              <strong>Description:</strong> {event.description}
+              <strong>Description:</strong> {event.description || "(None)"}
+            </Typography>
+          )}
+
+          {!event.description && isOwn && (
+            <Typography>
+              <strong>Description:</strong>{" "}
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "rgba(255, 255, 255, 0.7)"
+                }}
+              >
+                (None)
+              </span>
             </Typography>
           )}
         </Box>
         <Divider
           orientation="vertical"
+          flexItem
           sx={{
             display: {
               xs: "none",
@@ -134,6 +225,8 @@ const Event = ({
           }}
         />
         <Divider
+          orientation="horizontal"
+          flexItem
           sx={{
             display: {
               xs: "block",
@@ -141,17 +234,24 @@ const Event = ({
             }
           }}
         />
-        <Box>
+        <Box
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "50%"
+            }
+          }}
+        >
           <Typography
             variant="h4"
             sx={{
               marginTop: 0,
               marginBottom: 0.5,
 
-              fontSize: "1.5rem"
+              fontSize: "1.7rem"
             }}
           >
-            Who's Going?
+            {isPast ? "Attendees" : "Who's Going?"}
           </Typography>
           {event.attendees.length === 0 ? (
             <Typography
@@ -162,7 +262,13 @@ const Event = ({
               Nobody yet!
             </Typography>
           ) : (
-            <List>
+            <List
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap"
+              }}
+            >
               {event.attendees.map((attendee) => {
                 const user = userList.users.find(
                   (user) => user.id === attendee
@@ -170,20 +276,64 @@ const Event = ({
                 if (!user) {
                   return null;
                 }
-                return <UserListItem key={attendee} user={user} />;
+
+                return (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                  >
+                    {!isPast && user.id === appState.loggedInUser!.id && (
+                      <Tooltip
+                        title="Remove yourself from this event"
+                        placement="top"
+                        arrow
+                        PopperProps={{
+                          modifiers: [
+                            {
+                              name: "offset",
+                              options: {
+                                offset: [0, -10]
+                              }
+                            }
+                          ]
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          sx={{
+                            padding: "4px",
+                            minWidth: 0,
+                            width: "30px",
+                            height: "30px"
+                          }}
+                          onClick={updateAttendance}
+                        >
+                          <CloseIcon />
+                        </Button>
+                      </Tooltip>
+                    )}
+                    <UserListItem key={attendee} user={user} />
+                  </Box>
+                );
               })}
             </List>
           )}
-          <Button
-            variant="contained"
-            color={imGoing ? "secondary" : "primary"}
-            onClick={updateAttendance}
-            startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
-          >
-            {imGoing ? "I'm not going." : "I'm going!"}
-          </Button>
+          {!imGoing && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={updateAttendance}
+              startIcon={<AddIcon />}
+            >
+              I'm going!
+            </Button>
+          )}
         </Box>
       </Box>
+      <EventComments event={event} readOnly={isPast} />
     </Paper>
   );
 };

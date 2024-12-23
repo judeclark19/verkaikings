@@ -3,15 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { getDetails } from "use-places-autocomplete";
 
 const LocationPicker = ({
-  location,
-  setLocation
+  setLocationData,
+  locationName,
+  setLocationName
 }: {
-  location: any | null;
-  setLocation: (location: any | null) => void;
+  setLocationData: (location: any | null) => void;
+  locationName: string;
+  setLocationName: (locationName: string) => void;
 }) => {
-  //   const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [value, setValue] = useState("");
 
   useEffect(() => {
     const initAutocomplete = () => {
@@ -25,26 +25,20 @@ const LocationPicker = ({
           const place = autocomplete.getPlace();
           if (place && place.place_id) {
             handleSelect(place.place_id);
-            setValue(place.name || place.formatted_address || "");
+            setLocationName(place.name || place.formatted_address || "");
           }
         });
       }
     };
 
-    // if (modalOpen) {
-    initAutocomplete(); // Initialize immediately when modal opens
-    // }
-
-    return () => {
-      // Cleanup function
-    };
+    initAutocomplete();
   }, []);
 
   const handleSelect = async (placeId: string) => {
     try {
       const details = await getDetails({ placeId });
       if (typeof details !== "string" && details.name) {
-        setLocation(details);
+        setLocationData(details);
         console.log("Selected place details:", details);
       } else {
         console.error("Details fetched are invalid or missing name");
@@ -59,13 +53,13 @@ const LocationPicker = ({
       <TextField
         variant="outlined"
         inputRef={inputRef}
-        value={value}
+        value={locationName}
         fullWidth
         onChange={(e) => {
           if (!e.target.value) {
-            setLocation(null);
+            setLocationData(null);
           }
-          setValue(e.target.value);
+          setLocationName(e.target.value);
         }}
         label="Location"
         slotProps={{

@@ -14,6 +14,7 @@ import {
   collection,
   doc,
   DocumentData,
+  DocumentReference,
   onSnapshot,
   updateDoc
 } from "firebase/firestore";
@@ -33,9 +34,13 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>(story?.comments || []);
 
+  let storyDocRef: DocumentReference;
+  if (story) {
+    storyDocRef = doc(db, "myWillemijnStories", story.id);
+  }
+
   useEffect(() => {
     if (!story) return;
-    const storyDocRef = doc(db, "myWillemijnStories", story.id);
 
     const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
@@ -68,20 +73,20 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
 
       try {
         // Update the story document in Firestore
-        const storyDocRef = doc(db, "myWillemijnStories", story.id);
         await updateDoc(storyDocRef, {
           comments: [...comments, newComment]
         });
 
-        // Send a notification to the story author
-        sendNotification(
-          story.authorId,
-          "New comment on your story",
-          `${myProfileState.user!.firstName} ${
-            myProfileState.user!.lastName
-          } left a comment`,
-          `/profile?notif=${newComment.id}`
-        );
+        if (story.authorId !== appState.loggedInUser!.id) {
+          sendNotification(
+            story.authorId,
+            "New comment on your story",
+            `${myProfileState.user!.firstName} ${
+              myProfileState.user!.lastName
+            } left a comment`,
+            `/profile?notif=${newComment}`
+          );
+        }
 
         setCommentText(""); // Clear the input
       } catch (error) {
@@ -96,7 +101,6 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
   const handleDelete = async (commentToDelete: Comment) => {
     try {
       // Update the story document in Firestore
-      const storyDocRef = doc(db, "myWillemijnStories", story.id);
       const updatedComments = comments.filter(
         (comment) => comment !== commentToDelete
       );

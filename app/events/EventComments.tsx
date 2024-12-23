@@ -1,0 +1,255 @@
+import appState from "@/lib/AppState";
+import { db } from "@/lib/firebase";
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  TextField,
+  Typography,
+  Link,
+  IconButton,
+  Divider
+} from "@mui/material";
+import {
+  collection,
+  doc,
+  DocumentData,
+  onSnapshot,
+  updateDoc
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import myProfileState from "@/app/profile/MyProfile.state";
+import { sendNotification } from "@/lib/clientUtils";
+
+type Comment = {
+  id: string;
+  authorId: string;
+  createdAt: string;
+  text: string;
+};
+
+const EventComments = ({
+  event,
+  readOnly = false
+}: {
+  event?: DocumentData;
+  readOnly?: boolean;
+}) => {
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState<Comment[]>(event?.comments || []);
+  const eventDocRef = doc(db, "events", event!.id);
+
+  useEffect(() => {
+    if (!event) return;
+
+    const unsubscribe = onSnapshot(eventDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const eventData = docSnapshot.data();
+        setComments(eventData.comments || []);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [event?.id]);
+
+  if (!event) return null;
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (commentText.trim()) {
+      if (!appState.loggedInUser) {
+        console.error("Must be logged in to comment");
+        return;
+      }
+
+      // Create a new comment
+      const newComment: Comment = {
+        id: doc(collection(db, `events/${event.id}/comments`)).id,
+        authorId: appState.loggedInUser!.id,
+        createdAt: new Date().toISOString(),
+        text: commentText
+      };
+
+      try {
+        // Update the story document in Firestore
+        await updateDoc(eventDocRef, {
+          comments: [...comments, newComment]
+        });
+
+        // Send a notification to the story author
+        sendNotification(
+          event.creatorId,
+          "New comment on your event",
+          `${myProfileState.user!.firstName} ${
+            myProfileState.user!.lastName
+          } left a comment`,
+          `/events/${event.id}?notif=${newComment.id}`
+        );
+
+        setCommentText(""); // Clear the input
+      } catch (error) {
+        alert(`Error adding comment: ${error}`);
+        console.error("Error adding comment:", error);
+      }
+    } else {
+      console.log("Comment cannot be empty");
+    }
+  };
+
+  const handleDelete = async (commentToDelete: Comment) => {
+    try {
+      // Update the story document in Firestore
+      //   const eventDocRef = doc(db, "events", event.id);
+      const updatedComments = comments.filter(
+        (comment) => comment !== commentToDelete
+      );
+
+      await updateDoc(eventDocRef, { comments: updatedComments });
+    } catch (error) {
+      alert(`Error deleting comment: ${error}`);
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  if (readOnly && comments.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {/* <Divider /> */}
+      <Box sx={{ mt: 4 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            mt: 0
+          }}
+        >
+          Comments
+        </Typography>
+
+        {/* Comments List */}
+        <List
+          sx={{
+            bgcolor: "background.paper",
+            borderRadius: 1,
+            mb: 2
+          }}
+        >
+          {comments.length > 0 ? (
+            comments.map((comment, index) => {
+              const commentAuthor = appState.userList.users.find(
+                (user) => user.id === comment.authorId
+              );
+              const isOwnComment =
+                comment.authorId === appState.loggedInUser?.id;
+
+              return (
+                <ListItem
+                  key={index}
+                  id={comment.id || Math.random().toString()}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    mb: 1,
+                    position: "relative"
+                  }}
+                >
+                  <Typography variant="body2" fontWeight="bold">
+                    <Link
+                      href={`/profile/${commentAuthor?.username || "#"}`}
+                      sx={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        "&:hover": {
+                          textDecoration: "underline"
+                        }
+                      }}
+                    >
+                      {commentAuthor?.firstName} {commentAuthor?.lastName}
+                    </Link>
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: 12, color: "gray" }}
+                  >
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {comment.text}
+                  </Typography>
+
+                  {isOwnComment && (
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      onClick={() => handleDelete(comment)}
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: "8px",
+                        color: "red"
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </ListItem>
+              );
+            })
+          ) : (
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{
+                px: 2
+              }}
+            >
+              {/* {readOnly ? `No comments` : `No comments yet.`} */}
+              No comments yet.
+            </Typography>
+          )}
+        </List>
+
+        {/* Add New Comment */}
+        {!readOnly && (
+          <form onSubmit={handleSubmit}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                alignItems: "center"
+              }}
+            >
+              <TextField
+                size="small"
+                placeholder="Write a comment..."
+                fullWidth
+                variant="outlined"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                size="small"
+                sx={{
+                  height: 40
+                }}
+                disabled={!commentText.trim()} // Disable button if input is empty
+              >
+                Post
+              </Button>
+            </Box>
+          </form>
+        )}
+      </Box>{" "}
+    </>
+  );
+};
+
+export default EventComments;

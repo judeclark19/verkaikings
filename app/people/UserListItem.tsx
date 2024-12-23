@@ -45,6 +45,10 @@ function UserListItem({ user }: { user: DocumentData }) {
           primary={`${user.firstName} ${user.lastName}${
             checkIfBirthdayToday(user.birthday) ? " 🎂" : ""
           }`}
+          primaryTypographyProps={{
+            // no wrapping
+            noWrap: true
+          }}
         />
       </ListItemButton>
     </ListItem>

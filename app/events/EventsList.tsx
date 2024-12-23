@@ -40,41 +40,72 @@ const EventsList = observer(() => {
         <Typography
           variant="h2"
           sx={{
-            color: "primary.dark"
+            color: "primary.dark",
+            textAlign: "center"
           }}
         >
           Upcoming Events
         </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2
-          }}
-        >
-          {eventsState.upcomingEvents.map((event) => (
-            <Event key={event.title} event={event as EventType} />
-          ))}
-        </Box>
-        <Typography
-          variant="h2"
-          sx={{
-            color: "primary.dark"
-          }}
-        >
-          Past Events
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2
-          }}
-        >
-          {eventsState.pastEvents.map((event) => (
-            <Event key={event.title} event={event as EventType} />
-          ))}
-        </Box>
+
+        {eventsState.upcomingEvents.length === 0 ? (
+          <Typography
+            sx={{
+              textAlign: "center",
+              mb: 3
+            }}
+          >
+            No upcoming events
+          </Typography>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 2
+            }}
+          >
+            {eventsState.upcomingEvents.map((event) => (
+              <Event key={event.title} event={event as EventType} />
+            ))}
+          </Box>
+        )}
+
+        {eventsState.pastEvents.length > 0 && (
+          <>
+            <Typography
+              variant="h2"
+              textAlign="center"
+              sx={{
+                color: "primary.dark",
+                mt: 5,
+                mb: 1
+              }}
+            >
+              Past Events
+            </Typography>
+            <Typography
+              sx={{
+                mb: 3,
+                textAlign: "center"
+              }}
+            >
+              Events in the past cannot be edited.
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: 2
+              }}
+            >
+              {eventsState.pastEvents.map((event) => (
+                <Event key={event.title} event={event as EventType} />
+              ))}
+            </Box>
+          </>
+        )}
       </Box>
     </>
   );
