@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { DocumentData } from "firebase/firestore";
-import { Avatar, Box, Button, Paper, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
@@ -187,7 +187,16 @@ const UserProfile = observer(
                 user.beReal ||
                 user.tiktok) && <SocialsList user={user} />}
             </Box>
-            <EventsList user={user} />
+            <Box
+              sx={{
+                display: {
+                  xs: "none",
+                  md: "block"
+                }
+              }}
+            >
+              <EventsList user={user} />
+            </Box>
           </Box>
           {/* MAIN CONTENT */}
           <Box
@@ -293,24 +302,44 @@ const UserProfile = observer(
                 />
               </Box>
             </Paper>
+            {(user.instagram ||
+              user.duolingo ||
+              user.beReal ||
+              user.tiktok) && (
+              <Box
+                sx={{
+                  display: {
+                    xs: "block",
+                    md: "none"
+                  },
+                  mt: 3
+                  // border: "1px solid hotpink"
+                }}
+              >
+                <Divider
+                  sx={{
+                    mb: 3
+                  }}
+                />
+                <SocialsList user={user} />
+              </Box>
+            )}
 
             <Box
               sx={{
                 display: {
                   xs: "block",
                   md: "none"
-                },
-                mt: 3
+                }
               }}
             >
-              {(user.instagram || user.duolingo || user.beReal) && (
-                <SocialsList user={user} />
-              )}
+              <EventsList user={user} />
             </Box>
 
             {/* SECOND SECTION - MY WILLEMIJN STORY */}
             {usersWillemijnStory && usersWillemijnStory.storyContent && (
               <>
+                <Divider sx={{ mt: 3 }} />
                 <Typography variant="h2" id="my-willemijn-story">
                   My Willemijn Story
                 </Typography>
