@@ -15,7 +15,8 @@ import {
   Login as LoginIcon,
   Logout as LogoutIcon,
   Notifications as NotificationsIcon,
-  NotificationsActive as NotificationsActiveIcon
+  NotificationsActive as NotificationsActiveIcon,
+  Event as EventIcon
 } from "@mui/icons-material";
 import { styled } from "styled-components";
 import notificationsState from "@/app/notifications/Notifications.state";
@@ -146,56 +147,66 @@ function DrawerUI({
             else return <DrawerLink key={link.href} link={link} />;
           })}
 
-        {/* link to Notifications */}
+        {/* link to Events and Notifications */}
         {isLoggedIn && (
-          <ListItem
-            component={Link}
-            href="/notifications"
-            sx={{
-              backgroundColor: isActive("/notifications")
-                ? "primary.main"
-                : "transparent",
-              transition: "background-color 0.3s ease",
-              "&:hover": {
-                backgroundColor: "primary.main"
-              }
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                color: "background.default",
-                minWidth: "40px"
-              }}
-            >
-              {notificationsState.notifications.filter((notif) => !notif.read)
-                .length > 0 ? (
-                <Badge
-                  badgeContent={notificationsState.unreadNotifications.length}
-                  color="error"
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      right: 4,
-                      top: 4,
-                      backgroundColor: "secondary.dark",
-                      color: "white"
-                    }
-                  }}
-                >
-                  <NotificationsActiveIcon sx={{ fontSize: 24 }} />
-                </Badge>
-              ) : (
-                <NotificationsIcon />
-              )}
-            </ListItemIcon>
-
-            <ListItemText
-              primary="NOTIFICATIONS"
-              primaryTypographyProps={{
-                fontWeight: isActive("/notifications") ? "700" : "400",
-                color: "background.default"
+          <>
+            <DrawerLink
+              link={{
+                href: "/events",
+                title: "Events",
+                icon: EventIcon,
+                protected: true
               }}
             />
-          </ListItem>
+            <ListItem
+              component={Link}
+              href="/notifications"
+              sx={{
+                backgroundColor: isActive("/notifications")
+                  ? "primary.main"
+                  : "transparent",
+                transition: "background-color 0.3s ease",
+                "&:hover": {
+                  backgroundColor: "primary.main"
+                }
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  color: "background.default",
+                  minWidth: "40px"
+                }}
+              >
+                {notificationsState.notifications.filter((notif) => !notif.read)
+                  .length > 0 ? (
+                  <Badge
+                    badgeContent={notificationsState.unreadNotifications.length}
+                    color="error"
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        right: 4,
+                        top: 4,
+                        backgroundColor: "secondary.dark",
+                        color: "white"
+                      }
+                    }}
+                  >
+                    <NotificationsActiveIcon sx={{ fontSize: 24 }} />
+                  </Badge>
+                ) : (
+                  <NotificationsIcon />
+                )}
+              </ListItemIcon>
+
+              <ListItemText
+                primary="NOTIFICATIONS"
+                primaryTypographyProps={{
+                  fontWeight: isActive("/notifications") ? "700" : "400",
+                  color: "background.default"
+                }}
+              />
+            </ListItem>
+          </>
         )}
 
         {/* link to /login */}

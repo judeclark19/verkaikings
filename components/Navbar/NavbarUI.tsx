@@ -53,7 +53,8 @@ const NavbarUI = observer(
       }
     };
 
-    const isActive = (path: string) => pathname === path;
+    const isActive = (path: string) =>
+      pathname.startsWith(path) && (path !== "/" || pathname === "/");
 
     const getNavLinkStyle = (link: string) => {
       return {
@@ -195,6 +196,22 @@ const NavbarUI = observer(
 
               {isLoggedIn && (
                 <>
+                  <Button
+                    color="inherit"
+                    component={Link}
+                    href={"/events"}
+                    sx={getNavLinkStyle("/events")}
+                  >
+                    Events
+                  </Button>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                      borderColor: "background.default",
+                      margin: "0 8px"
+                    }}
+                  />
                   <NotificationsDropdown />
                   <Divider
                     orientation="vertical"

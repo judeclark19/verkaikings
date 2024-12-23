@@ -5,6 +5,7 @@ import CakeIcon from "@mui/icons-material/Cake";
 import PlaceIcon from "@mui/icons-material/Place";
 import MapIcon from "@mui/icons-material/Map";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { ElementType } from "react";
 
 export type NavLinkType = {
   title: string;
@@ -12,7 +13,7 @@ export type NavLinkType = {
   protected: boolean;
   paramKey?: string;
   paramValue?: string;
-  icon?: React.ElementType;
+  icon?: ElementType;
   submenu?: NavLinkType[];
 };
 
