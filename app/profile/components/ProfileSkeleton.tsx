@@ -78,15 +78,7 @@ function ProfileSkeleton() {
             ))}
         </Box>
 
-        {/* <Divider sx={{ my: 3 }} /> */}
-
-        {/* SECOND SECTION - EVENTS */}
-        {/* <Typography variant="h2">
-          <Skeleton width="120px" />
-        </Typography>
-        <Skeleton variant="rectangular" height="200px" /> */}
-
-        {/* THIRD SECTION - MY WILLEMIJN STORY */}
+        {/* SECOND SECTION - MY WILLEMIJN STORY */}
         <Box>
           <Typography variant="h2" sx={{ marginBottom: 2 }}>
             <Skeleton width="40%" />

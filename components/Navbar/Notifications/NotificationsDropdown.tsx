@@ -11,8 +11,11 @@ import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
 import Link from "next/link";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+
+import {
+  Notifications as NotificationsIcon,
+  NotificationsActive as NotificationsActiveIcon
+} from "@mui/icons-material";
 import notificationsState from "@/app/notifications/Notifications.state";
 import NotificationsMenuItem from "./NotificationsMenuItem";
 

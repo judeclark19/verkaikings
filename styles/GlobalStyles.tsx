@@ -55,18 +55,10 @@ const GlobalStyles = createGlobalStyle`
   }
 
 
-  // autocomplete drodown?
+  // google autocomplete dropdown
 .pac-container {
   z-index: 2001 !important;
 }
-
-/* .modal {
-  z-index: 2000 !important;
-} */
-
-/* .modal-backdrop {
-  z-index: 1000 !important;
-} */
 `;
 
 export default GlobalStyles;

@@ -223,15 +223,6 @@ const MyProfile = observer(() => {
           >
             <SocialsList />
           </Box>
-          {/* <Divider
-            sx={{
-              mt: 3,
-              display: {
-                xs: "block",
-                md: "none"
-              }
-            }}
-          /> */}
           <Box
             sx={{
               display: {
@@ -259,10 +250,10 @@ const MyProfile = observer(() => {
             }}
           />
 
-          {/* THIRD SECTION - MY WILLEMIJN STORY */}
+          {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <MyWillemijnStory />
 
-          {/* FOURTH SECTION - SUPPORT*/}
+          {/* THIRD SECTION - SUPPORT*/}
           <Divider
             sx={{
               mt: 3

@@ -8,8 +8,7 @@ import {
   TextField,
   Typography,
   Link,
-  IconButton,
-  Divider
+  IconButton
 } from "@mui/material";
 import {
   collection,
@@ -93,7 +92,7 @@ const EventComments = ({
           );
         }
 
-        setCommentText(""); // Clear the input
+        setCommentText("");
       } catch (error) {
         alert(`Error adding comment: ${error}`);
         console.error("Error adding comment:", error);
@@ -105,8 +104,6 @@ const EventComments = ({
 
   const handleDelete = async (commentToDelete: Comment) => {
     try {
-      // Update the story document in Firestore
-      //   const eventDocRef = doc(db, "events", event.id);
       const updatedComments = comments.filter(
         (comment) => comment !== commentToDelete
       );
@@ -124,7 +121,6 @@ const EventComments = ({
 
   return (
     <>
-      {/* <Divider /> */}
       <Box sx={{ mt: 4 }}>
         <Typography
           variant="h4"
@@ -213,7 +209,6 @@ const EventComments = ({
                 px: 2
               }}
             >
-              {/* {readOnly ? `No comments` : `No comments yet.`} */}
               No comments yet.
             </Typography>
           )}

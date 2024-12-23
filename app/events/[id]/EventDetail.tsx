@@ -8,8 +8,6 @@ import appState from "@/lib/AppState";
 import { Box, Button, Skeleton, Typography } from "@mui/material";
 import Link from "next/link";
 import EditEventModal from "../EditEventModal";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 const EventDetail = observer(() => {
   const params = useParams();

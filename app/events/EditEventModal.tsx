@@ -1,21 +1,23 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
 import { useState } from "react";
 import {
   CircularProgress,
   Alert,
   TextField,
   Fab,
-  Tooltip
+  Tooltip,
+  Box,
+  Button,
+  Typography,
+  Modal
 } from "@mui/material";
-import { auth, db } from "@/lib/firebase"; // Adjust path to your Firebase setup
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { auth, db } from "@/lib/firebase";
+import {
+  LocalizationProvider,
+  TimePicker,
+  DatePicker
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import LocationPicker from "./LocationPicker";
 import { doc, setDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
@@ -52,16 +54,15 @@ export default function EditEventModal({
     setSuccess(null);
   };
 
-  const initialHour = parseInt(event.time.split(":")[0]);
-  const initialMinute = parseInt(event.time.split(":")[1]);
-
   // Form fields
   const [title, setTitle] = useState(event.title);
   const [time, setTime] = useState<Dayjs | null>(
-    dayjs().hour(initialHour).minute(initialMinute)
+    dayjs()
+      .hour(parseInt(event.time.split(":")[0]))
+      .minute(parseInt(event.time.split(":")[1]))
   );
   const [date, setDate] = useState<Dayjs | null>(dayjs(event.date));
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(event.description);
   const [locationName, setLocationName] = useState(event.locationName);
   const [locationUrl, setLocationUrl] = useState<string | null>(
     event.locationUrl
@@ -84,7 +85,6 @@ export default function EditEventModal({
       return;
     }
     try {
-      // do stuff
       const updatedEventInfo = {
         creatorId: user.uid,
         title,
@@ -237,7 +237,6 @@ export default function EditEventModal({
                 type="button"
                 variant="outlined"
                 color="secondary"
-                // fullWidth
                 onClick={handleClose}
                 sx={{
                   flexGrow: 1,

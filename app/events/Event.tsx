@@ -11,9 +11,9 @@ import {
 } from "@mui/material";
 import eventsState, { EventType } from "./Events.state";
 import { formatFullBirthday, sendNotification } from "@/lib/clientUtils";
+import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
 import UserListItem from "../people/UserListItem";
-import appState from "@/lib/AppState";
 import {
   Add as AddIcon,
   Close as CloseIcon,
@@ -335,7 +335,7 @@ const Event = ({
               onClick={updateAttendance}
               startIcon={<AddIcon />}
             >
-              I'm going!
+              I&apos;m going!
             </Button>
           )}
         </Box>

@@ -46,7 +46,6 @@ function UserListItem({ user }: { user: DocumentData }) {
             checkIfBirthdayToday(user.birthday) ? " 🎂" : ""
           }`}
           primaryTypographyProps={{
-            // no wrapping
             noWrap: true
           }}
         />

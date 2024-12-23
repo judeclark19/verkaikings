@@ -308,10 +308,7 @@ const UserProfile = observer(
               )}
             </Box>
 
-            {/* SECOND SECTION - EVENTS */}
-            {/* <EventsList user={user} /> */}
-
-            {/* THIRD SECTION - MY WILLEMIJN STORY */}
+            {/* SECOND SECTION - MY WILLEMIJN STORY */}
             {usersWillemijnStory && usersWillemijnStory.storyContent && (
               <>
                 <Typography variant="h2" id="my-willemijn-story">

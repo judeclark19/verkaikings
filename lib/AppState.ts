@@ -16,7 +16,7 @@ import {
 import { db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
 import { registerPushNotifications } from "./clientUtils";
-import eventsState, { Events, EventType } from "@/app/events/Events.state";
+import eventsState, { Events } from "@/app/events/Events.state";
 
 class AppState {
   isInitialized = false;

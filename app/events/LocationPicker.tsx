@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { getDetails } from "use-places-autocomplete";
 
 const LocationPicker = ({
@@ -40,7 +40,6 @@ const LocationPicker = ({
       if (typeof details !== "string" && details.name && details.url) {
         setLocationName(details.name);
         setLocationUrl(details.url);
-        console.log("Selected place details:", details);
       } else {
         console.error("Details fetched are invalid or missing name");
       }

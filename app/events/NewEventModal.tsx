@@ -1,15 +1,21 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
 import { useState } from "react";
-import { CircularProgress, Alert, TextField } from "@mui/material";
+import {
+  CircularProgress,
+  Alert,
+  TextField,
+  Button,
+  Modal,
+  Box,
+  Typography
+} from "@mui/material";
 import { auth, db } from "@/lib/firebase";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import {
+  LocalizationProvider,
+  TimePicker,
+  DatePicker
+} from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import LocationPicker from "./LocationPicker";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { Add as AddIcon } from "@mui/icons-material";
@@ -178,7 +184,6 @@ export default function NewEventModal() {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              //   required
               autoComplete="description"
             />
 
@@ -194,7 +199,6 @@ export default function NewEventModal() {
                 type="button"
                 variant="outlined"
                 color="secondary"
-                // fullWidth
                 onClick={handleClose}
                 sx={{
                   flexGrow: 1,
