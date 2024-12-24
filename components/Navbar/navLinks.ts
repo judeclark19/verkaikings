@@ -67,7 +67,7 @@ export const navLinks: NavLinkType[] = [
       {
         title: "Stories",
         href: "/people?viewBy=story",
-        paramValue: "map",
+        paramValue: "story",
         icon: MenuBookIcon,
         protected: true
       }
