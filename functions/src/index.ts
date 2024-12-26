@@ -368,3 +368,93 @@ exports.birthdayCheck = onSchedule(
     runBirthdayCheck();
   }
 );
+
+exports.sendNewEventNotifications = onDocumentCreated(
+  "events/{docId}",
+  async (e) => {
+    const newEventId = e.params.docId;
+    const newEventData = e.data?.data();
+
+    if (!newEventData) {
+      console.error("No event data found.");
+      return;
+    }
+
+    console.log("A new event was created:", newEventId);
+
+    try {
+      const authorDoc = await adminDb
+        .doc(`users/${newEventData.creatorId}`)
+        .get();
+      const author = authorDoc.data();
+      if (!author) {
+        console.error(
+          "No author data found in the event, no notifications sent."
+        );
+        return;
+      }
+
+      // NOTIFICATION GOES TO ALL OTHER USERS ==================================
+
+      const allUsersSnapshot = await adminDb.collection("users").get();
+      const otherUserTokens: string[] = [];
+
+      // firestore
+      const nent = `New event: ${newEventData.title}`;
+      const nenb = `${author.firstName} ${author.lastName} created an event.`;
+      const nenUrl = `/events/${newEventId}`;
+
+      for (const userDoc of allUsersSnapshot.docs) {
+        if (userDoc.id !== newEventData.creatorId) {
+          // Add a notification to each user's subcollection
+          await adminDb.collection(`users/${userDoc.id}/notifications`).add({
+            title: nent,
+            body: nenb,
+            url: nenUrl,
+            createdAt: Timestamp.now(),
+            read: false,
+          });
+
+          const tokensSnapshot = await adminDb
+            .collection(`users/${userDoc.id}/fcmTokens`)
+            .get();
+
+          const tokens = tokensSnapshot.docs.map((tokenDoc) => tokenDoc.id);
+          otherUserTokens.push(...tokens);
+        }
+      }
+
+      // pushes
+      if (otherUserTokens.length > 0) {
+        const announcementMessage = {
+          webpush: {
+            notification: {
+              title: nent,
+              body: nenb,
+              icon: "/favicon-32x32.png",
+            },
+            fcm_options: {
+              link: nenUrl,
+            },
+          },
+          tokens: otherUserTokens,
+        };
+
+        const response = await adminMessaging.sendEachForMulticast(
+          announcementMessage
+        );
+
+        console.log(
+          `New Event notification sent to ${response.successCount} devices.`
+        );
+        console.log(
+          `${response.failureCount} failed to receive new event notif.`
+        );
+      } else {
+        console.log("No FCM tokens found for other users.");
+      }
+    } catch (error) {
+      console.error("Error sending event notifications:", error);
+    }
+  }
+);
