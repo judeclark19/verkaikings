@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,23 +10,27 @@ import {
   Drawer,
   Box,
   Divider,
-  Avatar,
-  CircularProgress,
   Badge
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { navLinks } from "./navLinks";
+import {
+  eventsLink,
+  homeLink,
+  myProfileLink,
+  peopleLinks
+} from "./navLinks.data";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
-import SubmenuDropdown from "./SubmenuDropdown";
+import SubmenuDropdown from "./Links/SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
 import NotificationsDropdown from "./Notifications/NotificationsDropdown";
 import notificationsState from "@/app/notifications/Notifications.state";
+import AppBarLink from "./Links/AppBarLink";
 
 const NavbarUI = observer(
   ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {
@@ -82,6 +86,7 @@ const NavbarUI = observer(
               margin: "auto"
             }}
           >
+            {/* hamburger */}
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -104,6 +109,7 @@ const NavbarUI = observer(
                 <MenuIcon />
               </Badge>
             </IconButton>
+            {/* logo */}
             <Typography
               variant="h3"
               component={Link}
@@ -123,87 +129,19 @@ const NavbarUI = observer(
                 display: { xs: "none", md: "flex" }
               }}
             >
-              {navLinks
-                .filter((link) => {
-                  if (link.protected) {
-                    return isLoggedIn;
-                  }
-                  return true;
-                })
-                .map((link) => {
-                  if (link.submenu)
-                    return (
-                      <Fragment key={link.title}>
-                        <SubmenuDropdown parentLink={link} />
-                        <Divider
-                          orientation="vertical"
-                          flexItem
-                          sx={{
-                            borderColor: "background.default",
-                            margin: "0 8px"
-                          }}
-                        />
-                      </Fragment>
-                    );
-                  return (
-                    <Fragment key={link.href}>
-                      <Button
-                        color="inherit"
-                        component={Link}
-                        href={link.href}
-                        sx={getNavLinkStyle(link.href)}
-                      >
-                        {link.title === "My Profile" && myProfileState.user ? (
-                          <>
-                            <Avatar
-                              src={myProfileState.user.profilePicture || ""}
-                              alt={`${myProfileState.user.firstName} ${myProfileState.user.lastName}`}
-                              sx={{
-                                width: 28,
-                                height: 28,
-                                fontSize: 12,
-                                bgcolor: "secondary.main"
-                              }}
-                            >
-                              {!myProfileState.user.profilePicture &&
-                                `${myProfileState.user.firstName?.[0] || ""}${
-                                  myProfileState.user.lastName?.[0] || ""
-                                }`}
-                            </Avatar>
-                          </>
-                        ) : link.title === "My Profile" ? (
-                          <CircularProgress
-                            size={24}
-                            sx={{
-                              color: "inherit"
-                            }}
-                          />
-                        ) : (
-                          link.title
-                        )}
-                      </Button>
-                      <Divider
-                        orientation="vertical"
-                        flexItem
-                        sx={{
-                          borderColor: "background.default",
-                          margin: "0 8px"
-                        }}
-                      />
-                    </Fragment>
-                  );
-                })}
+              {/* HOME */}
+              <AppBarLink link={homeLink} isActive={isActive(homeLink.href)} />
 
               {isLoggedIn && (
                 <>
-                  <Button
-                    color="inherit"
-                    component={Link}
-                    href={"/events"}
-                    sx={getNavLinkStyle("/events")}
-                  >
-                    Events
-                  </Button>
+                  {/* MY PROFILE */}
+                  <AppBarLink
+                    link={myProfileLink}
+                    isActive={isActive(myProfileLink.href)}
+                  />
+
+                  {/* PEOPLE */}
+                  <SubmenuDropdown parentLink={peopleLinks} />
                   <Divider
                     orientation="vertical"
                     flexItem
@@ -212,6 +150,14 @@ const NavbarUI = observer(
                       margin: "0 8px"
                     }}
                   />
+
+                  {/* EVENTS */}
+                  <AppBarLink
+                    link={eventsLink}
+                    isActive={isActive(eventsLink.href)}
+                  />
+
+                  {/* NOTIFICATIONS */}
                   <NotificationsDropdown />
                   <Divider
                     orientation="vertical"
@@ -224,6 +170,7 @@ const NavbarUI = observer(
                 </>
               )}
 
+              {/* LOG IN / LOG OUT */}
               <Button
                 color="inherit"
                 onClick={
@@ -234,6 +181,7 @@ const NavbarUI = observer(
                 {isLoggedIn ? "Log Out" : "Log In"}
               </Button>
 
+              {/* SIGN UP */}
               {!isLoggedIn && (
                 <>
                   <Divider
