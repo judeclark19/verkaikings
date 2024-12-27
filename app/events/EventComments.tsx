@@ -10,20 +10,14 @@ import {
   Link,
   IconButton
 } from "@mui/material";
-import {
-  collection,
-  doc,
-  DocumentData,
-  onSnapshot,
-  updateDoc
-} from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
-import eventsState from "./Events.state";
+import eventsState, { EventDocType } from "./Events.state";
 
-type Comment = {
+type EventCommentType = {
   id: string;
   authorId: string;
   createdAt: string;
@@ -34,11 +28,13 @@ const EventComments = ({
   event,
   readOnly = false
 }: {
-  event?: DocumentData;
+  event?: EventDocType;
   readOnly?: boolean;
 }) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState<Comment[]>(event?.comments || []);
+  const [comments, setComments] = useState<EventCommentType[]>(
+    event?.comments || []
+  );
   const eventDocRef = doc(db, "events", event!.id);
   const isPast = event && eventsState.pastEvents.find((e) => e.id === event.id);
 
@@ -67,7 +63,7 @@ const EventComments = ({
       }
 
       // Create a new comment
-      const newComment: Comment = {
+      const newComment: EventCommentType = {
         id: doc(collection(db, `events/${event.id}/comments`)).id,
         authorId: appState.loggedInUser!.id,
         createdAt: new Date().toISOString(),
@@ -102,7 +98,7 @@ const EventComments = ({
     }
   };
 
-  const handleDelete = async (commentToDelete: Comment) => {
+  const handleDelete = async (commentToDelete: EventCommentType) => {
     try {
       const updatedComments = comments.filter(
         (comment) => comment !== commentToDelete

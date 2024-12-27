@@ -1,7 +1,7 @@
 "use client";
 
 import { observer } from "mobx-react-lite";
-import eventsState, { EventType } from "./Events.state";
+import eventsState, { EventDocType } from "./Events.state";
 import Event from "./Event";
 import { Box, Skeleton, Typography } from "@mui/material";
 import NewEventModal from "./NewEventModal";
@@ -66,7 +66,7 @@ const EventsList = observer(() => {
             }}
           >
             {eventsState.upcomingEvents.map((event) => (
-              <Event key={event.id} event={event as EventType} />
+              <Event key={event.id} event={event as EventDocType} />
             ))}
           </Box>
         )}
@@ -101,7 +101,7 @@ const EventsList = observer(() => {
               }}
             >
               {eventsState.pastEvents.map((event) => (
-                <Event key={event.id} event={event as EventType} />
+                <Event key={event.id} event={event as EventDocType} />
               ))}
             </Box>
           </>

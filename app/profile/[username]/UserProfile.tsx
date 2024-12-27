@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { DocumentData } from "firebase/firestore";
 import { Avatar, Box, Button, Divider, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
@@ -21,16 +20,18 @@ import StoryComments from "@/app/people/ByStory/StoryComments";
 import StoryReactions from "@/app/people/ByStory/StoryReactions";
 import FlagComponent from "@/components/Flag";
 import EventsList from "../EventsList";
+import { UserDocType } from "@/lib/UserList";
+import { StoryDocType } from "@/lib/MyWillemijnStories";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
     const params = useParams();
     const { username } = params;
     const [isSelf, setIsSelf] = useState(false);
-    const [user, setUser] = useState<DocumentData | null>(null); // State to hold user data
+    const [user, setUser] = useState<UserDocType | null>(null); // State to hold user data
     const [error, setError] = useState(""); // Error state
     const [usersWillemijnStory, setUsersWillemijnStory] =
-      useState<DocumentData | null>(null);
+      useState<StoryDocType | null>(null);
 
     const userInfo = appState.userList.users.find(
       (u) => u.username === username
@@ -171,7 +172,7 @@ const UserProfile = observer(
               }}
             >
               {user.firstName} {user.lastName}{" "}
-              {checkIfBirthdayToday(user.birthday) && "🎂"}
+              {user.birthday && checkIfBirthdayToday(user.birthday) && "🎂"}
             </Typography>
 
             <Box
@@ -217,7 +218,7 @@ const UserProfile = observer(
               }}
             >
               {user.firstName} {user.lastName}{" "}
-              {checkIfBirthdayToday(user.birthday) && "🎂"}
+              {user.birthday && checkIfBirthdayToday(user.birthday) && "🎂"}
             </Typography>
             <Paper
               elevation={6}

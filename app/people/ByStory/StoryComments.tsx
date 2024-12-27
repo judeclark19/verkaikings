@@ -13,7 +13,6 @@ import {
 import {
   collection,
   doc,
-  DocumentData,
   DocumentReference,
   onSnapshot,
   updateDoc
@@ -22,17 +21,13 @@ import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
+import { StoryCommentType, StoryDocType } from "@/lib/MyWillemijnStories";
 
-type Comment = {
-  id: string;
-  authorId: string;
-  createdAt: string;
-  text: string;
-};
-
-const StoryComments = ({ story }: { story?: DocumentData }) => {
+const StoryComments = ({ story }: { story?: StoryDocType }) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState<Comment[]>(story?.comments || []);
+  const [comments, setComments] = useState<StoryCommentType[]>(
+    story?.comments || []
+  );
 
   let storyDocRef: DocumentReference;
   if (story) {
@@ -64,7 +59,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
       }
 
       // Create a new comment
-      const newComment: Comment = {
+      const newComment: StoryCommentType = {
         id: doc(collection(db, `myWillemijnStories/${story.id}/comments`)).id,
         authorId: appState.loggedInUser!.id,
         createdAt: new Date().toISOString(),
@@ -98,7 +93,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
     }
   };
 
-  const handleDelete = async (commentToDelete: Comment) => {
+  const handleDelete = async (commentToDelete: StoryCommentType) => {
     try {
       // Update the story document in Firestore
       const updatedComments = comments.filter(

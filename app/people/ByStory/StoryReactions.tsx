@@ -5,7 +5,6 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  DocumentData,
   onSnapshot,
   DocumentReference
 } from "firebase/firestore";
@@ -14,15 +13,10 @@ import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
+import { StoryDocType, StoryReactionType } from "@/lib/MyWillemijnStories";
 
-type Reaction = {
-  authorId: string;
-  type: "like" | "love" | "laugh";
-  createdAt: string;
-};
-
-const StoryReactions = ({ story }: { story?: DocumentData }) => {
-  const [reactions, setReactions] = useState<Reaction[]>(
+const StoryReactions = ({ story }: { story?: StoryDocType }) => {
+  const [reactions, setReactions] = useState<StoryReactionType[]>(
     story?.reactions || []
   );
 
@@ -72,7 +66,7 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
       }
     } else {
       // Add the reaction
-      const newReaction: Reaction = {
+      const newReaction: StoryReactionType = {
         authorId: appState.loggedInUser.id,
         type: reactionType,
         createdAt: new Date().toISOString()
@@ -103,7 +97,8 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
   };
 
   const countReactions = (type: "like" | "love" | "laugh") =>
-    reactions.filter((reaction: Reaction) => reaction.type === type).length;
+    reactions.filter((reaction: StoryReactionType) => reaction.type === type)
+      .length;
 
   const getReactionUsers = (type: "like" | "love" | "laugh") =>
     reactions

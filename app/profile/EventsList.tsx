@@ -11,9 +11,9 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "./MyProfile.state";
 import eventsState from "../events/Events.state";
 import Link from "next/link";
-import { DocumentData } from "firebase/firestore";
+import { UserDocType } from "@/lib/UserList";
 
-const EventsList = observer(({ user }: { user: DocumentData }) => {
+const EventsList = observer(({ user }: { user: UserDocType }) => {
   const isSelf = user.id === myProfileState.userId;
   const userEvents = eventsState.upcomingEvents.filter((event) =>
     event.attendees.includes(user.id)

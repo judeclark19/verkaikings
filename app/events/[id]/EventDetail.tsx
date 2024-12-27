@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import eventsState, { EventType } from "../Events.state";
+import eventsState, { EventDocType } from "../Events.state";
 import { observer } from "mobx-react-lite";
 import Event from "../Event";
 import appState from "@/lib/AppState";
@@ -62,9 +62,12 @@ const EventDetail = observer(() => {
           alignItems: "center"
         }}
       >
-        <Event event={eventInfo as EventType} showTitle={false} />
+        <Event event={eventInfo as EventDocType} showTitle={false} />
         {eventInfo.creatorId === appState.loggedInUser?.id && !isPast && (
-          <EditEventModal buttonType="button" event={eventInfo as EventType} />
+          <EditEventModal
+            buttonType="button"
+            event={eventInfo as EventDocType}
+          />
         )}
         {eventInfo.creatorId === appState.loggedInUser?.id && isPast && (
           <Button variant="contained" color="secondary" onClick={deleteEvent}>

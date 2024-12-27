@@ -1,8 +1,15 @@
 import { db } from "@/lib/firebase";
-import { deleteDoc, doc, DocumentData } from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
-export type EventType = {
+type EventComment = {
+  id: string;
+  authorId: string;
+  createdAt: string;
+  text: string;
+};
+
+export type EventDocType = {
   id: string;
   creatorId: string;
   createdAt: string;
@@ -13,18 +20,19 @@ export type EventType = {
   locationUrl: string;
   description: string;
   attendees: string[];
+  comments: EventComment[];
 };
 
 export class Events {
   isInitialized = false;
-  allEvents: DocumentData[] = [];
-  pastEvents: DocumentData[] = [];
-  upcomingEvents: DocumentData[] = [];
+  allEvents: EventDocType[] = [];
+  pastEvents: EventDocType[] = [];
+  upcomingEvents: EventDocType[] = [];
   constructor() {
     makeAutoObservable(this);
   }
 
-  setAllEvents(events: DocumentData[]) {
+  setAllEvents(events: EventDocType[]) {
     this.allEvents = events;
 
     const today = new Date();

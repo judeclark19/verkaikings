@@ -21,7 +21,7 @@ import dayjs, { Dayjs } from "dayjs";
 import LocationPicker from "./LocationPicker";
 import { doc, setDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
-import { EventType } from "./Events.state";
+import { EventDocType } from "./Events.state";
 
 const style = {
   position: "absolute",
@@ -43,7 +43,7 @@ export default function EditEventModal({
   event
 }: {
   buttonType?: "fab" | "button";
-  event: EventType;
+  event: EventDocType;
 }) {
   // Modal state
   const [open, setOpen] = useState(false);

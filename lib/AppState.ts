@@ -1,8 +1,7 @@
 import UserMapState from "@/app/people/UserMap/UserMap.state";
 import myProfileState from "@/app/profile/MyProfile.state";
-import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable, toJS } from "mobx";
-import userList, { UserList } from "./UserList";
+import userList, { UserDocType, UserList } from "./UserList";
 import {
   collection,
   doc,
@@ -14,9 +13,12 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { db, requestNotificationPermission } from "./firebase";
-import myWillemijnStories, { MyWillemijnStories } from "./MyWillemijnStories";
+import myWillemijnStories, {
+  MyWillemijnStories,
+  StoryDocType
+} from "./MyWillemijnStories";
 import { registerPushNotifications } from "./clientUtils";
-import eventsState, { Events } from "@/app/events/Events.state";
+import eventsState, { EventDocType, Events } from "@/app/events/Events.state";
 
 class AppState {
   isInitialized = false;
@@ -24,7 +26,7 @@ class AppState {
   userList: UserList = userList;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
-  loggedInUser: DocumentData | null = null;
+  loggedInUser: UserDocType | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
@@ -45,10 +47,16 @@ class AppState {
         const stories = await getDocs(collection(db, "myWillemijnStories"));
         const events = await getDocs(collection(db, "events"));
         this.init(
-          users.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+          users.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as UserDocType)
+          ),
           userId!,
-          stories.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-          events.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          stories.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as StoryDocType)
+          ),
+          events.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as EventDocType)
+          )
         );
       }
       this.subscribeToUsers();
@@ -60,10 +68,10 @@ class AppState {
   }
 
   async init(
-    users: DocumentData[],
+    users: UserDocType[],
     userId: string,
-    stories: DocumentData[],
-    events: DocumentData[]
+    stories: StoryDocType[],
+    events: EventDocType[]
   ) {
     if (this.isInitialized) {
       return;
@@ -129,10 +137,13 @@ class AppState {
 
   subscribeToUsers() {
     this.userUnsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
-      const updatedUsers = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const updatedUsers = snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data()
+          } as UserDocType)
+      );
       this.userList.setUsers(updatedUsers);
     });
   }
@@ -141,10 +152,13 @@ class AppState {
     this.storyUnsubscribe = onSnapshot(
       collection(db, "myWillemijnStories"),
       (snapshot) => {
-        const updatedStories = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const updatedStories = snapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data()
+            } as StoryDocType)
+        );
         this.myWillemijnStories.setAllStories(updatedStories);
         this.myWillemijnStories.updateFilteredStories();
       }
@@ -155,10 +169,13 @@ class AppState {
     this.eventsUnsubscribe = onSnapshot(
       collection(db, "events"),
       (snapshot) => {
-        const updatedEvents = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const updatedEvents = snapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data()
+            } as EventDocType)
+        );
         this.events.setAllEvents(updatedEvents);
       }
     );

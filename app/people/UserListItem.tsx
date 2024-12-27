@@ -1,10 +1,10 @@
 import FlagComponent from "@/components/Flag";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
+import { UserDocType } from "@/lib/UserList";
 import { ListItem, ListItemButton, ListItemText, Avatar } from "@mui/material";
-import { DocumentData } from "firebase-admin/firestore";
 import Link from "next/link";
 
-function UserListItem({ user }: { user: DocumentData }) {
+function UserListItem({ user }: { user: UserDocType }) {
   return (
     <ListItem
       key={user.id}
@@ -43,7 +43,7 @@ function UserListItem({ user }: { user: DocumentData }) {
         {/* Name and birthday cake */}
         <ListItemText
           primary={`${user.firstName} ${user.lastName}${
-            checkIfBirthdayToday(user.birthday) ? " 🎂" : ""
+            user.birthday && checkIfBirthdayToday(user.birthday) ? " 🎂" : ""
           }`}
           primaryTypographyProps={{
             noWrap: true

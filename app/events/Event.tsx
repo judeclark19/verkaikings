@@ -9,7 +9,7 @@ import {
   Tooltip,
   Fab
 } from "@mui/material";
-import eventsState, { EventType } from "./Events.state";
+import eventsState, { EventDocType } from "./Events.state";
 import { formatFullBirthday, sendNotification } from "@/lib/clientUtils";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
@@ -29,7 +29,7 @@ const Event = ({
   event,
   showTitle = true
 }: {
-  event: EventType;
+  event: EventDocType;
   showTitle?: boolean;
 }) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);

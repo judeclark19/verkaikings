@@ -22,9 +22,15 @@ import {
 } from "@mui/material";
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
-import { DocumentData } from "firebase-admin/firestore";
 import PasswordInput from "@/components/PasswordInput";
 import { cleanNameString } from "@/lib/clientUtils";
+
+type PhoneNumberDoc = {
+  id: string;
+  phoneNumber: string;
+  userId?: string;
+  name?: string;
+};
 
 const SignupForm = () => {
   const [signupStage, setSignupStage] = useState<1 | 2>(1);
@@ -49,16 +55,19 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
 
-  const [phoneNumbers, setPhoneNumbers] = useState<DocumentData[]>([]);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberDoc[]>([]);
   const [matchingPhoneId, setMatchingPhoneId] = useState("");
 
   useEffect(() => {
     async function fetchPhoneNumbers() {
       const fetchedPhoneNumbers = await getDocs(collection(db, "phoneNumbers"));
-      return fetchedPhoneNumbers.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      return fetchedPhoneNumbers.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data()
+          } as PhoneNumberDoc)
+      );
     }
 
     fetchPhoneNumbers()

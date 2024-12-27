@@ -3,14 +3,23 @@ import {
   collection,
   deleteDoc,
   doc,
-  DocumentData,
   onSnapshot,
   orderBy,
   query,
+  Timestamp,
   updateDoc
 } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import myProfileState from "../profile/MyProfile.state";
+
+export type NotificationDocType = {
+  id: string;
+  read: boolean;
+  title: string;
+  body: string | null;
+  url: string | null;
+  createdAt: Timestamp;
+};
 
 class Notification {
   id: string;
@@ -18,10 +27,10 @@ class Notification {
   title: string;
   body: string | null = null;
   url: string | null = null;
-  createdAt: string | null = null;
+  createdAt: Timestamp;
   isFadingOut = false;
 
-  constructor(notification: DocumentData) {
+  constructor(notification: NotificationDocType) {
     makeAutoObservable(this);
     this.read = notification.read;
     this.id = notification.id;
@@ -103,10 +112,12 @@ export class NotificationsState {
     this.unsubscribeNotifications = onSnapshot(
       notificationsQuery,
       (snapshot) => {
-        const notifications: DocumentData[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        })) as DocumentData[];
+        const notifications: NotificationDocType[] = snapshot.docs.map(
+          (doc) => ({
+            id: doc.id,
+            ...doc.data()
+          })
+        ) as NotificationDocType[];
 
         // console.log("Live Notifications:", notifications);
 
@@ -135,7 +146,7 @@ export class NotificationsState {
     }
   }
 
-  setNotifications(notifications: DocumentData[]) {
+  setNotifications(notifications: NotificationDocType[]) {
     this.notifications = notifications.map(
       (notification) => new Notification(notification)
     );
@@ -156,10 +167,6 @@ export class NotificationsState {
 
   get readNotifications() {
     return this.notifications.filter((notif) => notif.read);
-  }
-
-  getNotificationById(id: string) {
-    return this.notifications.find((n: DocumentData) => n.id === id);
   }
 
   markAllAsRead() {
