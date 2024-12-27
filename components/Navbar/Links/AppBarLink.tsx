@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { NavLinkType } from "../navLinks.data";
 import { Avatar, Button, CircularProgress, Divider } from "@mui/material";
 import Link from "next/link";
@@ -7,22 +6,19 @@ import { observer } from "mobx-react-lite";
 
 const AppBarLink = observer(
   ({ link, isActive }: { link: NavLinkType; isActive: boolean }) => {
-    const getNavLinkStyle = (link: string) => {
-      return {
-        fontWeight: isActive ? "700" : "500",
-        backgroundColor: isActive ? "primary.main" : "transparent",
-        "&:hover": {
-          backgroundColor: "primary.main"
-        }
-      };
-    };
     return (
       <>
         <Button
           color="inherit"
           component={Link}
           href={link.href}
-          sx={getNavLinkStyle(link.href)}
+          sx={{
+            fontWeight: isActive ? "700" : "500",
+            backgroundColor: isActive ? "primary.main" : "transparent",
+            "&:hover": {
+              backgroundColor: "primary.main"
+            }
+          }}
         >
           {link.title === "My Profile" && myProfileState.user ? (
             <>

@@ -293,7 +293,7 @@ const Event = ({
                     <UserListItem key={attendee} user={user} />
                     {!isPast && user.id === appState.loggedInUser!.id && (
                       <Tooltip
-                        title="Remove yourself from this event"
+                        title="I'm not going"
                         placement="top"
                         arrow
                         PopperProps={{
@@ -329,14 +329,32 @@ const Event = ({
             </List>
           )}
           {!imGoing && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={updateAttendance}
-              startIcon={<AddIcon />}
+            <Box
+              sx={{
+                // border: "2px solid red",
+                display: "flex",
+                justifyContent: {
+                  xs: "center",
+                  sm: "flex-start"
+                }
+              }}
             >
-              I&apos;m going!
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={updateAttendance}
+                startIcon={<AddIcon />}
+                sx={{
+                  width: {
+                    xs: "100%",
+                    sm: "170px"
+                  },
+                  maxWidth: 400
+                }}
+              >
+                I&apos;m going!
+              </Button>
+            </Box>
           )}
         </Box>
       </Box>
