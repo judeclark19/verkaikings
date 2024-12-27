@@ -8,6 +8,7 @@ import { db } from "@/lib/firebase";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
+import { UserDocType } from "@/lib/UserList";
 
 const DatePickerForm = observer(
   ({
@@ -42,7 +43,7 @@ const DatePickerForm = observer(
           myProfileState.setUser({
             ...myProfileState.user,
             birthday: value ? value.format("YYYY-MM-DD") : null
-          });
+          } as UserDocType);
         })
         .catch((error) => {
           console.error("Error updating user's birthday: ", error);

@@ -14,7 +14,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
 import appState from "@/lib/AppState";
-import userList from "@/lib/UserList";
+import userList, { UserDocType } from "@/lib/UserList";
 
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -120,11 +120,11 @@ const CityPicker = observer(
           if (updatedUserData) {
             // Update the user list with the fetched users
             fetchUsers().then((users) => {
-              userList.setUsers(users);
+              userList.setUsers(users as UserDocType[]);
             });
 
             // Update MyProfile state with new document data
-            myProfileState.setUser(updatedUserData);
+            myProfileState.setUser(updatedUserData as UserDocType);
 
             // Check if the country was changed, and update country details in MyProfile state
             if (country && country !== myProfileState.countryAbbr) {

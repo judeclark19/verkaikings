@@ -10,10 +10,9 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ArrowForward } from "@mui/icons-material";
 import notificationsState, { NotificationDocType } from "./Notifications.state";
-import { Timestamp } from "firebase/firestore";
 
 const NotificationListItem = observer(
   ({
@@ -23,9 +22,7 @@ const NotificationListItem = observer(
   }: {
     notif: NotificationDocType;
     visibility: { [key: string]: boolean };
-    setVisibility: React.Dispatch<
-      React.SetStateAction<{ [key: string]: boolean }>
-    >;
+    setVisibility: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
   }) => {
     const [markReadOnUnmount, setMarkReadOnUnmount] = useState(false);
     const notificationState = notificationsState.notifications.find(
@@ -155,7 +152,6 @@ const NotificationListItem = observer(
                 e.preventDefault();
                 setVisibility((prev) => ({ ...prev, [notif.id]: false }));
                 setTimeout(() => {
-                  // notif.delete();
                   notificationState!.delete();
                 }, 300);
               }}
@@ -190,7 +186,6 @@ const NotificationListItem = observer(
               onChange={() => {
                 setVisibility((prev) => ({ ...prev, [notif.id]: false }));
                 setTimeout(() => {
-                  // notif.toggleRead();
                   notificationState!.toggleRead();
                 }, 300);
               }}

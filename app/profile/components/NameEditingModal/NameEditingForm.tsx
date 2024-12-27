@@ -6,12 +6,19 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { cleanNameString } from "@/lib/clientUtils";
+import { UserDocType } from "@/lib/UserList";
 
 const NameEditingForm = observer(
   ({ closeModal }: { closeModal: () => void }) => {
-    const [firstName, setFirstName] = useState(myProfileState.user?.firstName);
-    const [lastName, setLastName] = useState(myProfileState.user?.lastName);
-    const [username, setUsername] = useState(myProfileState.user?.username);
+    const [firstName, setFirstName] = useState(
+      myProfileState.user?.firstName || ""
+    );
+    const [lastName, setLastName] = useState(
+      myProfileState.user?.lastName || ""
+    );
+    const [username, setUsername] = useState(
+      myProfileState.user?.username || ""
+    );
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
@@ -42,7 +49,7 @@ const NameEditingForm = observer(
             // Access the document data
             const userData = userDocSnapshot.data();
             // console.log("User data:", userData);
-            myProfileState.setUser(userData);
+            myProfileState.setUser(userData as UserDocType);
           }
           console.log("Firebase displayName updated successfully");
         }

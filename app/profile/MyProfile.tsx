@@ -27,6 +27,7 @@ import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import EventsList from "./EventsList";
+import { UserDocType } from "@/lib/UserList";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -39,7 +40,7 @@ const MyProfile = observer(() => {
     const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         // Update MobX state with user data
-        myProfileState.setUser(docSnapshot.data());
+        myProfileState.setUser(docSnapshot.data() as UserDocType);
       }
     });
 
@@ -114,7 +115,9 @@ const MyProfile = observer(() => {
             >
               {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
               {""}
-              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+              {myProfileState.user.birthday &&
+                checkIfBirthdayToday(myProfileState.user.birthday) &&
+                "🎂"}
             </Typography>
             <NameEditingModal />
           </Box>
@@ -140,10 +143,12 @@ const MyProfile = observer(() => {
             }}
           >
             <EventsList
-              user={{
-                ...myProfileState.user,
-                id: myProfileState.userId
-              }}
+              user={
+                {
+                  ...myProfileState.user,
+                  id: myProfileState.userId
+                } as UserDocType
+              }
             />
           </Box>
         </Box>
@@ -171,7 +176,9 @@ const MyProfile = observer(() => {
           >
             <Typography variant="h1">
               {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
-              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+              {myProfileState.user.birthday &&
+                checkIfBirthdayToday(myProfileState.user.birthday) &&
+                "🎂"}
             </Typography>
             <NameEditingModal />
           </Box>
@@ -233,10 +240,12 @@ const MyProfile = observer(() => {
             }}
           >
             <EventsList
-              user={{
-                ...myProfileState.user,
-                id: myProfileState.userId
-              }}
+              user={
+                {
+                  ...myProfileState.user,
+                  id: myProfileState.userId
+                } as UserDocType
+              }
             />
           </Box>
 
