@@ -26,6 +26,8 @@ import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { db } from "@/lib/firebase";
 import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
+import EventsList from "./EventsList";
+import { UserDocType } from "@/lib/UserList";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -38,7 +40,7 @@ const MyProfile = observer(() => {
     const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         // Update MobX state with user data
-        myProfileState.setUser(docSnapshot.data());
+        myProfileState.setUser(docSnapshot.data() as UserDocType);
       }
     });
 
@@ -113,7 +115,9 @@ const MyProfile = observer(() => {
             >
               {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
               {""}
-              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+              {myProfileState.user.birthday &&
+                checkIfBirthdayToday(myProfileState.user.birthday) &&
+                "🎂"}
             </Typography>
             <NameEditingModal />
           </Box>
@@ -127,6 +131,25 @@ const MyProfile = observer(() => {
             }}
           >
             <SocialsList />
+          </Box>
+
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block"
+              },
+              mt: 3
+            }}
+          >
+            <EventsList
+              user={
+                {
+                  ...myProfileState.user,
+                  id: myProfileState.userId
+                } as UserDocType
+              }
+            />
           </Box>
         </Box>
         {/* MAIN CONTENT */}
@@ -153,11 +176,19 @@ const MyProfile = observer(() => {
           >
             <Typography variant="h1">
               {myProfileState.user.firstName} {myProfileState.user.lastName}{" "}
-              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+              {myProfileState.user.birthday &&
+                checkIfBirthdayToday(myProfileState.user.birthday) &&
+                "🎂"}
             </Typography>
             <NameEditingModal />
           </Box>
-          <Paper elevation={6} sx={{ px: 3 }}>
+          <Paper
+            elevation={8}
+            sx={{
+              px: 3,
+              mb: 3
+            }}
+          >
             <Box
               sx={{
                 display: "grid",
@@ -199,11 +230,44 @@ const MyProfile = observer(() => {
           >
             <SocialsList />
           </Box>
+          <Box
+            sx={{
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
+            }}
+          >
+            <EventsList
+              user={
+                {
+                  ...myProfileState.user,
+                  id: myProfileState.userId
+                } as UserDocType
+              }
+            />
+          </Box>
+
+          <Divider
+            sx={{
+              display: {
+                xs: "block",
+                md: "none"
+              },
+              mt: 3
+            }}
+          />
 
           {/* SECOND SECTION - MY WILLEMIJN STORY */}
           <MyWillemijnStory />
 
           {/* THIRD SECTION - SUPPORT*/}
+          <Divider
+            sx={{
+              mt: 3
+            }}
+          />
           <Box
             sx={{
               mt: 3

@@ -18,6 +18,7 @@ export const config = {
     "/profile/:path*",
     "/people/:path*",
     "/dashboard/:path*",
-    "/notifcations/:path*"
+    "/notifcations/:path*",
+    "/events/:path*"
   ] // Routes to protect
 };

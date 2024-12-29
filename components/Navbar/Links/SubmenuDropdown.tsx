@@ -1,7 +1,7 @@
 import { Button, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { NavLinkType } from "./navLinks";
+import { NavLinkType } from "../navLinks.data";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, MouseEvent } from "react";
 

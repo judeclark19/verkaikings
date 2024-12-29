@@ -1,5 +1,4 @@
 import { Paper, Typography } from "@mui/material";
-import { DocumentData } from "firebase/firestore";
 import React from "react";
 import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
@@ -9,8 +8,9 @@ import {
 import BeRealIcon from "../../../public/images/icons8-bereal-24.svg";
 import DuolingoIcon from "../../../public/images/icons8-duolingo-24.svg";
 import TikTokIcon from "../../../public/images/icons8-tiktok-24.svg";
+import { UserDocType } from "@/lib/UserList";
 
-function SocialsList({ user }: { user: DocumentData }) {
+function SocialsList({ user }: { user: UserDocType }) {
   return (
     <Paper
       elevation={3}

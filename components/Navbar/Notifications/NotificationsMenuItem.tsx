@@ -1,6 +1,7 @@
-import notificationsState from "@/app/notifications/Notifications.state";
+import notificationsState, {
+  NotificationDocType
+} from "@/app/notifications/Notifications.state";
 import { Box, Checkbox, MenuItem, Tooltip, Typography } from "@mui/material";
-import { DocumentData } from "firebase-admin/firestore";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,7 +11,7 @@ const NotificationsMenuItem = observer(
     notification,
     handleClose
   }: {
-    notification: DocumentData;
+    notification: NotificationDocType;
     handleClose: () => void;
   }) => {
     const notificationState = notificationsState.notifications.find(
@@ -23,20 +24,24 @@ const NotificationsMenuItem = observer(
       setIsFadingIn(false);
     }, []);
 
+    if (!notificationState) {
+      return null;
+    }
+
     return (
       <MenuItem
         key={notification.id}
         onClick={() => {
           if (!notification.url) {
-            notification.toggleRead();
+            notificationState.toggleRead();
           }
           if (notification.url) {
             handleClose();
-            notification.markAsRead();
+            notificationState.markAsRead();
           }
         }}
         component={notification.url ? Link : "div"}
-        href={notification.url}
+        href={notification.url || ""}
         sx={{
           fontSize: "14px",
           fontWeight: notification.read ? "normal" : "bold",

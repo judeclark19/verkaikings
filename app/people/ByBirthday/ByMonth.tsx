@@ -9,13 +9,16 @@ const ByMonth = observer(({ month }: { month: string }) => {
     return date.toLocaleString(locale, { month: "long" });
   }
 
+  const color = parseInt(month) % 2 !== 0 ? "primary.dark" : "secondary.dark";
+
   return (
     <Paper
-      elevation={8}
-      color="secondary"
       sx={{
         padding: 2,
-        height: "fit-content"
+        height: "fit-content",
+        // backgroundColor: color,
+
+        borderRadius: "4px"
       }}
     >
       <Typography
@@ -23,7 +26,8 @@ const ByMonth = observer(({ month }: { month: string }) => {
         sx={{
           textAlign: "center",
           marginTop: 0,
-          color: parseInt(month) % 2 !== 0 ? "primary.dark" : "secondary.dark"
+          // color: "background.default"
+          color
         }}
       >
         {getMonthName(parseInt(month), navigator.language || "en")}
@@ -32,7 +36,7 @@ const ByMonth = observer(({ month }: { month: string }) => {
         {Object.keys(userList.usersByBirthday[month])
           .sort((a, b) => parseInt(a) - parseInt(b))
           .map((day) => (
-            <ByDay key={day} day={day} month={month} />
+            <ByDay key={day} day={day} month={month} color={color} />
           ))}
       </div>
     </Paper>

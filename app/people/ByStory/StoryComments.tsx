@@ -13,7 +13,7 @@ import {
 import {
   collection,
   doc,
-  DocumentData,
+  DocumentReference,
   onSnapshot,
   updateDoc
 } from "firebase/firestore";
@@ -21,21 +21,21 @@ import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
+import { StoryCommentType, StoryDocType } from "@/lib/MyWillemijnStories";
 
-type Comment = {
-  id: string;
-  authorId: string;
-  createdAt: string;
-  text: string;
-};
-
-const StoryComments = ({ story }: { story?: DocumentData }) => {
+const StoryComments = ({ story }: { story?: StoryDocType }) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState<Comment[]>(story?.comments || []);
+  const [comments, setComments] = useState<StoryCommentType[]>(
+    story?.comments || []
+  );
+
+  let storyDocRef: DocumentReference;
+  if (story) {
+    storyDocRef = doc(db, "myWillemijnStories", story.id);
+  }
 
   useEffect(() => {
     if (!story) return;
-    const storyDocRef = doc(db, "myWillemijnStories", story.id);
 
     const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
@@ -59,7 +59,7 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
       }
 
       // Create a new comment
-      const newComment: Comment = {
+      const newComment: StoryCommentType = {
         id: doc(collection(db, `myWillemijnStories/${story.id}/comments`)).id,
         authorId: appState.loggedInUser!.id,
         createdAt: new Date().toISOString(),
@@ -68,20 +68,20 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
 
       try {
         // Update the story document in Firestore
-        const storyDocRef = doc(db, "myWillemijnStories", story.id);
         await updateDoc(storyDocRef, {
           comments: [...comments, newComment]
         });
 
-        // Send a notification to the story author
-        sendNotification(
-          story.authorId,
-          "New comment on your story",
-          `${myProfileState.user!.firstName} ${
-            myProfileState.user!.lastName
-          } left a comment`,
-          `/profile?notif=${newComment.id}`
-        );
+        if (story.authorId !== appState.loggedInUser!.id) {
+          sendNotification(
+            story.authorId,
+            "New comment on your story",
+            `${myProfileState.user!.firstName} ${
+              myProfileState.user!.lastName
+            } left a comment`,
+            `/profile?notif=${newComment}`
+          );
+        }
 
         setCommentText(""); // Clear the input
       } catch (error) {
@@ -93,10 +93,9 @@ const StoryComments = ({ story }: { story?: DocumentData }) => {
     }
   };
 
-  const handleDelete = async (commentToDelete: Comment) => {
+  const handleDelete = async (commentToDelete: StoryCommentType) => {
     try {
       // Update the story document in Firestore
-      const storyDocRef = doc(db, "myWillemijnStories", story.id);
       const updatedComments = comments.filter(
         (comment) => comment !== commentToDelete
       );

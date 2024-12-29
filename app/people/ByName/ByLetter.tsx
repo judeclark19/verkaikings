@@ -5,15 +5,15 @@ import {
   Paper,
   Typography
 } from "@mui/material";
-import { DocumentData } from "firebase/firestore";
 import UserListItem from "../UserListItem";
+import { UserDocType } from "@/lib/UserList";
 
 function ByLetter({
   letter,
   groupedUsers
 }: {
   letter: string;
-  groupedUsers: DocumentData;
+  groupedUsers: Record<string, UserDocType[]>;
 }) {
   return (
     <ListItem
@@ -58,7 +58,7 @@ function ByLetter({
               backgroundColor: "rgb(18, 18, 18)"
             }}
           >
-            {groupedUsers[letter].map((user: DocumentData) => (
+            {groupedUsers[letter].map((user: UserDocType) => (
               <UserListItem key={user.username} user={user} />
             ))}
           </div>

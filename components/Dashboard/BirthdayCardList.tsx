@@ -1,18 +1,12 @@
 import UserListItem from "@/app/people/UserListItem";
 import appState from "@/lib/AppState";
 import { formatBirthday2digit } from "@/lib/clientUtils";
+import { UserDocType } from "@/lib/UserList";
 import { Box, CircularProgress, List, Typography } from "@mui/material";
-import { DocumentData } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 
 const BirthdayCardList = observer(
-  ({
-    users,
-    emptyMessage
-  }: {
-    users: DocumentData[];
-    emptyMessage: string;
-  }) => {
+  ({ users, emptyMessage }: { users: UserDocType[]; emptyMessage: string }) => {
     if (!appState.isInitialized) {
       return <CircularProgress />;
     }
@@ -63,7 +57,7 @@ const BirthdayCardList = observer(
                       paddingRight: "1rem"
                     }}
                   >
-                    &nbsp; - {formatBirthday2digit(user.birthday)}
+                    &nbsp; - {formatBirthday2digit(user.birthday!)}
                   </div>
                 </Box>
               ))}

@@ -1,13 +1,13 @@
 import appState from "@/lib/AppState";
-import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import notificationsState, {
   NotificationsState
 } from "../notifications/Notifications.state";
+import { UserDocType } from "@/lib/UserList";
 
 export class MyProfileState {
   isFetched = false;
-  user: DocumentData | null = null;
+  user: UserDocType | null = null;
   userId: string | null = null;
   placeId: string | null = null;
   cityName: string | null = null;
@@ -26,7 +26,7 @@ export class MyProfileState {
     makeAutoObservable(this);
   }
 
-  async init(user: DocumentData, userId: string) {
+  async init(user: UserDocType, userId: string) {
     await appState.waitForInitialization(); // Ensure appState is ready
 
     this.setUser(user);
@@ -45,11 +45,14 @@ export class MyProfileState {
     this.notificationsState = notificationsState;
     this.notificationsState.subscribeToNotifications(userId);
 
-    this.setMyWillemijnStory(
-      appState.myWillemijnStories.allStories.find(
-        (story) => story.authorId === userId
-      )?.storyContent
+    const usersStory = appState.myWillemijnStories.allStories.find(
+      (story) => story.authorId === userId
     );
+
+    if (usersStory) {
+      this.setMyWillemijnStory(usersStory.storyContent);
+    }
+
     this.setIsFetched(true);
   }
 
@@ -57,7 +60,7 @@ export class MyProfileState {
     this.isFetched = isFetched;
   }
 
-  setUser(user: DocumentData | null) {
+  setUser(user: UserDocType | null) {
     this.user = user;
   }
 

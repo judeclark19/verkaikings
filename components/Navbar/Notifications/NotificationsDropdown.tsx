@@ -11,8 +11,11 @@ import { ArrowDropDownIcon } from "@mui/x-date-pickers/icons";
 import { observer } from "mobx-react-lite";
 import { useState, MouseEvent } from "react";
 import Link from "next/link";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+
+import {
+  Notifications as NotificationsIcon,
+  NotificationsActive as NotificationsActiveIcon
+} from "@mui/icons-material";
 import notificationsState from "@/app/notifications/Notifications.state";
 import NotificationsMenuItem from "./NotificationsMenuItem";
 
@@ -104,7 +107,7 @@ const NotificationsDropdown = observer(() => {
             color: "text.primary"
           },
           "& .MuiMenu-list": {
-            width: "250px",
+            minWidth: "250px",
             backgroundColor: "rgb(75,75,75)",
             display: "flex",
             flexDirection: "column",
@@ -116,18 +119,22 @@ const NotificationsDropdown = observer(() => {
         {notificationsState.unreadNotifications.length === 0 ? (
           <MenuItem
             sx={{
-              fontSize: "14px",
               fontWeight: "normal",
               backgroundColor: "transparent",
               color: "text.primary",
               flexDirection: "column",
-              alignItems: "flex-start",
               padding: "0.75rem 1.5rem",
               pointerEvents: "none",
-              opacity: 0.7
+              opacity: 0.7,
+              display: "flex",
+              alignItems: "center"
             }}
           >
-            <Typography component="span">No unread notifications.</Typography>
+            {notificationsState.isInitialized ? (
+              <Typography component="span">No unread notifications.</Typography>
+            ) : (
+              <CircularProgress color="inherit" size={24} />
+            )}
           </MenuItem>
         ) : (
           notificationsState.unreadNotifications
