@@ -2,7 +2,9 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, Auth, onAuthStateChanged, User } from "firebase/auth";
 import {
   collection,
+  deleteDoc,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
   query,
@@ -67,20 +69,48 @@ export const requestNotificationPermission = async (userId: string) => {
 
         const tokensRef = collection(db, "users", userId, "fcmTokens");
 
-        // Check for existing token
-        const existingTokensQuery = query(
-          tokensRef,
-          where("token", "==", token)
-        );
-        const existingTokensSnapshot = await getDocs(existingTokensQuery);
+        // Fetch all tokens
+        const tokensSnapshot = await getDocs(tokensRef);
+        const now = new Date();
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
-        if (existingTokensSnapshot.empty) {
-          // Token does not exist, save it
-          const tokenRef = doc(tokensRef, token);
-          await setDoc(tokenRef, { token, createdAt: new Date() });
-          console.log("Saved FCM token to db");
+        let isStale = false;
+
+        // Check all tokens for staleness and delete if necessary
+        for (const doc of tokensSnapshot.docs) {
+          const tokenData = doc.data();
+          const createdAt = tokenData.createdAt?.toDate();
+
+          if (createdAt && createdAt < ninetyDaysAgo) {
+            // Token is stale, delete it
+            await deleteDoc(doc.ref);
+            console.log(`Deleted stale token: ${doc.id}`);
+          }
+
+          if (doc.id === token) {
+            // Check if the generated token is stale
+            if (createdAt && createdAt < ninetyDaysAgo) {
+              isStale = true;
+            }
+          }
+        }
+
+        // Handle the generated token
+        const tokenRef = doc(tokensRef, token);
+        if (isStale) {
+          // Update createdAt for stale token
+          await setDoc(tokenRef, { token, createdAt: now }, { merge: true });
+          console.log("Updated stale token with new createdAt timestamp.");
         } else {
-          console.log("Token already exists. No need to save.");
+          const existingTokenDoc = await getDoc(tokenRef);
+          if (!existingTokenDoc.exists()) {
+            // Save new token
+            await setDoc(tokenRef, { token, createdAt: now });
+            console.log("Saved new FCM token to db.");
+          } else {
+            console.log("Token already exists and is not stale.");
+          }
         }
       }
     } else {
