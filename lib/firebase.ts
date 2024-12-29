@@ -7,9 +7,7 @@ import {
   getDoc,
   getDocs,
   getFirestore,
-  query,
-  setDoc,
-  where
+  setDoc
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { isSupported, getMessaging, getToken } from "firebase/messaging";
