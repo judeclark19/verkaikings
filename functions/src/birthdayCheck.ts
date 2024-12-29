@@ -28,6 +28,18 @@ export async function runBirthdayCheck() {
   console.log("Checking for birthdays", today);
 
   try {
+    // notify Jude
+    const judeMessage = {
+      title: "birthdayCheck function just ran",
+      body: "admin message",
+      url: null,
+    };
+
+    notifyUsers({
+      userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
+      notification: judeMessage,
+    });
+
     const allUsersSnapshot = await adminDb.collection("users").get();
 
     for (const userDoc of allUsersSnapshot.docs) {

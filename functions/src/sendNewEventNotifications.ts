@@ -31,6 +31,18 @@ export async function sendNewEventNotifications(
   console.log("A new event was created:", newEventId);
 
   try {
+    // notify Jude
+    const judeMessage = {
+      title: "sendNewEventNotifications function just ran",
+      body: "admin message",
+      url: null,
+    };
+
+    notifyUsers({
+      userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
+      notification: judeMessage,
+    });
+
     const authorDoc = await adminDb
       .doc(`users/${newEventData.creatorId}`)
       .get();
