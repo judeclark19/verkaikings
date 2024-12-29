@@ -8,6 +8,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage, db } from "@/lib/firebase"; // Your Firebase setup
 import { updateDoc, doc } from "firebase/firestore";
 import myProfileState from "../MyProfile.state";
+import { UserDocType } from "@/lib/UserList";
 
 const ProfilePic = observer(() => {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ const ProfilePic = observer(() => {
         myProfileState.setUser({
           ...myProfileState.user,
           profilePicture: url
-        });
+        } as UserDocType);
 
         console.log("Profile picture updated:", url);
 

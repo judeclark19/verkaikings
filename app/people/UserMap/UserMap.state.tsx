@@ -1,16 +1,15 @@
-import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "@/lib/AppState";
-import userList from "@/lib/UserList";
+import userList, { UserDocType } from "@/lib/UserList";
 
 type MapItem = {
   cityId: string;
-  users: DocumentData[];
+  users: UserDocType[];
   countryAbbr: string;
 };
 
 class UserMapState {
-  usersWithCity: DocumentData[] = [];
+  usersWithCity: UserDocType[] = [];
   isInitialized = false;
   mapItems: MapItem[] = [];
   cityNames: Record<string, string> = {};
@@ -20,7 +19,7 @@ class UserMapState {
   map: google.maps.Map | null = null;
   visibleMarkerCount = 0; // Observable property to track visible markers
 
-  constructor(users: DocumentData[], cityNames: Record<string, string>) {
+  constructor(users: UserDocType[], cityNames: Record<string, string>) {
     makeAutoObservable(this);
     this.usersWithCity = users.filter((user) => user.cityId);
     this.cityNames = cityNames;
@@ -129,7 +128,7 @@ class UserMapState {
     </div>`;
   }
 
-  updateInfoWindowContent(cityId: string, updatedUsers: DocumentData[]) {
+  updateInfoWindowContent(cityId: string, updatedUsers: UserDocType[]) {
     const infoWindow = this.infoWindows.get(cityId);
     if (infoWindow) {
       const mapItem = this.mapItems.find((item) => item.cityId === cityId);
@@ -140,7 +139,7 @@ class UserMapState {
     }
   }
 
-  updateMarkerVisibility(filteredUsers: DocumentData[]) {
+  updateMarkerVisibility(filteredUsers: UserDocType[]) {
     const visibleCityIds = new Set(
       filteredUsers.map((user) => user.cityId).filter((id) => !!id)
     );

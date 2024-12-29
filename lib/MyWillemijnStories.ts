@@ -1,21 +1,42 @@
-import { DocumentData } from "firebase-admin/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 
+export type StoryCommentType = {
+  id: string;
+  authorId: string;
+  createdAt: string;
+  text: string;
+};
+
+export type StoryReactionType = {
+  authorId: string;
+  type: "like" | "love" | "laugh";
+  createdAt: string;
+};
+
+export type StoryDocType = {
+  id: string;
+  authorId: string;
+  storyContent: string;
+  createdAt: string;
+  comments: StoryCommentType[];
+  reactions: StoryReactionType[];
+};
+
 export class MyWillemijnStories {
-  allStories: DocumentData[] = [];
-  filteredStories: DocumentData[] = [];
+  allStories: StoryDocType[] = [];
+  filteredStories: StoryDocType[] = [];
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  init(stories: DocumentData[]) {
+  init(stories: StoryDocType[]) {
     this.allStories = stories;
     this.filteredStories = stories;
   }
 
-  setAllStories(stories: DocumentData[]) {
+  setAllStories(stories: StoryDocType[]) {
     this.allStories = stories;
   }
 

@@ -5,30 +5,28 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  DocumentData,
-  onSnapshot
+  onSnapshot,
+  DocumentReference
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
+import { StoryDocType, StoryReactionType } from "@/lib/MyWillemijnStories";
 
-type Reaction = {
-  authorId: string;
-  type: "like" | "love" | "laugh";
-  createdAt: string;
-};
-
-const StoryReactions = ({ story }: { story?: DocumentData }) => {
-  const [reactions, setReactions] = useState<Reaction[]>(
+const StoryReactions = ({ story }: { story?: StoryDocType }) => {
+  const [reactions, setReactions] = useState<StoryReactionType[]>(
     story?.reactions || []
   );
 
+  let storyDocRef: DocumentReference;
+  if (story) {
+    storyDocRef = doc(db, "myWillemijnStories", story.id);
+  }
+
   useEffect(() => {
     if (!story) return;
-
-    const storyDocRef = doc(db, "myWillemijnStories", story.id);
 
     const unsubscribe = onSnapshot(storyDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
@@ -50,8 +48,6 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
       return;
     }
 
-    const storyDocRef = doc(db, "myWillemijnStories", story.id);
-
     // Check if the user already reacted with this type
     const existingReaction = reactions.find(
       (reaction) =>
@@ -70,7 +66,7 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
       }
     } else {
       // Add the reaction
-      const newReaction: Reaction = {
+      const newReaction: StoryReactionType = {
         authorId: appState.loggedInUser.id,
         type: reactionType,
         createdAt: new Date().toISOString()
@@ -82,14 +78,17 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
         });
 
         // send a notification to the author of the story
-        sendNotification(
-          story.authorId,
-          "New reaction on your story",
-          `${myProfileState.user!.firstName} ${
-            myProfileState.user!.lastName
-          } left a "${reactionType}"`,
-          `/profile?notif=story-${reactionType}`
-        );
+
+        if (story.authorId !== appState.loggedInUser.id) {
+          sendNotification(
+            story.authorId,
+            "New reaction on your story",
+            `${myProfileState.user!.firstName} ${
+              myProfileState.user!.lastName
+            } left a "${reactionType}"`,
+            `/profile?notif=story-${reactionType}`
+          );
+        }
       } catch (error) {
         alert(`Error adding reaction: ${error}`);
         console.error("Error adding reaction:", error);
@@ -98,7 +97,8 @@ const StoryReactions = ({ story }: { story?: DocumentData }) => {
   };
 
   const countReactions = (type: "like" | "love" | "laugh") =>
-    reactions.filter((reaction: Reaction) => reaction.type === type).length;
+    reactions.filter((reaction: StoryReactionType) => reaction.type === type)
+      .length;
 
   const getReactionUsers = (type: "like" | "love" | "laugh") =>
     reactions

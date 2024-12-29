@@ -10,17 +10,18 @@ import {
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import UserListItem from "../UserListItem";
-import userList from "@/lib/UserList";
-import { doc, DocumentData, onSnapshot } from "firebase/firestore";
+import userList, { UserDocType } from "@/lib/UserList";
+import { doc, onSnapshot } from "firebase/firestore";
 import { PeopleViews } from "../PeopleList";
 import StoryComments from "./StoryComments";
 import StoryReactions from "./StoryReactions";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { deleteQueryParam } from "@/lib/clientUtils";
+import { StoryDocType } from "@/lib/MyWillemijnStories";
 
-const Column = observer(({ users }: { users: DocumentData[] }) => {
-  const [stories, setStories] = useState<Record<string, DocumentData>>({});
+const Column = observer(({ users }: { users: UserDocType[] }) => {
+  const [stories, setStories] = useState<Record<string, StoryDocType>>({});
 
   useEffect(() => {
     const unsubscribes: (() => void)[] = [];
@@ -31,7 +32,7 @@ const Column = observer(({ users }: { users: DocumentData[] }) => {
         if (docSnapshot.exists()) {
           setStories((prevStories) => ({
             ...prevStories,
-            [user.id]: docSnapshot.data()
+            [user.id]: docSnapshot.data() as StoryDocType
           }));
         }
       });
@@ -84,7 +85,7 @@ const Column = observer(({ users }: { users: DocumentData[] }) => {
 });
 
 const ByStory = observer(() => {
-  const [shuffledUsers, setShuffledUsers] = useState<DocumentData[]>([]);
+  const [shuffledUsers, setShuffledUsers] = useState<UserDocType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { ListItem, ListItemText, ListItemIcon, Avatar } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { NavLinkType } from "./navLinks";
+import { NavLinkType } from "../navLinks.data";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
 

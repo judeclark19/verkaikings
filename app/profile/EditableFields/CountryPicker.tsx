@@ -13,7 +13,7 @@ import { observer } from "mobx-react-lite";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
-import userList from "@/lib/UserList";
+import userList, { UserDocType } from "@/lib/UserList";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -60,7 +60,7 @@ const CountryPicker = observer(
       })
         .then(() => {
           fetchUsers().then((users) => {
-            userList.setUsers(users);
+            userList.setUsers(users as UserDocType[]);
           });
 
           console.log("Country updated");

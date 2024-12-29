@@ -3,6 +3,7 @@ import UserListItem from "../UserListItem";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
+import Link from "next/link";
 
 const ByCity = observer(
   ({
@@ -14,6 +15,8 @@ const ByCity = observer(
     cityId: string;
     titleColor: "primary.dark" | "secondary.dark";
   }) => {
+    const noCityListed = cityId === "No city listed";
+
     return (
       <Paper
         elevation={8}
@@ -31,13 +34,22 @@ const ByCity = observer(
           >
             <Typography
               variant="h3"
+              component={noCityListed ? "h3" : Link}
+              href={
+                noCityListed
+                  ? ""
+                  : `/people?viewBy=map&query=${appState.cityNames[cityId]}`
+              }
               sx={{
                 textAlign: "center",
                 marginTop: 0,
-                color: titleColor
+                color: titleColor,
+                width: "100%",
+                display: "flex",
+                justifyContent: "center"
               }}
             >
-              {cityId === "No city listed" ? (
+              {noCityListed ? (
                 "No city listed"
               ) : appState.cityNames[cityId] ? (
                 appState.cityNames[cityId]

@@ -7,33 +7,30 @@ import {
 } from "@/lib/clientUtils";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import Link from "next/link";
-import { DocumentData } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
-import userList from "@/lib/UserList";
+import userList, { UserDocType } from "@/lib/UserList";
 
 const Dashboard = observer(() => {
-  const [recentBirthdays, setRecentBirthdays] = useState<DocumentData[]>([]);
-  const [todaysBirthdays, setTodaysBirthdays] = useState<DocumentData[]>([]);
-  const [upcomingBirthdays, setUpcomingBirthdays] = useState<DocumentData[]>(
-    []
-  );
+  const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
+  const [todaysBirthdays, setTodaysBirthdays] = useState<UserDocType[]>([]);
+  const [upcomingBirthdays, setUpcomingBirthdays] = useState<UserDocType[]>([]);
 
   useEffect(() => {
-    const recent: DocumentData[] = [];
-    const today: DocumentData[] = [];
-    const upcoming: DocumentData[] = [];
+    const recent: UserDocType[] = [];
+    const today: UserDocType[] = [];
+    const upcoming: UserDocType[] = [];
 
     userList.users
       .filter((user) => user.birthday)
       .forEach((user) => {
-        if (checkIfBirthdayToday(user.birthday)) {
+        if (checkIfBirthdayToday(user.birthday!)) {
           today.push(user);
-        } else if (checkIfBirthdayRecent(user.birthday)) {
+        } else if (checkIfBirthdayRecent(user.birthday!)) {
           recent.push(user);
-        } else if (checkIfBirthdaySoon(user.birthday)) {
+        } else if (checkIfBirthdaySoon(user.birthday!)) {
           upcoming.push(user);
         }
       });

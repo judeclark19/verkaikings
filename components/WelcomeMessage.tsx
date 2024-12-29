@@ -4,13 +4,12 @@ import { Box, Skeleton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
-import { DocumentData } from "firebase/firestore";
 import UserListItem from "@/app/people/UserListItem";
-import userList from "@/lib/UserList";
+import userList, { UserDocType } from "@/lib/UserList";
 
 const WelcomeMessage = observer(
   ({ isLoggedIn, email }: { isLoggedIn: boolean; email: string | null }) => {
-    const [loggedInUser, setLoggedInUser] = useState<DocumentData | null>(null);
+    const [loggedInUser, setLoggedInUser] = useState<UserDocType | null>(null);
 
     useEffect(() => {
       appState.waitForInitialization();

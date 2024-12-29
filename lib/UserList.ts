@@ -1,18 +1,35 @@
-import { DocumentData } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
 
 type CountryUsersType = {
   countryName: string;
-  cities: Record<string, DocumentData[]>;
+  cities: Record<string, UserDocType[]>;
+};
+
+export type UserDocType = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phoneNumber: string;
+  cityId: string | "";
+  countryAbbr: string;
+  birthday: string | null;
+  profilePicture: string | null;
+  email: string;
+  instagram: string | null;
+  tiktok: string | null;
+  duolingo: string | null;
+  beReal: string | null;
+  pronouns: string | null;
 };
 
 export class UserList {
-  users: DocumentData[] = [];
+  users: UserDocType[] = [];
   usersByCountry: Record<string, CountryUsersType> = {};
-  usersByBirthday: Record<string, Record<string, DocumentData[]>> = {};
-  filteredUsers: DocumentData[] = [];
+  usersByBirthday: Record<string, Record<string, UserDocType[]>> = {};
+  filteredUsers: UserDocType[] = [];
   query = "";
   debounceTimeout: NodeJS.Timeout | null = null;
 
@@ -20,12 +37,12 @@ export class UserList {
     makeAutoObservable(this);
   }
 
-  init(users: DocumentData[]) {
+  init(users: UserDocType[]) {
     this.users = users;
     this.filteredUsers = users;
   }
 
-  setUsers(users: DocumentData[]) {
+  setUsers(users: UserDocType[]) {
     if (!users) return;
     this.users = users;
 
@@ -43,7 +60,7 @@ export class UserList {
     appState.initUserMap();
   }
 
-  setFilteredUsers(users: DocumentData[]) {
+  setFilteredUsers(users: UserDocType[]) {
     this.filteredUsers = users;
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
@@ -51,7 +68,7 @@ export class UserList {
     appState.userMap?.updateMarkerVisibility(users);
   }
 
-  setUsersByCountry(users: DocumentData[]) {
+  setUsersByCountry(users: UserDocType[]) {
     this.usersByCountry = {};
     users.forEach((user) => {
       const countryAbbr = user.countryAbbr;
@@ -74,7 +91,7 @@ export class UserList {
     });
   }
 
-  setUsersByBirthday(users: DocumentData[]) {
+  setUsersByBirthday(users: UserDocType[]) {
     // INIT USERS BY BIRTHDAY
     this.usersByBirthday = {};
 
@@ -114,13 +131,13 @@ export class UserList {
     viewingBy: PeopleViews,
     skipDebounce = false
   ) {
-    const fieldsToSearch = ["firstName", "lastName", "username"];
+    const fieldsToSearch: (keyof UserDocType)[] = [
+      "firstName",
+      "lastName",
+      "username"
+    ];
     if (viewingBy === PeopleViews.NAME) {
       fieldsToSearch.push("phoneNumber");
-    }
-
-    if (viewingBy === PeopleViews.STORY) {
-      fieldsToSearch.push("myWillemijnStory");
     }
 
     if (this.debounceTimeout) {
@@ -151,7 +168,12 @@ export class UserList {
             .includes(lowerCaseQuery);
 
           // Check city and country names
-          const cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
+          let cityName;
+          if (user.cityId) {
+            cityName = appState.cityNames[user.cityId]?.toLowerCase() || "";
+          } else {
+            cityName = "";
+          }
           const countryName =
             appState.countryNames[user.countryAbbr]?.toLowerCase() || "";
           const matchesLocation =

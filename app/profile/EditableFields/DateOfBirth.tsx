@@ -52,7 +52,9 @@ const DateOfBirth = observer(() => {
               {myProfileState.user.birthday
                 ? birthdayText(myProfileState.user.birthday)
                 : "(Enter your date of birth)"}{" "}
-              {checkIfBirthdayToday(myProfileState.user.birthday) && "🎂"}
+              {myProfileState.user.birthday &&
+                checkIfBirthdayToday(myProfileState.user.birthday) &&
+                "🎂"}
             </Typography>
           )}
         </div>
