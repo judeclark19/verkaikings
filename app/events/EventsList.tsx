@@ -38,7 +38,7 @@ const EventsList = observer(() => {
           margin: "0 auto"
         }}
       >
-        {eventsState.upcomingEvents.length && (
+        {eventsState.upcomingEvents.length > 0 && (
           <>
             <Typography
               variant="h2"
