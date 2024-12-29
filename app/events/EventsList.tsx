@@ -16,6 +16,7 @@ const EventsList = observer(() => {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           gap: 2,
@@ -25,7 +26,7 @@ const EventsList = observer(() => {
       >
         <Typography>
           {eventsState.allEvents.length === 0
-            ? "No events yet"
+            ? "No events yet..."
             : "Don't see your event below?"}
         </Typography>
         <NewEventModal />
@@ -37,38 +38,30 @@ const EventsList = observer(() => {
           margin: "0 auto"
         }}
       >
-        <Typography
-          variant="h2"
-          sx={{
-            color: "primary.dark",
-            textAlign: "center"
-          }}
-        >
-          Upcoming Events
-        </Typography>
-
-        {eventsState.upcomingEvents.length === 0 ? (
-          <Typography
-            sx={{
-              textAlign: "center",
-              mb: 3
-            }}
-          >
-            No upcoming events
-          </Typography>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: 2
-            }}
-          >
-            {eventsState.upcomingEvents.map((event) => (
-              <Event key={event.id} event={event as EventDocType} />
-            ))}
-          </Box>
+        {eventsState.upcomingEvents.length && (
+          <>
+            <Typography
+              variant="h2"
+              sx={{
+                color: "primary.dark",
+                textAlign: "center"
+              }}
+            >
+              Upcoming Events
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: 2
+              }}
+            >
+              {eventsState.upcomingEvents.map((event) => (
+                <Event key={event.id} event={event as EventDocType} />
+              ))}
+            </Box>
+          </>
         )}
 
         {eventsState.pastEvents.length > 0 && (
