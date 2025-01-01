@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ArrowForward } from "@mui/icons-material";
 import notificationsState, { NotificationDocType } from "./Notifications.state";
+import appState from "@/lib/AppState";
 
 const NotificationListItem = observer(
   ({
@@ -153,6 +154,7 @@ const NotificationListItem = observer(
                 setVisibility((prev) => ({ ...prev, [notif.id]: false }));
                 setTimeout(() => {
                   notificationState!.delete();
+                  appState.setSnackbarMessage("Notification deleted");
                 }, 300);
               }}
               sx={{

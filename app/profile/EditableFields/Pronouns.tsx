@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
 import { FaTransgender } from "react-icons/fa";
 import EditBtn from "./EditBtn";
+import appState from "@/lib/AppState";
 
 const Pronouns = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -31,9 +32,10 @@ const Pronouns = observer(() => {
     })
       .then(() => {
         setTemp(myProfileState.pronouns || "");
-        console.log("Pronouns updated successfully");
+        appState.setSnackbarMessage("Pronouns updated successfully.");
       })
       .catch((error) => {
+        appState.setSnackbarMessage("Error updating pronouns.");
         console.error("Error updating Pronouns: ", error);
       })
       .finally(() => {

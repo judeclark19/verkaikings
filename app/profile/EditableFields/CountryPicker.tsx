@@ -14,6 +14,7 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
 import userList, { UserDocType } from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -64,10 +65,12 @@ const CountryPicker = observer(
           });
 
           console.log("Country updated");
+          appState.setSnackbarMessage("Country updated successfully.");
           myProfileState.setCityName(null);
           myProfileState.setPlaceId(null);
         })
         .catch((error) => {
+          appState.setSnackbarMessage("Error updating country.");
           console.error("Error updating document: ", error);
         })
         .finally(() => {

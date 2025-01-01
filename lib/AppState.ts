@@ -31,6 +31,10 @@ class AppState {
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
   userMap: UserMapState | null = null;
+
+  snackbarOpen = false;
+  snackbarMessage = "";
+
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;
@@ -352,6 +356,15 @@ class AppState {
     }
 
     this.setPDCinDB();
+  }
+
+  setSnackbarMessage(message: string) {
+    this.snackbarMessage = message;
+    this.setSnackbarOpen(true);
+  }
+
+  setSnackbarOpen(open: boolean) {
+    this.snackbarOpen = open;
   }
 }
 

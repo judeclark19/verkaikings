@@ -13,6 +13,7 @@ import notificationsState from "./Notifications.state";
 import NotificationListItem from "./NotificationsListItem";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import appState from "@/lib/AppState";
 
 const NotificationsList = observer(() => {
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
@@ -74,6 +75,9 @@ const NotificationsList = observer(() => {
 
                 setTimeout(() => {
                   notificationsState.markAllAsRead();
+                  appState.setSnackbarMessage(
+                    "All notifications marked as read."
+                  );
                 }, 300);
               }}
             >
@@ -88,6 +92,7 @@ const NotificationsList = observer(() => {
               disabled={notificationsState.notifications.length === 0}
               onClick={() => {
                 notificationsState.deleteAll();
+                appState.setSnackbarMessage("All notifications deleted.");
               }}
             >
               Delete all

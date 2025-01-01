@@ -9,6 +9,7 @@ import { storage, db } from "@/lib/firebase"; // Your Firebase setup
 import { updateDoc, doc } from "firebase/firestore";
 import myProfileState from "../MyProfile.state";
 import { UserDocType } from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const ProfilePic = observer(() => {
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,7 @@ const ProfilePic = observer(() => {
           profilePicture: url
         } as UserDocType);
 
-        console.log("Profile picture updated:", url);
+        appState.setSnackbarMessage("Profile picture updated successfully.");
 
         break; // Stop retrying if upload is successful
       } catch (error) {
