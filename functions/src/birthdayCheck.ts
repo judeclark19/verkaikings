@@ -1,4 +1,4 @@
-import { adminDb, notifyUsers } from "./utils";
+import {adminDb, notifyUsers} from "./utils";
 /**
  * Helper function to get the ordinal suffix of a number.
  *
@@ -44,24 +44,24 @@ export async function runBirthdayCheck() {
         const judeMessage = {
           title: `birthday notifs sent for ${userData.username}`,
           body: "admin message",
-          url: null
+          url: null,
         };
 
         notifyUsers({
           userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
-          notification: judeMessage
+          notification: judeMessage,
         });
 
         const age = todayYear - parseInt(year);
         const birthdayMessage = {
           title: `Happy ${getOrdinal(age)} Birthday!`,
           body: "Wishing you a fantastic day!",
-          url: null
+          url: null,
         };
 
         await notifyUsers({
           userIds: [userDoc.id],
-          notification: birthdayMessage
+          notification: birthdayMessage,
         });
 
         const otherUsers = allUsersSnapshot.docs
@@ -73,12 +73,12 @@ export async function runBirthdayCheck() {
           body: `It's ${userData.firstName} ${userData.lastName}'s ${getOrdinal(
             age
           )} birthday today.`,
-          url: `/profile/${userData.username}`
+          url: `/profile/${userData.username}`,
         };
 
         await notifyUsers({
           userIds: otherUsers,
-          notification: generalMessage
+          notification: generalMessage,
         });
       }
     }
