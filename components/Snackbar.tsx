@@ -1,22 +1,25 @@
-import Button from "@mui/material/Button";
-import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 
 const SimpleSnackbar = observer(() => {
-  const handleClick = () => {
-    appState.setSnackbarOpen(true);
-  };
+  // const handleClick = () => {
+  //   appState.setSnackbarOpen(true);
+  // };
 
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
-  ) => {
-    // if (reason === "clickaway") {
-    //   return;
-    // }
+  // const handleClose = (
+  //   event: React.SyntheticEvent | Event,
+  //   reason?: SnackbarCloseReason
+  // ) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
+  //   appState.setSnackbarOpen(false);
+  // };
+
+  const handleClose = () => {
     appState.setSnackbarOpen(false);
   };
 

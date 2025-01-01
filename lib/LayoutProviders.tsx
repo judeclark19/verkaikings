@@ -5,7 +5,7 @@ import GlobalStyles from "@/styles/GlobalStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import darkTheme from "@/styles/theme";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import appState from "./AppState";
 import { useSearchParams } from "next/navigation";
 import SimpleSnackbar from "@/components/Snackbar";
