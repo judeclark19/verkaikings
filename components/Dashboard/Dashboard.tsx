@@ -134,7 +134,7 @@ const Dashboard = observer(() => {
         Click to see the full birthday list &nbsp;
         <CakeIcon />
       </Button>
-      <Box
+      {/* <Box
         sx={{
           border: "1px solid red",
           marginTop: "2rem",
@@ -146,7 +146,7 @@ const Dashboard = observer(() => {
         }}
       >
         Donation stuff here, on home page?
-      </Box>
+      </Box> */}
     </div>
   );
 });
