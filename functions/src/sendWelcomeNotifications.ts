@@ -33,7 +33,7 @@ export async function sendWelcomeNotifications(
   try {
     // notify Jude
     const judeMessage = {
-      title: "sendNewStoryNotifications function just ran",
+      title: "sendNewWelcomeNotifications function just ran",
       body: "admin message",
       url: null,
     };

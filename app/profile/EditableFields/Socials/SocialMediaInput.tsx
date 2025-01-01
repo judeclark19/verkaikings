@@ -7,6 +7,7 @@ import { ReactElement, useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import SaveBtn from "../SaveBtn";
+import appState from "@/lib/AppState";
 
 type SocialMediaInputProps = {
   platformName: string;
@@ -50,7 +51,7 @@ const SocialMediaInput: React.FC<SocialMediaInputProps> = observer(
         });
         profileStateSetter(temp || null);
         setTemp(temp || ""); // Sync `temp` with state
-        console.log(`${platformName} updated successfully`);
+        appState.setSnackbarMessage(`${platformName} updated successfully`);
       } catch (error) {
         alert(`Error updating ${platformName}: ${error}`);
         console.error(`Error updating ${platformName}: `, error);

@@ -8,6 +8,7 @@ import darkTheme from "@/styles/theme";
 import { useEffect } from "react";
 import appState from "./AppState";
 import { useSearchParams } from "next/navigation";
+import SimpleSnackbar from "@/components/Snackbar";
 
 export default function LayoutProviders({
   children,
@@ -47,6 +48,7 @@ export default function LayoutProviders({
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         {children}
+        <SimpleSnackbar />
       </ThemeProvider>
     </StyledComponentsRegistry>
   );

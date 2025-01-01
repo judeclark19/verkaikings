@@ -47,7 +47,7 @@ const MyWillemijnStory = observer(() => {
           storyContent: myProfileState.myWillemijnStory || "",
           updatedAt: new Date().toISOString()
         });
-        console.log("MyWillemijnStory updated successfully.");
+        appState.setSnackbarMessage("MyWillemijnStory updated successfully.");
       } else {
         // If no story exists, create a new one
         const newStoryDocRef = doc(

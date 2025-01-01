@@ -72,8 +72,12 @@ const CityPicker = observer(
         })
           .then(() => {
             console.log("User's city removed.", myProfileState.cityName);
+            appState.setSnackbarMessage("City removed successfully.");
           })
           .catch((error) => {
+            appState.setSnackbarMessage(
+              "Error removing city. Please try again."
+            );
             console.error("Error updating user's city: ", error);
           })
           .finally(() => {
@@ -132,15 +136,15 @@ const CityPicker = observer(
               myProfileState.setCountryName(country);
             }
 
-            console.log(
-              "User's city updated successfully",
-              updatedUserData.cityName
+            appState.setSnackbarMessage(
+              `City successfully updated to ${updatedUserData.cityName}`
             );
           } else {
             console.error("No data found in the updated document.");
           }
         })
         .catch((error) => {
+          appState.setSnackbarMessage("Error updating city. Please try again.");
           console.error("Error updating user's city: ", error);
         })
         .finally(() => {

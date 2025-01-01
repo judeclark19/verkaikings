@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import SaveBtn from "./SaveBtn";
 import { UserDocType } from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const DatePickerForm = observer(
   ({
@@ -37,7 +38,7 @@ const DatePickerForm = observer(
         birthday: value ? value.format("YYYY-MM-DD") : null
       })
         .then(() => {
-          console.log("User's birthday updated successfully");
+          appState.setSnackbarMessage("Birthday updated successfully.");
           setLoading(false);
           setIsEditing(false);
           myProfileState.setUser({
@@ -46,6 +47,7 @@ const DatePickerForm = observer(
           } as UserDocType);
         })
         .catch((error) => {
+          appState.setSnackbarMessage("Error updating birthday.");
           console.error("Error updating user's birthday: ", error);
           setLoading(false);
           setIsEditing(false);

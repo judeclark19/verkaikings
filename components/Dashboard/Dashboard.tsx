@@ -134,6 +134,19 @@ const Dashboard = observer(() => {
         Click to see the full birthday list &nbsp;
         <CakeIcon />
       </Button>
+      <Box
+        sx={{
+          border: "1px solid red",
+          marginTop: "2rem",
+          height: "500px",
+          fontSize: "2rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        Donation stuff here, on home page?
+      </Box>
     </div>
   );
 });

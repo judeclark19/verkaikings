@@ -7,6 +7,7 @@ import { auth, db } from "@/lib/firebase";
 import { updateProfile } from "firebase/auth";
 import { cleanNameString } from "@/lib/clientUtils";
 import { UserDocType } from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const NameEditingForm = observer(
   ({ closeModal }: { closeModal: () => void }) => {
@@ -53,8 +54,7 @@ const NameEditingForm = observer(
           }
           console.log("Firebase displayName updated successfully");
         }
-
-        console.log("Name updated successfully");
+        appState.setSnackbarMessage("Name updated successfully");
       } catch (error) {
         alert(`Error updating Name: ${error}`);
         console.error("Error updating Name: ", error);

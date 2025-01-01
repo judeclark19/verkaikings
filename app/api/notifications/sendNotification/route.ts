@@ -54,9 +54,6 @@ export async function POST(req: Request) {
       tokens
     };
 
-    // console.log("Tokens:", tokens);
-    // console.log("Message Payload:", JSON.stringify(message, null, 2));
-
     const response = await adminMessaging.sendEachForMulticast(message);
 
     return NextResponse.json({

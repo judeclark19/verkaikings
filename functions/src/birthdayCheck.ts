@@ -28,18 +28,6 @@ export async function runBirthdayCheck() {
   console.log("Checking for birthdays", today);
 
   try {
-    // notify Jude
-    const judeMessage = {
-      title: "birthdayCheck function just ran",
-      body: "admin message",
-      url: null,
-    };
-
-    notifyUsers({
-      userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
-      notification: judeMessage,
-    });
-
     const allUsersSnapshot = await adminDb.collection("users").get();
 
     for (const userDoc of allUsersSnapshot.docs) {
@@ -51,6 +39,18 @@ export async function runBirthdayCheck() {
       const [year, month, day] = birthday.split("-");
       if (parseInt(month) === todayMonth && parseInt(day) === todayDay) {
         console.log("Send birthday notifiactions for user:", userData.username);
+
+        // notify Jude
+        const judeMessage = {
+          title: `birthday notifs sent for ${userData.username}`,
+          body: "admin message",
+          url: null,
+        };
+
+        notifyUsers({
+          userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
+          notification: judeMessage,
+        });
 
         const age = todayYear - parseInt(year);
         const birthdayMessage = {
