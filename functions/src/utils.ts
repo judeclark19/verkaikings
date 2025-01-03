@@ -17,7 +17,7 @@ export async function fetchUserTokens(userId: string) {
     const tokensSnapshot = await adminDb
       .collection(`users/${userId}/fcmTokens`)
       .get();
-    console.log("tokensSnapshot", tokensSnapshot.docs);
+    console.log("tokensSnapshot", tokensSnapshot.docs.length);
     return tokensSnapshot.docs.map((doc) => doc.id);
   } catch (error) {
     console.error(`Error fetching tokens for user ${userId}:`, error);

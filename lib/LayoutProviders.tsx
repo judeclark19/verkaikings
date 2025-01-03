@@ -32,13 +32,31 @@ export default function LayoutProviders({
   }, [isLoggedIn, userId]);
 
   useEffect(() => {
-    if (notifParam) {
-      const element = document.getElementById(notifParam as string);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        element.classList.add("highlighted");
-        setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 2s
+    const scrollToElement = (startTime: number) => {
+      if (notifParam) {
+        const element = document.getElementById(notifParam as string);
+
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.classList.add("highlighted");
+          setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 1.5s
+        } else {
+          const elapsedTime = performance.now() - startTime;
+          if (elapsedTime < 8000) {
+            // Retry for up to 8 seconds
+            requestAnimationFrame(() => scrollToElement(startTime));
+          } else {
+            console.warn(
+              `Element with id ${notifParam} not found after 8 seconds.`
+            );
+          }
+        }
       }
+    };
+
+    if (notifParam) {
+      const startTime = performance.now();
+      scrollToElement(startTime);
     }
   }, [notifParam]);
 
