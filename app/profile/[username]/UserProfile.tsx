@@ -339,11 +339,9 @@ const UserProfile = observer(
 
             {/* SECOND SECTION - MY WILLEMIJN STORY */}
             {usersWillemijnStory && usersWillemijnStory.storyContent && (
-              <>
+              <Box id="my-willemijn-story">
                 <Divider sx={{ mt: 3 }} />
-                <Typography variant="h2" id="my-willemijn-story">
-                  My Willemijn Story
-                </Typography>
+                <Typography variant="h2">My Willemijn Story</Typography>
                 <Paper>
                   <Typography
                     sx={{
@@ -363,7 +361,7 @@ const UserProfile = observer(
                     <StoryComments story={usersWillemijnStory} />
                   </Box>
                 </Paper>
-              </>
+              </Box>
             )}
           </Box>
         </Box>
