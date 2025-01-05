@@ -8,8 +8,7 @@ import {
   Box,
   Button,
   Typography,
-  Modal,
-  FormHelperText
+  Modal
 } from "@mui/material";
 import { auth, db } from "@/lib/firebase";
 import {
