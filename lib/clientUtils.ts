@@ -1,25 +1,44 @@
 import { PhoneNumberUtil } from "google-libphonenumber";
 
 export function formatFullBirthday(input: string) {
-  // Parse the input string into a Date object
-  const date = new Date(`${input}T00:00:00`);
-
   // Detect the user's locale or default to "en"
   const userLocale = navigator.language || "en";
 
-  // Format the date using toLocaleDateString with the detected locale
-  return date
-    .toLocaleDateString(userLocale, {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    })
-    .replace(/,/g, ", ");
+  // Check if the input is a month/day format (`--MM-DD`)
+  const isMonthDayOnly = input.startsWith("--");
+
+  let date: Date;
+
+  if (isMonthDayOnly) {
+    // Extract month and day from the input
+    const currentYear = new Date().getFullYear(); // Use the current year for display
+    date = new Date(
+      `${currentYear}-${input.split("-")[2]}-${input.split("-")[3]}T00:00:00`
+    );
+  } else {
+    // Parse full date (with year)
+    date = new Date(`${input}T00:00:00`);
+  }
+
+  // Format the date
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric"
+  };
+
+  // Add "year" to the format options if the input contains a year
+  if (!isMonthDayOnly) {
+    options.year = "numeric";
+  }
+
+  return date.toLocaleDateString(userLocale, options).replace(/,/g, ", ");
 }
 
 export function formatBirthday2digit(input: string) {
+  const birthday = addYearToBirthday(input);
+
   // Parse the input string into a Date object
-  const date = new Date(`${input}T00:00:00`);
+  const date = new Date(`${birthday}T00:00:00`);
 
   // Detect the user's locale or default to "en"
   const userLocale = navigator.language || "en";
@@ -30,79 +49,55 @@ export function formatBirthday2digit(input: string) {
     .replace(/,/g, ", ");
 }
 
-export function checkIfBirthdayToday(birthday: string) {
+function isBirthdayInRange(
+  birthday: string,
+  rangeStart: number,
+  rangeEnd: number
+): boolean {
   if (!birthday) return false;
 
+  const userBirthday = addYearToBirthday(birthday);
+
   const today = new Date();
-  const todayMonth = today.getMonth() + 1;
-  const todayDay = today.getDate();
+  const userBirthdayMonth = parseInt(userBirthday.split("-")[1]);
+  const userBirthdayDay = parseInt(userBirthday.split("-")[2]);
 
-  const userBirthdayMonth = birthday.split("-")[1];
-  const userBirthdayDay = birthday.split("-")[2];
+  const birthdayThisYear = new Date(
+    today.getFullYear(),
+    userBirthdayMonth - 1,
+    userBirthdayDay
+  );
 
-  const isToday =
-    parseInt(userBirthdayMonth) === todayMonth &&
-    parseInt(userBirthdayDay) === todayDay;
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() + rangeStart);
 
-  return isToday;
+  const endDate = new Date(today);
+  endDate.setDate(today.getDate() + rangeEnd);
+
+  return birthdayThisYear >= startDate && birthdayThisYear <= endDate;
+}
+
+export function checkIfBirthdayToday(birthday: string) {
+  return isBirthdayInRange(birthday, 0, 0); // 0 to 0 days (today only)
 }
 
 export function checkIfBirthdayRecent(birthday: string) {
-  if (!birthday) return false;
-
-  const today = new Date();
-  const todayMonth = today.getMonth() + 1;
-  const todayDay = today.getDate();
-
-  const userBirthdayMonth = parseInt(birthday.split("-")[1]);
-  const userBirthdayDay = parseInt(birthday.split("-")[2]);
-
-  const birthdayThisYear = new Date(
-    today.getFullYear(),
-    userBirthdayMonth - 1,
-    userBirthdayDay
-  );
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(today.getDate() - 7);
-
-  // Check if the birthday is within the last 7 days but not today
-  return (
-    birthdayThisYear < today &&
-    birthdayThisYear >= sevenDaysAgo &&
-    !(
-      birthdayThisYear.getDate() === todayDay &&
-      birthdayThisYear.getMonth() + 1 === todayMonth
-    )
-  );
+  return isBirthdayInRange(birthday, -7, -1); // Last 7 days (excluding today)
 }
 
 export function checkIfBirthdaySoon(birthday: string) {
-  if (!birthday) return false;
+  return isBirthdayInRange(birthday, 1, 7); // Next 7 days (excluding today)
+}
 
-  const today = new Date();
-  const todayMonth = today.getMonth() + 1;
-  const todayDay = today.getDate();
+export function addYearToBirthday(birthday: string) {
+  if (!birthday) return "";
 
-  const userBirthdayMonth = parseInt(birthday.split("-")[1]);
-  const userBirthdayDay = parseInt(birthday.split("-")[2]);
+  if (birthday.startsWith("--")) {
+    const currentYear = new Date().getFullYear();
+    return `${currentYear}${birthday.slice(1)}`;
+  }
 
-  const birthdayThisYear = new Date(
-    today.getFullYear(),
-    userBirthdayMonth - 1,
-    userBirthdayDay
-  );
-  const sevenDaysLater = new Date();
-  sevenDaysLater.setDate(today.getDate() + 7);
-
-  // Check if the birthday is within the next 7 days but not today
-  return (
-    birthdayThisYear > today &&
-    birthdayThisYear <= sevenDaysLater &&
-    !(
-      birthdayThisYear.getDate() === todayDay &&
-      birthdayThisYear.getMonth() + 1 === todayMonth
-    )
-  );
+  return birthday;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -158,14 +153,9 @@ export const sendNotification = async (
     // console.error("Failed to send notification:", errorData.error);
     return;
   }
-
-  // const responseData = await response.json();
-  // console.log("Notification sent successfully:", responseData);
 };
 
 export const registerPushNotifications = async () => {
-  // console.log("register push notifications");
-  // if ("serviceWorker" in navigator) {
   try {
     const registration = await navigator.serviceWorker.register(
       "/firebase-messaging-sw.js"
@@ -177,28 +167,4 @@ export const registerPushNotifications = async () => {
   } catch (err) {
     console.error("Service Worker registration failed:", err);
   }
-  // }
 };
-
-// export const registerPushNotifications = async () => {
-//   console.log("register push notifications");
-//   if ("serviceWorker" in navigator) {
-//     const registrations = await navigator.serviceWorker.getRegistrations();
-//     const existingSW = registrations.find((reg) =>
-//       reg.scope.includes("firebase-messaging-sw.js")
-//     );
-
-//     if (!existingSW) {
-//       try {
-//         const registration = await navigator.serviceWorker.register(
-//           "/firebase-messaging-sw.js"
-//         );
-//         console.log("Service Worker registered:", registration.scope);
-//       } catch (err) {
-//         console.error("Service Worker registration failed:", err);
-//       }
-//     } else {
-//       console.log("Service Worker already registered:", existingSW.scope);
-//     }
-//   }
-// };

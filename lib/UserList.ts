@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
+import { addYearToBirthday } from "./clientUtils";
 
 type CountryUsersType = {
   countryName: string;
@@ -97,7 +98,8 @@ export class UserList {
 
     users.forEach((user) => {
       if (!user.birthday) return;
-      const { birthday } = user;
+      const birthday = addYearToBirthday(user.birthday);
+
       const month = birthday.split("-")[1];
       const day = birthday.split("-")[2];
 

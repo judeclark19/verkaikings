@@ -36,7 +36,19 @@ export async function runBirthdayCheck() {
 
       if (!birthday) continue;
 
-      const [year, month, day] = birthday.split("-");
+      const isMonthDayOnly = birthday.startsWith("--");
+      let year; let month; let day;
+
+      if (isMonthDayOnly) {
+        month = birthday.split("-")[2];
+        day = birthday.split("-")[3];
+        year = null;
+      } else {
+        year = birthday.split("-")[0];
+        month = birthday.split("-")[1];
+        day = birthday.split("-")[2];
+      }
+
       if (parseInt(month) === todayMonth && parseInt(day) === todayDay) {
         console.log("Send birthday notifiactions for user:", userData.username);
 
@@ -52,9 +64,12 @@ export async function runBirthdayCheck() {
           notification: judeMessage,
         });
 
-        const age = todayYear - parseInt(year);
+        const messageTitle = isMonthDayOnly ?
+          "Happy Birthday!" :
+          `Happy ${getOrdinal(todayYear - parseInt(year))} Birthday!`;
+
         const birthdayMessage = {
-          title: `Happy ${getOrdinal(age)} Birthday!`,
+          title: messageTitle,
           body: "Wishing you a fantastic day!",
           url: null,
         };
@@ -68,11 +83,15 @@ export async function runBirthdayCheck() {
           .filter((doc) => doc.id !== userDoc.id)
           .map((doc) => doc.id);
 
+        const messageBody = isMonthDayOnly ?
+          `It's ${userData.firstName}'s birthday today.` :
+          `It's ${userData.firstName} ${userData.lastName}'s ${getOrdinal(
+            todayYear - parseInt(year)
+          )} birthday today.`;
+
         const generalMessage = {
           title: `Happy birthday to ${userData.firstName}`,
-          body: `It's ${userData.firstName} ${userData.lastName}'s ${getOrdinal(
-            age
-          )} birthday today.`,
+          body: messageBody,
           url: `/profile/${userData.username}`,
         };
 

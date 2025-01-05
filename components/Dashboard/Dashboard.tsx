@@ -19,39 +19,62 @@ const Dashboard = observer(() => {
   const [upcomingBirthdays, setUpcomingBirthdays] = useState<UserDocType[]>([]);
 
   useEffect(() => {
-    const recent: UserDocType[] = [];
-    const today: UserDocType[] = [];
-    const upcoming: UserDocType[] = [];
+    const recentBirthdays: UserDocType[] = [];
+    const todayBirthdays: UserDocType[] = [];
+    const upcomingBirthdays: UserDocType[] = [];
 
     userList.users
       .filter((user) => user.birthday)
       .forEach((user) => {
         if (checkIfBirthdayToday(user.birthday!)) {
-          today.push(user);
+          todayBirthdays.push(user);
         } else if (checkIfBirthdayRecent(user.birthday!)) {
-          recent.push(user);
+          recentBirthdays.push(user);
         } else if (checkIfBirthdaySoon(user.birthday!)) {
-          upcoming.push(user);
+          upcomingBirthdays.push(user);
         }
       });
 
+    const today = new Date();
+    const currentYear = today.getFullYear();
+
+    function getComparableDate(birthday: string) {
+      let month;
+      let day;
+
+      if (birthday.startsWith("--")) {
+        month = birthday.split("-")[2];
+        day = birthday.split("-")[3];
+      } else {
+        month = birthday.split("-")[1];
+        day = birthday.split("-")[2];
+      }
+
+      // Create a Date object using the normalized year
+      return new Date(Number(currentYear), Number(month) - 1, Number(day));
+    }
+
     // Sort recent birthdays: most recent first
-    recent.sort((a, b) => {
-      const dateA = new Date(a.birthday!);
-      const dateB = new Date(b.birthday!);
-      return dateB.getTime() - dateA.getTime(); // Descending order
+    recentBirthdays.sort((a, b) => {
+      const dateA = getComparableDate(a.birthday!);
+      const dateB = getComparableDate(b.birthday!);
+
+      // Sort by month/day first, treating them as same-year dates
+      return dateB.getTime() - dateA.getTime();
     });
 
     // Sort upcoming birthdays: soonest first
-    upcoming.sort((a, b) => {
-      const dateA = new Date(a.birthday!);
-      const dateB = new Date(b.birthday!);
-      return dateA.getTime() - dateB.getTime(); // Ascending order
+    upcomingBirthdays.sort((a, b) => {
+      const dateA = getComparableDate(a.birthday!);
+      const dateB = getComparableDate(b.birthday!);
+
+      // Sort by month/day first, treating them as same-year dates
+      return dateA.getTime() - dateB.getTime();
     });
 
-    setRecentBirthdays(recent);
-    setTodaysBirthdays(today);
-    setUpcomingBirthdays(upcoming);
+    setRecentBirthdays(recentBirthdays);
+    setTodaysBirthdays(todayBirthdays);
+    setUpcomingBirthdays(upcomingBirthdays);
   }, [userList.users]);
 
   return (
