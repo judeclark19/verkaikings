@@ -8,7 +8,16 @@ import NewEventModal from "./NewEventModal";
 
 const EventsList = observer(() => {
   if (!eventsState.isInitialized) {
-    return <Skeleton variant="rectangular" height={200} />;
+    return (
+      <Skeleton
+        variant="rectangular"
+        height={600}
+        sx={{
+          maxWidth: "670px",
+          margin: "0 auto"
+        }}
+      />
+    );
   }
 
   return (

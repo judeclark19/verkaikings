@@ -4,7 +4,6 @@ import {
   ListItemText,
   Checkbox,
   IconButton,
-  Tooltip,
   Box
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,6 +13,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ArrowForward } from "@mui/icons-material";
 import notificationsState, { NotificationDocType } from "./Notifications.state";
 import appState from "@/lib/AppState";
+import Tooltip from "@/components/Tooltip";
 
 const NotificationListItem = observer(
   ({
@@ -130,21 +130,7 @@ const NotificationListItem = observer(
             justifyContent: "flex-end"
           }}
         >
-          <Tooltip
-            title="Delete"
-            placement="top"
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -12]
-                  }
-                }
-              ]
-            }}
-          >
+          <Tooltip title="Delete" offset={-12}>
             <IconButton
               aria-label="delete"
               size="medium"
@@ -168,18 +154,7 @@ const NotificationListItem = observer(
           </Tooltip>
           <Tooltip
             title={notif.read ? "Mark as unread" : "Mark as read"}
-            placement="top"
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -12]
-                  }
-                }
-              ]
-            }}
+            offset={-12}
           >
             <Checkbox
               checked={!!notif.read}
@@ -199,21 +174,7 @@ const NotificationListItem = observer(
             />
           </Tooltip>
           {notif.url && (
-            <Tooltip
-              title="Go to source"
-              placement="top"
-              arrow
-              PopperProps={{
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -12]
-                    }
-                  }
-                ]
-              }}
-            >
+            <Tooltip title="Go to source" offset={-12}>
               <IconButton
                 aria-label="go"
                 size="medium"

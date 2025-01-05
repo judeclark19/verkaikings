@@ -6,7 +6,6 @@ import {
   Typography,
   Button,
   Divider,
-  Tooltip,
   Fab
 } from "@mui/material";
 import eventsState, { EventDocType } from "./Events.state";
@@ -24,6 +23,8 @@ import { db } from "@/lib/firebase";
 import Link from "next/link";
 import EditEventModal from "./EditEventModal";
 import EventComments from "./EventComments";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import Tooltip from "@/components/Tooltip";
 
 const Event = ({
   event,
@@ -197,11 +198,44 @@ const Event = ({
           </Typography>
 
           {event.externalLink && (
-            <Typography>
+            <Typography
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}
+            >
+              <strong>External Link:</strong>
+
+              <Button
+                href={event.externalLink}
+                target="_blank"
+                variant="outlined"
+                startIcon={<OpenInNewIcon />}
+                sx={{ textTransform: "none" }}
+              >
+                Event web page
+              </Button>
+            </Typography>
+          )}
+
+          {!event.externalLink && isOwn && (
+            <Typography
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}
+            >
               <strong>External Link:</strong>{" "}
-              <MuiLink href={event.externalLink} target="_blank">
-                {event.externalLink}
-              </MuiLink>
+              <span
+                style={{
+                  fontStyle: "italic",
+                  color: "rgba(255, 255, 255, 0.7)"
+                }}
+              >
+                (None)
+              </span>
             </Typography>
           )}
 
@@ -302,21 +336,7 @@ const Event = ({
                   >
                     <UserListItem key={attendee} user={user} />
                     {!isPast && user.id === appState.loggedInUser!.id && (
-                      <Tooltip
-                        title="I'm not going"
-                        placement="top"
-                        arrow
-                        PopperProps={{
-                          modifiers: [
-                            {
-                              name: "offset",
-                              options: {
-                                offset: [0, -10]
-                              }
-                            }
-                          ]
-                        }}
-                      >
+                      <Tooltip title="I'm not going" offset={-8}>
                         <Button
                           variant="contained"
                           color="secondary"
