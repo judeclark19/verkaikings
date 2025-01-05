@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { useState } from "react";
 import { CircularProgress, Alert } from "@mui/material";
-import { auth } from "@/lib/firebase"; // Adjust path to your Firebase setup
+import { auth } from "@/lib/firebase";
 import {
   updatePassword,
   EmailAuthProvider,
@@ -18,6 +18,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 500,
+  maxWidth: "95%",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
