@@ -195,6 +195,16 @@ const Event = ({
               )
             )}
           </Typography>
+
+          {event.externalLink && (
+            <Typography>
+              <strong>External Link:</strong>{" "}
+              <MuiLink href={event.externalLink} target="_blank">
+                {event.externalLink}
+              </MuiLink>
+            </Typography>
+          )}
+
           {event.description && (
             <Typography>
               <strong>Description:</strong> {event.description || "(None)"}

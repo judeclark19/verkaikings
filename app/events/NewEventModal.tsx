@@ -50,6 +50,8 @@ export default function NewEventModal() {
   const [time, setTime] = useState<Dayjs | null>(dayjs().hour(20).minute(0)); // Default to today, 20:00
   const [date, setDate] = useState<Dayjs | null>(dayjs());
   const [locationUrl, setLocationUrl] = useState<string | null>(null);
+  const [externalLink, setExternalLink] = useState<string | null>("");
+
   const [description, setDescription] = useState("");
   const [locationName, setLocationName] = useState("");
 
@@ -159,6 +161,11 @@ export default function NewEventModal() {
                 label="Date"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
+                slotProps={{
+                  textField: {
+                    required: true
+                  }
+                }}
               />
 
               <TimePicker
@@ -174,6 +181,15 @@ export default function NewEventModal() {
               setLocationUrl={setLocationUrl}
               locationName={locationName}
               setLocationName={setLocationName}
+            />
+
+            <TextField
+              label="External Link"
+              variant="outlined"
+              fullWidth
+              value={externalLink}
+              onChange={(e) => setExternalLink(e.target.value)}
+              helperText="Usually link to buy tickets, or some other relevant page about the event"
             />
 
             <TextField

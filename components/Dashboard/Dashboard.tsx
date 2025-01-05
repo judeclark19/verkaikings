@@ -35,6 +35,20 @@ const Dashboard = observer(() => {
         }
       });
 
+    // Sort recent birthdays: most recent first
+    recent.sort((a, b) => {
+      const dateA = new Date(a.birthday!);
+      const dateB = new Date(b.birthday!);
+      return dateB.getTime() - dateA.getTime(); // Descending order
+    });
+
+    // Sort upcoming birthdays: soonest first
+    upcoming.sort((a, b) => {
+      const dateA = new Date(a.birthday!);
+      const dateB = new Date(b.birthday!);
+      return dateA.getTime() - dateB.getTime(); // Ascending order
+    });
+
     setRecentBirthdays(recent);
     setTodaysBirthdays(today);
     setUpcomingBirthdays(upcoming);
