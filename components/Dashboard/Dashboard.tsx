@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
 import userList, { UserDocType } from "@/lib/UserList";
-import { toJS } from "mobx";
 
 const Dashboard = observer(() => {
   const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
