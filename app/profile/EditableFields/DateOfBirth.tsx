@@ -1,22 +1,14 @@
-import React, { useState } from "react";
-import DateOfBirthPicker from "./DateOfBirthPicker";
 import { Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
-import EditBtn from "./EditBtn";
 import CakeIcon from "@mui/icons-material/Cake";
+import DOBChangeModal from "../components/DOBChangeModal";
 
 const DateOfBirth = observer(() => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   if (!myProfileState.user) {
     return;
   }
-
-  const birthdayText = (birthday: string) => {
-    // return `${birthday} / ${formatFullBirthday(birthday)}`;
-    return formatFullBirthday(birthday);
-  };
 
   return (
     <>
@@ -38,27 +30,21 @@ const DateOfBirth = observer(() => {
           }}
         >
           <CakeIcon />
-          {isEditing ? (
-            <DateOfBirthPicker label="Birthday" setIsEditing={setIsEditing} />
-          ) : (
-            <Typography
-              component="p"
-              sx={{
-                color: myProfileState.user.birthday
-                  ? "inherit"
-                  : "text.secondary"
-              }}
-            >
-              {myProfileState.user.birthday
-                ? birthdayText(myProfileState.user.birthday)
-                : "(Enter your date of birth)"}{" "}
-              {myProfileState.user.birthday &&
-                checkIfBirthdayToday(myProfileState.user.birthday) &&
-                "🎂"}
-            </Typography>
-          )}
+          <Typography
+            component="p"
+            sx={{
+              color: myProfileState.user.birthday ? "inherit" : "text.secondary"
+            }}
+          >
+            {myProfileState.user.birthday
+              ? formatFullBirthday(myProfileState.user.birthday)
+              : "(Enter your date of birth)"}{" "}
+            {myProfileState.user.birthday &&
+              checkIfBirthdayToday(myProfileState.user.birthday) &&
+              "🎂"}
+          </Typography>
         </div>
-        {!isEditing && <EditBtn setIsEditing={setIsEditing} />}
+        <DOBChangeModal />
       </div>
     </>
   );
