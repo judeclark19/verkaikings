@@ -58,7 +58,7 @@ const SocialsList = observer(() => {
         <EmailChangeModal />
       </div>
       <SocialMediaInput
-        platformName="TikTok"
+        platformName="Instagram"
         platformIcon={<InstagramIcon />}
         stateKey="instagram"
         profileStateSetter={(value) => myProfileState.setInstagram(value)}
