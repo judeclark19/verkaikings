@@ -72,8 +72,6 @@ const Dashboard = observer(() => {
       return dateA.getTime() - dateB.getTime();
     });
 
-    console.log("upcoming sorted", upcomingBirthdays);
-
     setRecentBirthdays(recentBirthdays);
     setTodaysBirthdays(todayBirthdays);
     setUpcomingBirthdays(upcomingBirthdays);
