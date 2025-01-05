@@ -31,18 +31,6 @@ export async function sendNewStoryNotifications(
   console.log("A new story was created:", newStoryId);
 
   try {
-    // notify Jude
-    const judeMessage = {
-      title: "sendNewStoryNotifications function just ran",
-      body: "admin message",
-      url: null,
-    };
-
-    notifyUsers({
-      userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
-      notification: judeMessage,
-    });
-
     // Fetch the author's details
     const authorDoc = await adminDb.doc(`users/${newStoryData.authorId}`).get();
     const author = authorDoc.data();

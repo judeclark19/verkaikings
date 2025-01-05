@@ -31,18 +31,6 @@ export async function sendWelcomeNotifications(
   console.log("A new user was created:", newUserId);
 
   try {
-    // notify Jude
-    const judeMessage = {
-      title: "sendNewWelcomeNotifications function just ran",
-      body: "admin message",
-      url: null,
-    };
-
-    notifyUsers({
-      userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
-      notification: judeMessage,
-    });
-
     // Notify the new user
     const welcomeMessage = {
       title: "Welcome to the Verkaikings Society app",

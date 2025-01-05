@@ -8,7 +8,8 @@ import {
   Box,
   Button,
   Typography,
-  Modal
+  Modal,
+  FormHelperText
 } from "@mui/material";
 import { auth, db } from "@/lib/firebase";
 import {
@@ -67,6 +68,10 @@ export default function EditEventModal({
   const [locationUrl, setLocationUrl] = useState<string | null>(
     event.locationUrl
   );
+  const [externalLink, setExternalLink] = useState<string | null>(
+    event.externalLink
+  );
+
   // Form state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,8 +98,8 @@ export default function EditEventModal({
         time: time!.format("HH:mm"),
         locationName,
         locationUrl,
-        description,
-        attendees: [user.uid]
+        externalLink,
+        description
       };
 
       // update the event in the database
@@ -197,6 +202,11 @@ export default function EditEventModal({
                 label="Date"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
+                slotProps={{
+                  textField: {
+                    required: true
+                  }
+                }}
               />
 
               <TimePicker
@@ -212,6 +222,15 @@ export default function EditEventModal({
               setLocationUrl={setLocationUrl}
               locationName={locationName}
               setLocationName={setLocationName}
+            />
+
+            <TextField
+              label="External Link"
+              variant="outlined"
+              fullWidth
+              value={externalLink}
+              onChange={(e) => setExternalLink(e.target.value)}
+              helperText="Usually link to buy tickets, or some other relevant page about the event"
             />
 
             <TextField

@@ -18,6 +18,7 @@ export type EventDocType = {
   time: string;
   locationName: string;
   locationUrl: string;
+  externalLink: string;
   description: string;
   attendees: string[];
   comments: EventComment[];
