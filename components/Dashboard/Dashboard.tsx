@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
 import userList, { UserDocType } from "@/lib/UserList";
+import { toJS } from "mobx";
 
 const Dashboard = observer(() => {
   const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
@@ -34,6 +35,20 @@ const Dashboard = observer(() => {
           upcoming.push(user);
         }
       });
+
+    // Sort recent birthdays: most recent first
+    recent.sort((a, b) => {
+      const dateA = new Date(a.birthday!);
+      const dateB = new Date(b.birthday!);
+      return dateB.getTime() - dateA.getTime(); // Descending order
+    });
+
+    // Sort upcoming birthdays: soonest first
+    upcoming.sort((a, b) => {
+      const dateA = new Date(a.birthday!);
+      const dateB = new Date(b.birthday!);
+      return dateA.getTime() - dateB.getTime(); // Ascending order
+    });
 
     setRecentBirthdays(recent);
     setTodaysBirthdays(today);

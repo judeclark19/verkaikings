@@ -31,36 +31,31 @@ const BirthdayCardList = observer(
           }}
         >
           {users.length > 0 &&
-            users
-              .sort(
-                // Sort users alphabetically by username
-                (a, b) => a.username.localeCompare(b.username)
-              )
-              .map((user) => (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center"
+            users.map((user) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center"
+                }}
+                key={user.username}
+              >
+                <div
+                  style={{
+                    backgroundColor: "rgb(18, 18, 18)"
                   }}
-                  key={user.username}
                 >
-                  <div
-                    style={{
-                      backgroundColor: "rgb(18, 18, 18)"
-                    }}
-                  >
-                    <UserListItem user={user} />
-                  </div>
-                  <div
-                    style={{
-                      whiteSpace: "nowrap",
-                      paddingRight: "1rem"
-                    }}
-                  >
-                    &nbsp; - {formatBirthday2digit(user.birthday!)}
-                  </div>
-                </Box>
-              ))}
+                  <UserListItem user={user} />
+                </div>
+                <div
+                  style={{
+                    whiteSpace: "nowrap",
+                    paddingRight: "1rem"
+                  }}
+                >
+                  &nbsp; - {formatBirthday2digit(user.birthday!)}
+                </div>
+              </Box>
+            ))}
         </List>
       </>
     );
