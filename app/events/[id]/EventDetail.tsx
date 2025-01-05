@@ -34,7 +34,9 @@ const EventDetail = observer(() => {
           width="100%"
           sx={{
             height: 400,
-            mt: 2
+            mt: 2,
+            maxWidth: "670px",
+            margin: "0 auto"
           }}
         />
       </div>

@@ -1,5 +1,5 @@
 import { EmojiEmotions, Favorite, ThumbUp } from "@mui/icons-material";
-import { Box, Button, ButtonGroup, Tooltip, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import {
   doc,
   updateDoc,
@@ -14,6 +14,7 @@ import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
 import { StoryDocType, StoryReactionType } from "@/lib/MyWillemijnStories";
+import Tooltip from "@/components/Tooltip";
 
 const StoryReactions = ({ story }: { story?: StoryDocType }) => {
   const [reactions, setReactions] = useState<StoryReactionType[]>(
@@ -151,7 +152,6 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
                   ))}
                 </Box>
               }
-              arrow
             >
               <Button
                 sx={{

@@ -4,7 +4,6 @@ import {
   Alert,
   TextField,
   Fab,
-  Tooltip,
   Box,
   Button,
   Typography,
@@ -22,6 +21,7 @@ import LocationPicker from "./LocationPicker";
 import { doc, setDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import { EventDocType } from "./Events.state";
+import Tooltip from "@/components/Tooltip";
 
 const style = {
   position: "absolute",
@@ -126,21 +126,7 @@ export default function EditEventModal({
   return (
     <div>
       {buttonType === "fab" ? (
-        <Tooltip
-          title="Edit this event"
-          placement="top"
-          arrow
-          PopperProps={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, -8]
-                }
-              }
-            ]
-          }}
-        >
+        <Tooltip title="Edit this event" offset={-8}>
           <Fab
             size="small"
             color="secondary"

@@ -1,7 +1,8 @@
 import notificationsState, {
   NotificationDocType
 } from "@/app/notifications/Notifications.state";
-import { Box, Checkbox, MenuItem, Tooltip, Typography } from "@mui/material";
+import Tooltip from "@/components/Tooltip";
+import { Box, Checkbox, MenuItem, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -96,18 +97,7 @@ const NotificationsMenuItem = observer(
           >
             <Tooltip
               title={notification.read ? "Mark as unread" : "Mark as read"}
-              placement="top"
-              arrow
-              PopperProps={{
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -8]
-                    }
-                  }
-                ]
-              }}
+              offset={-8}
             >
               <Checkbox
                 checked={!!notification.read}
