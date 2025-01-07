@@ -22,6 +22,8 @@ import { doc, setDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import { EventDocType } from "./Events.state";
 import Tooltip from "@/components/Tooltip";
+import appState from "@/lib/AppState";
+import { observer } from "mobx-react-lite";
 
 const style = {
   position: "absolute",
@@ -38,234 +40,241 @@ const style = {
   overflow: "auto"
 };
 
-export default function EditEventModal({
-  buttonType = "fab",
-  event
-}: {
-  buttonType?: "fab" | "button";
-  event: EventDocType;
-}) {
-  // Modal state
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setError(null);
-    setSuccess(null);
-  };
+const EditEventModal = observer(
+  ({
+    buttonType = "fab",
+    event
+  }: {
+    buttonType?: "fab" | "button";
+    event: EventDocType;
+  }) => {
+    // Modal state
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => {
+      setOpen(false);
+      setError(null);
+      setSuccess(null);
+    };
 
-  // Form fields
-  const [title, setTitle] = useState(event.title);
-  const [time, setTime] = useState<Dayjs | null>(
-    dayjs()
-      .hour(parseInt(event.time.split(":")[0]))
-      .minute(parseInt(event.time.split(":")[1]))
-  );
-  const [date, setDate] = useState<Dayjs | null>(dayjs(event.date));
-  const [description, setDescription] = useState(event.description);
-  const [locationName, setLocationName] = useState(event.locationName);
-  const [locationUrl, setLocationUrl] = useState<string | null>(
-    event.locationUrl
-  );
-  const [externalLink, setExternalLink] = useState<string | null>(
-    event.externalLink
-  );
+    // Form fields
+    const [title, setTitle] = useState(event.title);
+    const [time, setTime] = useState<Dayjs | null>(
+      dayjs()
+        .hour(parseInt(event.time.split(":")[0]))
+        .minute(parseInt(event.time.split(":")[1]))
+    );
+    const [date, setDate] = useState<Dayjs | null>(dayjs(event.date));
+    const [description, setDescription] = useState(event.description);
+    const [locationName, setLocationName] = useState(event.locationName);
+    const [locationUrl, setLocationUrl] = useState<string | null>(
+      event.locationUrl
+    );
+    const [externalLink, setExternalLink] = useState<string | null>(
+      event.externalLink
+    );
 
-  // Form state
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+    // Form state
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
 
-    const user = auth.currentUser;
-    if (!user) {
-      setError("No authenticated user.");
-      setLoading(false);
-      return;
-    }
-    try {
-      const updatedEventInfo = {
-        creatorId: user.uid,
-        title,
-        createdAt: new Date().toISOString(),
-        date: date!.format("YYYY-MM-DD"),
-        time: time!.format("HH:mm"),
-        locationName,
-        locationUrl,
-        externalLink,
-        description
-      };
-
-      // update the event in the database
-      const eventDocRef = doc(db, "events", event.id);
-      await setDoc(eventDocRef, updatedEventInfo, { merge: true });
-
-      console.log("updated info: ", updatedEventInfo);
-      setSuccess("Event updated successfully.");
-
-      setTimeout(() => {
-        setSuccess(null);
-        handleClose();
-      }, 3000);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to create event.");
+      const user = auth.currentUser;
+      if (!user) {
+        setError("No authenticated user.");
+        setLoading(false);
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const updatedEventInfo = {
+          creatorId: user.uid,
+          title,
+          createdAt: new Date().toISOString(),
+          date: date!.format("YYYY-MM-DD"),
+          time: time!.format("HH:mm"),
+          locationName,
+          locationUrl,
+          externalLink,
+          description
+        };
 
-  return (
-    <div>
-      {buttonType === "fab" ? (
-        <Tooltip title="Edit this event" offset={-8}>
-          <Fab
-            size="small"
-            color="secondary"
-            aria-label="edit"
-            onClick={handleOpen}
-            sx={{
-              flexShrink: 0
-            }}
-          >
-            <EditIcon />
-          </Fab>
-        </Tooltip>
-      ) : (
-        <Button variant="contained" color="secondary" onClick={handleOpen}>
-          Edit this event
-        </Button>
-      )}
+        // update the event in the database
+        const eventDocRef = doc(db, "events", event.id);
+        await setDoc(eventDocRef, updatedEventInfo, { merge: true });
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="new-event-modal-title"
-        aria-describedby="new-event-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="new-event-modal-title" variant="h2" sx={{ mt: 0 }}>
-            Update Event
-          </Typography>
-          <Typography id="new-event-modal-description" sx={{ mt: 2 }}>
-            Update the event details below
-          </Typography>
+        console.log("updated info: ", updatedEventInfo);
+        setSuccess("Event updated successfully.");
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-              mt: 3,
-              display: "flex",
-              flexDirection: "column",
-              gap: 3
-            }}
-          >
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && <Alert severity="success">{success}</Alert>}
+        setTimeout(() => {
+          setSuccess(null);
+          handleClose();
+        }, 3000);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to create event.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-            <TextField
-              label="Title"
-              variant="outlined"
-              fullWidth
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              autoComplete="title"
-            />
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Date"
-                value={date}
-                onChange={(newValue) => setDate(newValue)}
-                slotProps={{
-                  textField: {
-                    required: true
-                  }
-                }}
-              />
-
-              <TimePicker
-                label="Start Time"
-                name="startTime"
-                value={time}
-                onChange={(newValue) => setTime(newValue)}
-                ampm={false}
-              />
-            </LocalizationProvider>
-
-            <LocationPicker
-              setLocationUrl={setLocationUrl}
-              locationName={locationName}
-              setLocationName={setLocationName}
-            />
-
-            <TextField
-              label="External Link"
-              variant="outlined"
-              fullWidth
-              value={externalLink}
-              onChange={(e) => setExternalLink(e.target.value)}
-              helperText="Usually link to buy tickets, or some other relevant page about the event"
-            />
-
-            <TextField
-              label="Description/Additional Info"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              autoComplete="description"
-            />
-
-            <Box
+    return (
+      <div>
+        {buttonType === "fab" ? (
+          <Tooltip title="Edit this event" offset={-8}>
+            <Fab
+              size="small"
+              color="secondary"
+              aria-label="edit"
+              onClick={handleOpen}
               sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-                gap: 1
+                flexShrink: 0
               }}
             >
-              <Button
-                type="button"
+              <EditIcon />
+            </Fab>
+          </Tooltip>
+        ) : (
+          <Button variant="contained" color="secondary" onClick={handleOpen}>
+            Edit this event
+          </Button>
+        )}
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="new-event-modal-title"
+          aria-describedby="new-event-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="new-event-modal-title" variant="h2" sx={{ mt: 0 }}>
+              Update Event
+            </Typography>
+            <Typography id="new-event-modal-description" sx={{ mt: 2 }}>
+              Update the event details below
+            </Typography>
+
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{
+                mt: 3,
+                display: "flex",
+                flexDirection: "column",
+                gap: 3
+              }}
+            >
+              {error && <Alert severity="error">{error}</Alert>}
+              {success && <Alert severity="success">{success}</Alert>}
+
+              <TextField
+                label="Title"
                 variant="outlined"
-                color="secondary"
-                onClick={handleClose}
+                fullWidth
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                autoComplete="title"
+              />
+
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale={appState.dayJsLocale}
+              >
+                <DatePicker
+                  label="Date"
+                  value={date}
+                  onChange={(newValue) => setDate(newValue)}
+                  slotProps={{
+                    textField: {
+                      required: true
+                    }
+                  }}
+                />
+
+                <TimePicker
+                  label="Start Time"
+                  name="startTime"
+                  value={time}
+                  onChange={(newValue) => setTime(newValue)}
+                  ampm={false}
+                />
+              </LocalizationProvider>
+
+              <LocationPicker
+                setLocationUrl={setLocationUrl}
+                locationName={locationName}
+                setLocationName={setLocationName}
+              />
+
+              <TextField
+                label="External Link"
+                variant="outlined"
+                fullWidth
+                value={externalLink}
+                onChange={(e) => setExternalLink(e.target.value)}
+                helperText="Usually link to buy tickets, or some other relevant page about the event"
+              />
+
+              <TextField
+                label="Description/Additional Info"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                autoComplete="description"
+              />
+
+              <Box
                 sx={{
-                  flexGrow: 1,
-                  minWidth: "50%"
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                  gap: 1
                 }}
               >
-                Close
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={loading}
-                sx={{ flexGrow: 1 }}
-              >
-                {loading ? (
-                  <CircularProgress color="inherit" size={14} />
-                ) : (
-                  "Update event"
-                )}
-              </Button>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleClose}
+                  sx={{
+                    flexGrow: 1,
+                    minWidth: "50%"
+                  }}
+                >
+                  Close
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading}
+                  sx={{ flexGrow: 1 }}
+                >
+                  {loading ? (
+                    <CircularProgress color="inherit" size={14} />
+                  ) : (
+                    "Update event"
+                  )}
+                </Button>
+              </Box>
             </Box>
           </Box>
-        </Box>
-      </Modal>
-    </div>
-  );
-}
+        </Modal>
+      </div>
+    );
+  }
+);
+
+export default EditEventModal;

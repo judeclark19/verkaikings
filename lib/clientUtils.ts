@@ -78,15 +78,15 @@ function isBirthdayInRange(
 }
 
 export function checkIfBirthdayToday(birthday: string) {
-  return isBirthdayInRange(birthday, 0, 0); // 0 to 0 days (today only)
+  return isBirthdayInRange(birthday, -1, 0); // 0 to 0 days (today only)
 }
 
 export function checkIfBirthdayRecent(birthday: string) {
-  return isBirthdayInRange(birthday, -7, -1); // Last 7 days (excluding today)
+  return isBirthdayInRange(birthday, -8, -1); // Last 7 days (excluding today)
 }
 
 export function checkIfBirthdaySoon(birthday: string) {
-  return isBirthdayInRange(birthday, 1, 7); // Next 7 days (excluding today)
+  return isBirthdayInRange(birthday, 0, 7); // Next 7 days (excluding today)
 }
 
 export function addYearToBirthday(birthday: string) {

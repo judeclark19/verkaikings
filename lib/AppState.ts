@@ -23,6 +23,7 @@ import eventsState, { EventDocType, Events } from "@/app/events/Events.state";
 class AppState {
   isInitialized = false;
   language: string = "en";
+  dayJsLocale: string = "en";
   userList: UserList = userList;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
@@ -365,6 +366,14 @@ class AppState {
 
   setSnackbarOpen(open: boolean) {
     this.snackbarOpen = open;
+  }
+
+  setLanguage(language: string) {
+    this.language = language;
+  }
+
+  setDayJsLocale(locale: string) {
+    this.dayJsLocale = locale;
   }
 }
 

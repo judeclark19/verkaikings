@@ -19,6 +19,8 @@ import dayjs, { Dayjs } from "dayjs";
 import LocationPicker from "./LocationPicker";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { Add as AddIcon } from "@mui/icons-material";
+import appState from "@/lib/AppState";
+import { observer } from "mobx-react-lite";
 
 const style = {
   position: "absolute",
@@ -35,7 +37,7 @@ const style = {
   overflow: "auto"
 };
 
-export default function NewEventModal() {
+const NewEventModal = observer(() => {
   // Modal state
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -156,7 +158,10 @@ export default function NewEventModal() {
               autoComplete="title"
             />
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale={appState.dayJsLocale}
+            >
               <DatePicker
                 label="Date"
                 value={date}
@@ -242,4 +247,6 @@ export default function NewEventModal() {
       </Modal>
     </div>
   );
-}
+});
+
+export default NewEventModal;

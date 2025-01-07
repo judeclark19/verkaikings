@@ -16,6 +16,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { UserDocType } from "@/lib/UserList";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { addYearToBirthday } from "@/lib/clientUtils";
+import appState from "@/lib/AppState";
 
 const style = {
   position: "absolute",
@@ -142,7 +143,10 @@ const DOBChangeModal = observer(() => {
             {error && <Alert severity="error">{error}</Alert>}
             {success && <Alert severity="success">{success}</Alert>}
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale={appState.dayJsLocale}
+            >
               <DatePicker
                 label="Month and day"
                 views={["month", "day"]} // Limit views to month and day only
@@ -163,6 +167,7 @@ const DOBChangeModal = observer(() => {
                   (newValue) => setYear(newValue ? newValue.year() : null) // Extract year from Dayjs
                 }
                 views={["year"]}
+                disableFuture
               />
             </LocalizationProvider>
             <Box
