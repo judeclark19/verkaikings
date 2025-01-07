@@ -88,9 +88,7 @@ class AppState {
     }
 
     this.initPromise = (async () => {
-      console.log("init promise navigator language:", navigator.language);
       this.language = navigator.language || "en";
-      // this.dayJsLocale = this.language;
       this.userList = userList;
       this.userList.init(users);
       this.myWillemijnStories = myWillemijnStories;

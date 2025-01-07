@@ -19,6 +19,7 @@ export async function loadDayjsLocale(locale: string) {
     return locale;
   } catch (err) {
     try {
+      console.warn(err);
       const fallbackLocale = locale.toLowerCase().split("-")[0];
       await import(`dayjs/locale/${fallbackLocale}.js`);
       dayjs.locale(fallbackLocale);
@@ -27,6 +28,7 @@ export async function loadDayjsLocale(locale: string) {
       console.warn(
         `Could not load dayjs locale "${locale}" or fallback. Using 'en'.`
       );
+      console.warn(fallbackErr);
       dayjs.locale("en");
       return "en";
     }
