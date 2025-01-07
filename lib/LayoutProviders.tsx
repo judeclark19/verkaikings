@@ -1,5 +1,6 @@
 "use client";
 
+import dayjs from "dayjs";
 import StyledComponentsRegistry from "@/lib/registry";
 import GlobalStyles from "@/styles/GlobalStyles";
 import { ThemeProvider } from "@mui/material/styles";
@@ -9,65 +10,96 @@ import { useEffect } from "react";
 import appState from "./AppState";
 import { useSearchParams } from "next/navigation";
 import SimpleSnackbar from "@/components/Snackbar";
+import { observer } from "mobx-react-lite";
 
-export default function LayoutProviders({
-  children,
-  isLoggedIn,
-  userId
-}: {
-  children: React.ReactNode;
-  isLoggedIn: boolean;
-  userId?: string;
-}) {
-  const searchParams = useSearchParams();
-  const notifParam = searchParams.get("notif");
+export async function loadDayjsLocale(locale: string) {
+  try {
+    await import(`dayjs/locale/${locale}.js`);
+    dayjs.locale(locale);
+    return locale;
+  } catch (err) {
+    try {
+      const fallbackLocale = locale.toLowerCase().split("-")[0];
+      await import(`dayjs/locale/${fallbackLocale}.js`);
+      dayjs.locale(fallbackLocale);
+      return fallbackLocale;
+    } catch (fallbackErr) {
+      console.warn(
+        `Could not load dayjs locale "${locale}" or fallback. Using 'en'.`
+      );
+      dayjs.locale("en");
+      return "en";
+    }
+  }
+}
 
-  useEffect(() => {
-    appState.initializeSnapshots(isLoggedIn, userId);
+const LayoutProviders = observer(
+  ({
+    children,
+    isLoggedIn,
+    userId
+  }: {
+    children: React.ReactNode;
+    isLoggedIn: boolean;
+    userId?: string;
+  }) => {
+    const searchParams = useSearchParams();
+    const notifParam = searchParams.get("notif");
 
-    // Cleanup when the component unmounts or isLoggedIn changes
-    return () => {
-      appState.unsubscribeFromSnapshots();
-    };
-  }, [isLoggedIn, userId]);
+    useEffect(() => {
+      appState.initializeSnapshots(isLoggedIn, userId);
+      // Cleanup when the component unmounts or isLoggedIn changes
+      return () => {
+        appState.unsubscribeFromSnapshots();
+      };
+    }, [isLoggedIn, userId]);
 
-  useEffect(() => {
-    const scrollToElement = (startTime: number) => {
-      if (notifParam) {
-        const element = document.getElementById(notifParam as string);
+    useEffect(() => {
+      loadDayjsLocale(appState.language).then((locale) => {
+        appState.setDayJsLocale(locale);
+      });
+    }, [appState.language]);
 
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
-          element.classList.add("highlighted");
-          setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 1.5s
-        } else {
-          const elapsedTime = performance.now() - startTime;
-          if (elapsedTime < 8000) {
-            // Retry for up to 8 seconds
-            requestAnimationFrame(() => scrollToElement(startTime));
+    useEffect(() => {
+      const scrollToElement = (startTime: number) => {
+        if (notifParam) {
+          const element = document.getElementById(notifParam as string);
+
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.add("highlighted");
+            setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 1.5s
           } else {
-            console.warn(
-              `Element with id ${notifParam} not found after 8 seconds.`
-            );
+            const elapsedTime = performance.now() - startTime;
+            if (elapsedTime < 8000) {
+              // Retry for up to 8 seconds
+              requestAnimationFrame(() => scrollToElement(startTime));
+            } else {
+              console.warn(
+                `Element with id ${notifParam} not found after 8 seconds.`
+              );
+            }
           }
         }
+      };
+
+      if (notifParam) {
+        const startTime = performance.now();
+        scrollToElement(startTime);
       }
-    };
+    }, [notifParam]);
 
-    if (notifParam) {
-      const startTime = performance.now();
-      scrollToElement(startTime);
-    }
-  }, [notifParam]);
+    return (
+      <StyledComponentsRegistry>
+        <GlobalStyles />
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          {children}
+          <SimpleSnackbar />
+        </ThemeProvider>
+      </StyledComponentsRegistry>
+    );
+  }
+);
 
-  return (
-    <StyledComponentsRegistry>
-      <GlobalStyles />
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        {children}
-        <SimpleSnackbar />
-      </ThemeProvider>
-    </StyledComponentsRegistry>
-  );
-}
+export default LayoutProviders;
