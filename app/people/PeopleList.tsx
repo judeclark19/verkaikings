@@ -26,6 +26,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import userList from "@/lib/UserList";
 import { ClearIcon } from "@mui/x-date-pickers/icons";
 import { deleteQueryParam } from "@/lib/clientUtils";
+import appState from "@/lib/AppState";
 
 export enum PeopleViews {
   NAME = "name",
@@ -43,7 +44,12 @@ const PeopleList = observer(() => {
   const [viewingBy, setViewingBy] = useState<PeopleViews>(PeopleViews.NAME);
 
   useEffect(() => {
-    if (!userList.users || userList.users.length === 0) return;
+    if (
+      !userList.users ||
+      userList.users.length === 0 ||
+      !appState.isInitialized
+    )
+      return;
     let viewByParam = searchParams.get("viewBy")?.toLowerCase();
     const queryParam = searchParams.get("query") || "";
 
@@ -53,12 +59,25 @@ const PeopleList = observer(() => {
 
     if (queryParam) {
       userList.setQuery(queryParam);
-      userList.filterUsersByQuery(queryParam, viewByParam as PeopleViews);
+      userList.filterUsersByQuery(queryParam, viewByParam as PeopleViews, true);
     }
 
     setViewingBy(viewByParam as PeopleViews);
     setLoading(false);
-  }, [userList.users]);
+  }, [appState.isInitialized, userList.users]);
+
+  useEffect(() => {
+    if (viewingBy === PeopleViews.STORY) {
+      setSearchPlaceholderText("Search users or stories...");
+    } else if (
+      viewingBy === PeopleViews.LOCATION ||
+      viewingBy === PeopleViews.MAP
+    ) {
+      setSearchPlaceholderText("Search users, cities, or countries...");
+    } else {
+      setSearchPlaceholderText("Search users...");
+    }
+  }, [viewingBy]);
 
   const handleViewChange = (view: PeopleViews) => {
     setViewingBy(view);
@@ -69,15 +88,9 @@ const PeopleList = observer(() => {
     currentParams.set("viewBy", view);
     const newPath = `${window.location.pathname}?${currentParams.toString()}`;
     window.history.pushState({}, "", newPath);
-
-    if (viewingBy === "story") {
-      setSearchPlaceholderText("Search users or stories...");
-    } else {
-      setSearchPlaceholderText("Search users...");
-    }
   };
 
-  if (loading) {
+  if (loading || !appState.isInitialized) {
     return (
       <Box
         sx={{
