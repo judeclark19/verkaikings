@@ -45,7 +45,7 @@ export function formatBirthday2digit(input: string) {
 
   // Format the date using toLocaleDateString with the detected locale
   return date
-    .toLocaleDateString(userLocale, { month: "2-digit", day: "2-digit" })
+    .toLocaleDateString(userLocale, { month: "short", day: "2-digit" })
     .replace(/,/g, ", ");
 }
 
