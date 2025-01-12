@@ -37,7 +37,9 @@ export async function runBirthdayCheck() {
       if (!birthday) continue;
 
       const isMonthDayOnly = birthday.startsWith("--");
-      let year; let month; let day;
+      let year;
+      let month;
+      let day;
 
       if (isMonthDayOnly) {
         month = birthday.split("-")[2];
@@ -51,18 +53,6 @@ export async function runBirthdayCheck() {
 
       if (parseInt(month) === todayMonth && parseInt(day) === todayDay) {
         console.log("Send birthday notifiactions for user:", userData.username);
-
-        // notify Jude
-        const judeMessage = {
-          title: `birthday notifs sent for ${userData.username}`,
-          body: "admin message",
-          url: null,
-        };
-
-        notifyUsers({
-          userIds: ["6pHYz7jcr7WoqoRWcnIXEn0Y1bm1"],
-          notification: judeMessage,
-        });
 
         const messageTitle = isMonthDayOnly ?
           "Happy Birthday!" :
