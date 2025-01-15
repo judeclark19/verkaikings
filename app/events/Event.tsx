@@ -366,8 +366,8 @@ const Event = ({
             <AttendeeAvatars event={event} />
           )}
 
-          {(showFullAttendees && !imGoing) ||
-            (!showFullAttendees && (
+          {!showFullAttendees ||
+            (showFullAttendees && !imGoing && (
               <Box
                 sx={{
                   display: "flex",
