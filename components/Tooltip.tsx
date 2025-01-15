@@ -25,6 +25,9 @@ const Tooltip = ({
           }
         ]
       }}
+      sx={{
+        fontSize: "1rem"
+      }}
     >
       {children}
     </MuiTooltip>

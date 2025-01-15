@@ -64,7 +64,11 @@ const EventDetail = observer(() => {
           alignItems: "center"
         }}
       >
-        <Event event={eventInfo as EventDocType} showTitle={false} />
+        <Event
+          event={eventInfo as EventDocType}
+          showTitle={false}
+          showFullAttendees={true}
+        />
         {eventInfo.creatorId === appState.loggedInUser?.id && !isPast && (
           <EditEventModal
             buttonType="button"

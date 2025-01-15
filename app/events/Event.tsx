@@ -25,13 +25,16 @@ import EditEventModal from "./EditEventModal";
 import EventComments from "./EventComments";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Tooltip from "@/components/Tooltip";
+import AttendeeAvatars from "./AttendeeAvatars";
 
 const Event = ({
   event,
-  showTitle = true
+  showTitle = true,
+  showFullAttendees = false
 }: {
   event: EventDocType;
   showTitle?: boolean;
+  showFullAttendees?: boolean;
 }) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);
   const isOwn = event.creatorId === appState.loggedInUser?.id;
@@ -298,7 +301,7 @@ const Event = ({
           >
             {isPast ? "Attendees" : "Who's Going?"}
           </Typography>
-          {event.attendees.length === 0 ? (
+          {event.attendees.length === 0 && (
             <Typography
               sx={{
                 mb: 1
@@ -306,7 +309,9 @@ const Event = ({
             >
               Nobody yet!
             </Typography>
-          ) : (
+          )}
+
+          {event.attendees.length > 0 && showFullAttendees ? (
             <List
               sx={{
                 width: "100%",
@@ -357,11 +362,13 @@ const Event = ({
                 );
               })}
             </List>
+          ) : (
+            <AttendeeAvatars event={event} />
           )}
+
           {!imGoing && (
             <Box
               sx={{
-                // border: "2px solid red",
                 display: "flex",
                 justifyContent: {
                   xs: "center",
