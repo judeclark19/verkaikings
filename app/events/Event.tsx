@@ -366,33 +366,34 @@ const Event = ({
             <AttendeeAvatars event={event} />
           )}
 
-          {!imGoing && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: {
-                  xs: "center",
-                  sm: "flex-start"
-                }
-              }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={updateAttendance}
-                startIcon={<AddIcon />}
+          {(showFullAttendees && !imGoing) ||
+            (!showFullAttendees && (
+              <Box
                 sx={{
-                  width: {
-                    xs: "100%",
-                    sm: "170px"
-                  },
-                  maxWidth: 400
+                  display: "flex",
+                  justifyContent: {
+                    xs: "center",
+                    sm: "flex-start"
+                  }
                 }}
               >
-                I&apos;m going!
-              </Button>
-            </Box>
-          )}
+                <Button
+                  variant="contained"
+                  color={imGoing ? "secondary" : "primary"}
+                  onClick={updateAttendance}
+                  startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "170px"
+                    },
+                    maxWidth: 400
+                  }}
+                >
+                  {imGoing ? "I'm not going" : "I'm going!"}
+                </Button>
+              </Box>
+            ))}
         </Box>
       </Box>
       <EventComments event={event} readOnly={!!isPast} />
