@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
 import userList, { UserDocType } from "@/lib/UserList";
+import FundraiserPreview from "./FundraiserPreview";
 
 const Dashboard = observer(() => {
   const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
@@ -79,6 +80,8 @@ const Dashboard = observer(() => {
 
   return (
     <div>
+      <FundraiserPreview />
+
       <Box
         sx={{
           display: "grid",
