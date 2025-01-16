@@ -27,7 +27,12 @@ const AttendeeAvatars = observer(({ event }: { event: EventDocType }) => {
       max={Infinity}
       sx={{
         justifyContent: "flex-end",
-        mb: 2
+        mb: 2,
+        marginLeft: "16px",
+        "& a": {
+          border: "2px solid lime",
+          marginLeft: "-16px!important"
+        }
       }}
     >
       {visibleAttendees.map((user) => (

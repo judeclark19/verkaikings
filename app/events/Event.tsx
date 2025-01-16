@@ -1,45 +1,47 @@
 import {
   Box,
   Link as MuiLink,
-  List,
   Paper,
   Typography,
   Button,
   Divider,
-  Fab
+  Fab,
+  Collapse
 } from "@mui/material";
 import eventsState, { EventDocType } from "./Events.state";
 import { formatFullBirthday, sendNotification } from "@/lib/clientUtils";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
-import UserListItem from "../people/UserListItem";
 import {
   Add as AddIcon,
   Close as CloseIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  OpenInNew as OpenInNewIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon
 } from "@mui/icons-material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import EditEventModal from "./EditEventModal";
 import EventComments from "./EventComments";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import Tooltip from "@/components/Tooltip";
 import AttendeeAvatars from "./AttendeeAvatars";
+import FullAttendeeList from "./FullAttendeeList";
+import { useState } from "react";
 
 const Event = ({
   event,
-  showTitle = true,
-  showFullAttendees = false
+  showTitle = true
 }: {
   event: EventDocType;
   showTitle?: boolean;
-  showFullAttendees?: boolean;
 }) => {
   const imGoing = event.attendees.includes(appState.loggedInUser!.id);
   const isOwn = event.creatorId === appState.loggedInUser?.id;
   const isPast = eventsState.pastEvents.find((e) => e.id === event.id);
   const creator = userList.users.find((user) => user.id === event.creatorId);
+
+  const [attendeesExpanded, setAttendeesExpanded] = useState(false);
 
   async function updateAttendance() {
     try {
@@ -90,6 +92,7 @@ const Event = ({
       }}
       id={event.id}
     >
+      {/* TITLE */}
       {showTitle && (
         <>
           <Box
@@ -133,6 +136,8 @@ const Event = ({
           </Box>
         </>
       )}
+
+      {/* CREATOR */}
       {creator && (
         <Typography>
           Event created by{" "}
@@ -142,6 +147,7 @@ const Event = ({
         </Typography>
       )}
 
+      {/* EVENT BODY */}
       <Box
         sx={{
           display: "flex",
@@ -155,6 +161,7 @@ const Event = ({
           }
         }}
       >
+        {/* EVENT DETAILS */}
         <Box
           sx={{
             width: {
@@ -282,6 +289,7 @@ const Event = ({
             }
           }}
         />
+        {/* ATTENDEES */}
         <Box
           sx={{
             width: {
@@ -310,90 +318,71 @@ const Event = ({
               Nobody yet!
             </Typography>
           )}
-
-          {event.attendees.length > 0 && showFullAttendees ? (
-            <List
+          <Box
+            sx={{
+              overflow: "hidden",
+              mb: 2
+            }}
+          >
+            <Collapse
+              in={attendeesExpanded}
+              timeout={500}
+              collapsedSize="52px"
               sx={{
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                marginLeft: {
-                  xs: "auto",
-                  md: "-1rem"
-                }
+                position: "relative"
               }}
             >
-              {event.attendees.map((attendee) => {
-                const user = userList.users.find(
-                  (user) => user.id === attendee
-                );
-                if (!user) {
-                  return null;
-                }
-
-                return (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center"
-                    }}
-                    key={attendee}
-                  >
-                    <UserListItem key={attendee} user={user} />
-                    {!isPast && user.id === appState.loggedInUser!.id && (
-                      <Tooltip title="I'm not going" offset={-8}>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          sx={{
-                            padding: "4px",
-                            minWidth: 0,
-                            width: "30px",
-                            height: "30px",
-                            marginLeft: "0.5rem"
-                          }}
-                          onClick={updateAttendance}
-                        >
-                          <CloseIcon />
-                        </Button>
-                      </Tooltip>
-                    )}
-                  </Box>
-                );
-              })}
-            </List>
-          ) : (
-            <AttendeeAvatars event={event} />
-          )}
-
-          {!showFullAttendees ||
-            (showFullAttendees && !imGoing && (
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: {
-                    xs: "center",
-                    sm: "flex-start"
-                  }
+                  opacity: attendeesExpanded ? 0 : 1,
+                  transition: "opacity 0.3s ease",
+                  height: "52px",
+                  display: attendeesExpanded ? "none" : "flex"
                 }}
               >
-                <Button
-                  variant="contained"
-                  color={imGoing ? "secondary" : "primary"}
-                  onClick={updateAttendance}
-                  startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
-                  sx={{
-                    width: {
-                      xs: "100%",
-                      sm: "170px"
-                    },
-                    maxWidth: 400
-                  }}
-                >
-                  {imGoing ? "I'm not going" : "I'm going!"}
-                </Button>
+                <AttendeeAvatars event={event} />
               </Box>
-            ))}
+              <Box
+                sx={{
+                  opacity: attendeesExpanded ? 1 : 0,
+                  transition: "opacity 0.3s ease"
+                }}
+              >
+                <FullAttendeeList
+                  event={event}
+                  isPast={!!isPast}
+                  updateAttendance={updateAttendance}
+                />
+              </Box>
+            </Collapse>
+            <Button
+              variant="outlined"
+              fullWidth
+              endIcon={
+                attendeesExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />
+              }
+              sx={{ mt: 1 }}
+              onClick={() => setAttendeesExpanded(!attendeesExpanded)}
+            >
+              {attendeesExpanded ? "Collapse" : "Expand"}
+            </Button>
+          </Box>
+
+          <Button
+            variant="contained"
+            color={imGoing ? "secondary" : "primary"}
+            onClick={updateAttendance}
+            startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "170px"
+              },
+              maxWidth: 400
+            }}
+          >
+            {imGoing ? "I'm not going" : "I'm going!"}
+          </Button>
         </Box>
       </Box>
       <EventComments event={event} readOnly={!!isPast} />
