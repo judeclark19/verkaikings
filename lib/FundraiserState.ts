@@ -1,4 +1,11 @@
 import { makeAutoObservable } from "mobx";
+import appState from "./AppState";
+
+type Donation = {
+  id: string;
+  userId: string;
+  amount: number;
+};
 
 export type FundraiserDocType = {
   id: string;
@@ -9,6 +16,9 @@ export type FundraiserDocType = {
   currentAmount: number;
   finalDay: string;
   description: string;
+  instructions: string;
+  confirmedDonations: Donation[];
+  pendingDonations: Donation[];
 };
 
 export class FundraiserState {
@@ -56,12 +66,21 @@ export class FundraiserState {
   }
 
   formatNumberToCurrency(number: number) {
-    return number % 1 === 0 ? number : number.toFixed(2);
+    return new Intl.NumberFormat(appState.language, {
+      minimumFractionDigits: number % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: 2
+    }).format(number);
   }
 
   setActiveFundraiserDescription(description: string) {
     if (this.activeFundraiser) {
       this.activeFundraiser.description = description;
+    }
+  }
+
+  setActiveFundraiserInstructions(instructions: string) {
+    if (this.activeFundraiser) {
+      this.activeFundraiser.instructions = instructions;
     }
   }
 }

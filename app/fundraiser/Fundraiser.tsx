@@ -3,22 +3,13 @@
 import appState from "@/lib/AppState";
 import fundraiserState from "@/lib/FundraiserState";
 import userList from "@/lib/UserList";
-import {
-  Skeleton,
-  Typography,
-  Link as MuiLink,
-  Box,
-  Paper
-} from "@mui/material";
+import { Skeleton, Typography, Box } from "@mui/material";
 import { observer } from "mobx-react-lite";
-
-import Link from "next/link";
 import { useState } from "react";
 import Creator from "./views/Creator";
-import Donor from "./views/Donor";
+import Donor from "./views/Donor/Donor";
 import { formatFullBirthday } from "@/lib/clientUtils";
 import FundraiserProgressBar from "./FundraiserProgressBar";
-import Description from "./editableFields/Description";
 import UserListItem from "../people/UserListItem";
 
 const Fundraiser = observer(() => {

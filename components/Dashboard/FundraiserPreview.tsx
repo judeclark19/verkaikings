@@ -1,13 +1,7 @@
 import FundraiserProgressBar from "@/app/fundraiser/FundraiserProgressBar";
 import appState from "@/lib/AppState";
 import fundraiserState from "@/lib/FundraiserState";
-import {
-  Box,
-  Button,
-  LinearProgress,
-  Skeleton,
-  Typography
-} from "@mui/material";
+import { Box, Button, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 
@@ -23,10 +17,6 @@ const FundraiserPreview = observer(() => {
       />
     );
   }
-
-  const current = activeFundraiser.currentAmount;
-  const goal = activeFundraiser.goalAmount;
-  const progress = (current / goal) * 100;
 
   return (
     <Button
@@ -60,7 +50,7 @@ const FundraiserPreview = observer(() => {
           sx={{
             mb: 0
           }}
-        >{`Raised $${current.toLocaleString()} of $${goal.toLocaleString()}`}</Typography>
+        >{`Raised €${fundraiserState.currentAmount} of €${fundraiserState.goalAmount}`}</Typography>
         <FundraiserProgressBar color="green" />
       </Box>
     </Button>
