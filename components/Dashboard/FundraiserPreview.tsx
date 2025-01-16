@@ -61,7 +61,7 @@ const FundraiserPreview = observer(() => {
             mb: 0
           }}
         >{`Raised $${current.toLocaleString()} of $${goal.toLocaleString()}`}</Typography>
-        <FundraiserProgressBar />
+        <FundraiserProgressBar color="green" />
       </Box>
     </Button>
   );

@@ -3,7 +3,13 @@ import { Box, LinearProgress, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 
 const FundraiserProgressBar = observer(
-  ({ width = 100 }: { width?: number }) => {
+  ({
+    color = "pink",
+    width = 100
+  }: {
+    color?: "pink" | "green";
+    width?: number;
+  }) => {
     return (
       <Box
         sx={{
@@ -20,12 +26,16 @@ const FundraiserProgressBar = observer(
           value={fundraiserState.progress}
           sx={{
             width: "100%",
-            height: "16px",
+            height: "28px",
             borderRadius: "8px",
             "& .MuiLinearProgress-bar": {
-              backgroundColor: "secondary.dark" // Completed bar color
+              backgroundColor: "secondary.dark",
+              background:
+                color === "pink"
+                  ? `linear-gradient(to right, var(--light-pink), var(--dark-pink))`
+                  : `linear-gradient(to right, var(--dark-green), var(--darker-green))`
             },
-            backgroundColor: "secondary.main" // Background color
+            backgroundColor: color === "pink" ? "secondary.main" : "#444"
           }}
         />
         <Typography

@@ -106,7 +106,6 @@ const Fundraiser = observer(() => {
       </Typography>
       <div
         style={{
-          border: "1px solid gray",
           display: "flex",
           justifyContent: "center"
         }}
@@ -122,7 +121,7 @@ const Fundraiser = observer(() => {
         <button
           onClick={() => setViewAs("donor")}
           style={{
-            backgroundColor: viewAs === "potential donor" ? "blue" : "white"
+            backgroundColor: viewAs === "donor" ? "blue" : "white"
           }}
         >
           donor

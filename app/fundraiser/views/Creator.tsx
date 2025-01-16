@@ -20,7 +20,6 @@ const Creator = () => {
         >
           Description
         </Typography>
-
         <Description />
       </Paper>
     </>

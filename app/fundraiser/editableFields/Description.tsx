@@ -10,6 +10,9 @@ import { useState } from "react";
 import SaveIcon from "@mui/icons-material/Save";
 import fundraiserState from "@/lib/FundraiserState";
 import { observer } from "mobx-react-lite";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import appState from "@/lib/AppState";
 
 const Description = observer(() => {
   const description = fundraiserState.activeFundraiser?.description;
@@ -17,8 +20,33 @@ const Description = observer(() => {
   const [loading, setLoading] = useState(false);
   const [textFieldValue, setTextFieldValue] = useState(description || "");
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (textFieldValue !== description) {
+      console.log("description is the same as before");
+
+      try {
+        setLoading(true);
+        // If the story exists, update it
+        const fundraiserDocRef = doc(
+          db,
+          "fundraisers",
+          fundraiserState.activeFundraiser!.id
+        );
+        await updateDoc(fundraiserDocRef, {
+          description: textFieldValue,
+          updatedAt: new Date().toISOString()
+        });
+        fundraiserState.activeFundraiser!.description = textFieldValue;
+        appState.setSnackbarMessage("Description updated successfully.");
+      } catch (error) {
+        alert(`Error updating or creating description: ${error}`);
+        console.error("Error updating or creating description: ", error);
+      } finally {
+        setLoading(false);
+        setIsEditing(false);
+      }
+    }
     setIsEditing(false);
   };
 
