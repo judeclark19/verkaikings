@@ -250,7 +250,11 @@ const Event = ({
           )}
 
           {event.description && (
-            <Typography>
+            <Typography
+              sx={{
+                whiteSpace: "pre-line"
+              }}
+            >
               <strong>Description:</strong> {event.description || "(None)"}
             </Typography>
           )}

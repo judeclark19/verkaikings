@@ -37,7 +37,7 @@ const Description = observer(() => {
           description: textFieldValue,
           updatedAt: new Date().toISOString()
         });
-        fundraiserState.activeFundraiser!.description = textFieldValue;
+        fundraiserState.setActiveFundraiserDescription(textFieldValue);
         appState.setSnackbarMessage("Description updated successfully.");
       } catch (error) {
         alert(`Error updating or creating description: ${error}`);
@@ -65,6 +65,15 @@ const Description = observer(() => {
               handleSubmit(e);
             }
           }}
+          sx={{
+            "& .MuiInputBase-input": {
+              resize: "vertical", // Applies directly to the internal <textarea>
+              height: "auto"
+            },
+            "& textarea": {
+              overflow: "auto"
+            }
+          }}
           variant="outlined"
         />
       ) : (
@@ -75,7 +84,8 @@ const Description = observer(() => {
               ? "text.primary"
               : "text.secondary",
             fontStyle: description ? "normal" : "italic",
-            height: "102px"
+            height: "102px",
+            whiteSpace: "pre-line"
           }}
         >
           {description ? description : "(No description)"}

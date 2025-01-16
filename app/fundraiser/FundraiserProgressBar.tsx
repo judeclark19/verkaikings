@@ -23,7 +23,7 @@ const FundraiserProgressBar = observer(
       >
         <LinearProgress
           variant="determinate"
-          value={fundraiserState.progress}
+          value={Math.min(100, fundraiserState.progress)}
           sx={{
             width: "100%",
             height: "28px",

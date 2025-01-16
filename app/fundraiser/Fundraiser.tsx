@@ -66,6 +66,29 @@ const Fundraiser = observer(() => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <button
+          onClick={() => setViewAs("creator")}
+          style={{
+            backgroundColor: viewAs === "creator" ? "blue" : "white"
+          }}
+        >
+          Creator
+        </button>
+        <button
+          onClick={() => setViewAs("donor")}
+          style={{
+            backgroundColor: viewAs === "donor" ? "blue" : "white"
+          }}
+        >
+          donor
+        </button>
+      </div>
       <Typography
         variant="h1"
         sx={{
@@ -99,34 +122,24 @@ const Fundraiser = observer(() => {
       <Typography
         variant="h3"
         sx={{
-          textAlign: "center"
+          textAlign: "center",
+          color: "primary.dark",
+          fontSize: "2rem"
+        }}
+      >
+        Amount raised: €{fundraiserState.currentAmount} (of goal €
+        {fundraiserState.goalAmount})
+      </Typography>
+      <Typography
+        variant="h4"
+        sx={{
+          textAlign: "center",
+          fontSize: "1.5rem"
         }}
       >
         Final day to donate: {formatFullBirthday(activeFundraiser.finalDay)}{" "}
       </Typography>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center"
-        }}
-      >
-        <button
-          onClick={() => setViewAs("creator")}
-          style={{
-            backgroundColor: viewAs === "creator" ? "blue" : "white"
-          }}
-        >
-          Creator
-        </button>
-        <button
-          onClick={() => setViewAs("donor")}
-          style={{
-            backgroundColor: viewAs === "donor" ? "blue" : "white"
-          }}
-        >
-          donor
-        </button>
-      </div>
+
       <FundraiserProgressBar width={90} />
       <Box>
         {viewAs === "creator" && <Creator />}

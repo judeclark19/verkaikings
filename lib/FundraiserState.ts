@@ -40,6 +40,30 @@ export class FundraiserState {
     const { currentAmount, goalAmount } = this.activeFundraiser;
     return (currentAmount / goalAmount) * 100;
   }
+
+  get currentAmount() {
+    if (!this.activeFundraiser) {
+      return 0;
+    }
+    return this.formatNumberToCurrency(this.activeFundraiser?.currentAmount);
+  }
+
+  get goalAmount() {
+    if (!this.activeFundraiser) {
+      return 0;
+    }
+    return this.formatNumberToCurrency(this.activeFundraiser?.goalAmount);
+  }
+
+  formatNumberToCurrency(number: number) {
+    return number % 1 === 0 ? number : number.toFixed(2);
+  }
+
+  setActiveFundraiserDescription(description: string) {
+    if (this.activeFundraiser) {
+      this.activeFundraiser.description = description;
+    }
+  }
 }
 
 const fundraiserState = new FundraiserState();

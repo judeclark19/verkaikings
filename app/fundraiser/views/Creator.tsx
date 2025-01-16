@@ -4,7 +4,6 @@ import Description from "../editableFields/Description";
 const Creator = () => {
   return (
     <>
-      <div>creator view</div>
       <Paper
         sx={{
           maxWidth: "670px",

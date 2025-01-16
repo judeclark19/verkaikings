@@ -11,8 +11,6 @@ const Donor = observer(() => {
 
   return (
     <>
-      <div>donor view</div>
-
       {description && (
         <Paper
           sx={{
@@ -29,8 +27,13 @@ const Donor = observer(() => {
           >
             Description
           </Typography>
-
-          {description}
+          <Typography
+            sx={{
+              whiteSpace: "pre-line"
+            }}
+          >
+            {description}
+          </Typography>
         </Paper>
       )}
     </>
