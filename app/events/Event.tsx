@@ -364,7 +364,9 @@ const Event = ({
               sx={{ mt: 1 }}
               onClick={() => setAttendeesExpanded(!attendeesExpanded)}
             >
-              {attendeesExpanded ? "Collapse" : "Expand"}
+              {`${attendeesExpanded ? "Collapse" : "Expand"} (${
+                event.attendees.length
+              })`}
             </Button>
           </Box>
 
