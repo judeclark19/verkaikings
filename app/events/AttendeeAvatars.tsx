@@ -30,7 +30,6 @@ const AttendeeAvatars = observer(({ event }: { event: EventDocType }) => {
         mb: 2,
         marginLeft: "16px",
         "& a": {
-          border: "2px solid lime",
           marginLeft: "-16px!important"
         }
       }}
