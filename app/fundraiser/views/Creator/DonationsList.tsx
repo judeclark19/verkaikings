@@ -17,13 +17,11 @@ import DonationAccordion from "./DonationAccordion";
 const DonationsList = observer(
   ({
     confirmedOrPending,
-    handleEdit,
     handleMakePending,
     handleConfirm,
     handleDelete
   }: {
     confirmedOrPending: "confirmed" | "pending";
-    handleEdit: (donation: DonationType) => void;
     handleMakePending: (donation: DonationType) => void;
     handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
@@ -76,7 +74,6 @@ const DonationsList = observer(
                     row={row}
                     key={row.userId}
                     confirmedOrPending={confirmedOrPending}
-                    // handleEdit={handleEdit}
                     handleMakePending={handleMakePending}
                     handleConfirm={handleConfirm}
                     handleDelete={handleDelete}
@@ -110,7 +107,6 @@ const DonationsList = observer(
                 user={user ? user : donation.userId}
                 donation={donation}
                 confirmedOrPending={confirmedOrPending}
-                handleEdit={handleEdit}
                 handleMakePending={handleMakePending}
                 handleConfirm={handleConfirm}
                 handleDelete={handleDelete}

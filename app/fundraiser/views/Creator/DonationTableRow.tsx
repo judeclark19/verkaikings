@@ -8,7 +8,7 @@ import {
   Delete as DeleteIcon,
   Check as CheckIcon
 } from "@mui/icons-material";
-import { DonationType } from "@/lib/FundraiserState";
+import fundraiserState, { DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import EditAmountField from "./EditAmountField";
 
@@ -76,7 +76,7 @@ const DonationTableRow = observer(
                       : "var(--dark-green)"
                 }}
               >
-                €{row.amount}
+                €{fundraiserState.formatNumberToCurrency(row.amount)}
               </span>{" "}
               &nbsp;
               <IconButton

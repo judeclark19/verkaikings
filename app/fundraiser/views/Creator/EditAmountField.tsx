@@ -10,11 +10,13 @@ const EditAmountField = observer(
   ({
     donation,
     setEditing,
-    confirmedOrPending
+    confirmedOrPending,
+    includeSaveButton = true
   }: {
     donation: DonationType;
     setEditing: (editing: boolean) => void;
     confirmedOrPending: "confirmed" | "pending";
+    includeSaveButton?: boolean;
   }) => {
     const [manualDonationAmount, setManualDonationAmount] = useState(
       donation.amount.toLocaleString()
@@ -40,7 +42,6 @@ const EditAmountField = observer(
           );
         }
         setLoading(false);
-
         setEditing(false);
       }
     };
@@ -86,18 +87,21 @@ const EditAmountField = observer(
             }
           }}
         />
-        <IconButton
-          color="secondary"
-          aria-label="edit"
-          size="small"
-          type="submit"
-        >
-          {loading ? (
-            <CircularProgress color="secondary" size={24} />
-          ) : (
-            <SaveIcon />
-          )}
-        </IconButton>
+
+        {includeSaveButton && (
+          <IconButton
+            color="secondary"
+            aria-label="edit"
+            size="small"
+            type="submit"
+          >
+            {loading ? (
+              <CircularProgress color="secondary" size={24} />
+            ) : (
+              <SaveIcon />
+            )}
+          </IconButton>
+        )}
       </form>
     );
   }

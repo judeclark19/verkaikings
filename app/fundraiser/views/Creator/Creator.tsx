@@ -14,10 +14,6 @@ const Creator = observer(() => {
   const { confirmedDonations, pendingDonations } =
     fundraiserState.activeFundraiser;
 
-  const handleEdit = (donation: DonationType) => {
-    fundraiserState.handleEditDonation(donation);
-  };
-
   const handleMakePending = (donation: DonationType) => {
     fundraiserState.handleMakeDonationPending(donation);
   };
@@ -110,7 +106,6 @@ const Creator = observer(() => {
         ) : (
           <DonationsList
             confirmedOrPending="confirmed"
-            handleEdit={handleEdit}
             handleMakePending={handleMakePending}
             handleConfirm={handleConfirm}
             handleDelete={handleDeleteConfirmed}
@@ -144,7 +139,6 @@ const Creator = observer(() => {
         ) : (
           <DonationsList
             confirmedOrPending="pending"
-            handleEdit={handleEdit}
             handleMakePending={handleMakePending}
             handleConfirm={handleConfirm}
             handleDelete={handleDeletePending}
