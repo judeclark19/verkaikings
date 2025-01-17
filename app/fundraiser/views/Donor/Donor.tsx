@@ -6,6 +6,8 @@ import { Box, List, Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import NoDonation from "./NoDonation";
 import appState from "@/lib/AppState";
+import DonationPending from "./DonationPending";
+import DonationConfirmed from "./DonationConfirmed";
 
 const Donor = observer(() => {
   if (!fundraiserState.activeFundraiser) {
@@ -29,9 +31,9 @@ const Donor = observer(() => {
     <Box
       sx={{
         margin: "auto",
+        marginTop: "2rem",
         width: "100%",
         gap: "1rem",
-        border: "1px solid red",
         display: "grid",
         gridTemplateColumns: {
           xs: "1fr",
@@ -129,8 +131,8 @@ const Donor = observer(() => {
 
               if (!user) return null;
               return (
-                <Box>
-                  <UserListItem key={user.id} user={user} />
+                <Box key={user.id}>
+                  <UserListItem user={user} />
                 </Box>
               );
             })}
@@ -143,7 +145,7 @@ const Donor = observer(() => {
         sx={{
           padding: "1rem"
         }}
-        elevation={5}
+        // elevation={5}
       >
         <Typography
           variant="h3"
@@ -155,8 +157,8 @@ const Donor = observer(() => {
         </Typography>
 
         {noDonation && <NoDonation />}
-        {donationIsPending && <div>donation is pending</div>}
-        {donationIsConfirmed && <div>donation is confirmed</div>}
+        {donationIsPending && <DonationPending />}
+        {donationIsConfirmed && <DonationConfirmed />}
       </Paper>
     </Box>
   );

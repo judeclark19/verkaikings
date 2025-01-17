@@ -4,9 +4,9 @@ import userList from "@/lib/UserList";
 import { Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 
-const DonationPending = observer(() => {
-  const pendingDonation =
-    fundraiserState.activeFundraiser?.pendingDonations?.find(
+const DonationConfirmed = observer(() => {
+  const confirmedDonation =
+    fundraiserState.activeFundraiser?.confirmedDonations?.find(
       (donation) => donation.userId === appState.loggedInUser?.id
     );
 
@@ -16,17 +16,18 @@ const DonationPending = observer(() => {
 
   return (
     <Typography>
-      Your{" "}
+      Your donation has been received by {creator!.firstName}. Thank you for
+      donating{" "}
       <strong
         style={{
-          color: "var(--dark-green)"
+          color: "var(--dark-pink)"
         }}
       >
-        €{pendingDonation?.amount}
-      </strong>{" "}
-      donation is pending {creator!.firstName}'s confirmation.
+        €{fundraiserState.formatNumberToCurrency(confirmedDonation!.amount)}
+      </strong>
+      !
     </Typography>
   );
 });
 
-export default DonationPending;
+export default DonationConfirmed;

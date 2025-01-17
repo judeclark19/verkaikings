@@ -6,7 +6,7 @@ import userList from "@/lib/UserList";
 import { Skeleton, Typography, Box } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import Creator from "./views/Creator";
+import Creator from "./views/Creator/Creator";
 import Donor from "./views/Donor/Donor";
 import { formatFullBirthday } from "@/lib/clientUtils";
 import FundraiserProgressBar from "./FundraiserProgressBar";
@@ -18,7 +18,7 @@ const Fundraiser = observer(() => {
     (user) => user.id === activeFundraiser?.creatorId
   );
 
-  const [viewAs, setViewAs] = useState("donor");
+  const [viewAs, setViewAs] = useState("creator");
 
   if (!appState.isInitialized) {
     return (

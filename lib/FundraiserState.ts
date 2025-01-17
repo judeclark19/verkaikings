@@ -1,8 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 
-type Donation = {
-  id: string;
+export type DonationType = {
   userId: string;
   amount: number;
 };
@@ -17,8 +16,8 @@ export type FundraiserDocType = {
   finalDay: string;
   description: string;
   instructions: string;
-  confirmedDonations: Donation[];
-  pendingDonations: Donation[];
+  confirmedDonations: DonationType[];
+  pendingDonations: DonationType[];
 };
 
 export class FundraiserState {
@@ -81,6 +80,27 @@ export class FundraiserState {
   setActiveFundraiserInstructions(instructions: string) {
     if (this.activeFundraiser) {
       this.activeFundraiser.instructions = instructions;
+    }
+  }
+
+  handleEditDonation(donation: DonationType) {
+    console.log("State Edit:", donation);
+    // Implement edit functionality here
+  }
+
+  handleMakeDonationPending(donation: DonationType) {
+    console.log("State Make Pending:", donation);
+    // Implement make pending functionality here
+  }
+
+  handleConfirmDonation(donation: DonationType) {
+    console.log("State Confirm:", donation);
+    // Implement confirm functionality here
+  }
+
+  handleDeleteDonation(donation: DonationType) {
+    if (confirm("Are you sure you want to delete this donation?")) {
+      console.log("State Delete:", donation);
     }
   }
 }
