@@ -397,6 +397,11 @@ class AppState {
   setSnackbarMessage(message: string) {
     this.snackbarMessage = message;
     this.setSnackbarOpen(true);
+
+    // set timeout 3 seconds
+    setTimeout(() => {
+      this.setSnackbarOpen(false);
+    }, 3000);
   }
 
   setSnackbarOpen(open: boolean) {

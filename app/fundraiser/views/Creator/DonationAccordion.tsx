@@ -1,18 +1,10 @@
 import UserListItem from "@/app/people/UserListItem";
 import { UserDocType } from "@/lib/UserList";
-import {
-  Box,
-  Button,
-  ClickAwayListener,
-  Collapse,
-  IconButton,
-  Paper,
-  Typography
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
-import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import CheckIcon from "@mui/icons-material/Check";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -22,24 +14,28 @@ import {
 } from "@mui/icons-material";
 import { DonationType } from "@/lib/FundraiserState";
 
-const ConfirmedDonationDropdown = ({
+const DonationAccordion = ({
   user,
   donation,
+  confirmedOrPending,
   handleEdit,
   handleMakePending,
+  handleConfirm,
   handleDelete
 }: {
-  user: UserDocType;
+  user: UserDocType | string;
   donation: {
     userId: string;
     amount: number;
   };
+  confirmedOrPending: "confirmed" | "pending";
   handleEdit: (donation: DonationType) => void;
   handleMakePending: (donation: DonationType) => void;
+  handleConfirm: (donation: DonationType) => void;
   handleDelete: (donation: DonationType) => void;
 }) => {
   return (
-    <Accordion>
+    <Accordion disableGutters>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
@@ -51,13 +47,15 @@ const ConfirmedDonationDropdown = ({
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%"
-            // border: "1px solid red"
           }}
-          // elevation={2}
-          key={user.username}
+          key={typeof user === "string" ? user : user.id}
         >
           <div>
-            <UserListItem user={user} />
+            {typeof user === "string" ? (
+              <>{user}</>
+            ) : (
+              <UserListItem user={user} />
+            )}
           </div>
           <div
             style={{
@@ -77,51 +75,36 @@ const ConfirmedDonationDropdown = ({
         </Box>
       </AccordionSummary>
       <AccordionDetails>
-        {/* <IconButton
-          color="warning"
-          onClick={() => handleMakePending(donation)}
-          aria-label="make pending"
-          size="small"
-        >
-          <PendingIcon />
-        </IconButton>
-
-        <IconButton
-          color="primary"
-          onClick={() => handleEdit(donation)}
-          aria-label="edit"
-          size="small"
-        >
-          <EditIcon />
-        </IconButton>
-
-        <IconButton
-          color="error"
-          onClick={() => handleDelete(donation)}
-          aria-label="delete"
-          size="small"
-        >
-          <DeleteIcon />
-        </IconButton> */}
-
         <Box
           sx={{
-            // border: "1px solid lime",
             display: "flex",
             justifyContent: "center",
             flexWrap: "wrap",
             gap: 2
           }}
         >
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => handleMakePending(donation)}
-            size="small"
-            startIcon={<PendingIcon />}
-          >
-            Make Pending
-          </Button>
+          {confirmedOrPending === "confirmed" ? (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => handleMakePending(donation)}
+              size="small"
+              startIcon={<PendingIcon />}
+            >
+              Make Pending
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleConfirm(donation)}
+              size="small"
+              startIcon={<CheckIcon />}
+            >
+              Confirm
+            </Button>
+          )}
+
           <Button
             variant="contained"
             color="error"
@@ -150,4 +133,4 @@ const ConfirmedDonationDropdown = ({
   );
 };
 
-export default ConfirmedDonationDropdown;
+export default DonationAccordion;

@@ -10,42 +10,34 @@ import {
   TableRow
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import ConfirmedDonationRow from "./ConfirmedDonationRow";
 import userList from "@/lib/UserList";
-import ConfirmedDonationDropdown from "./ConfirmedDonationDropdown";
+import DonationTableRow from "./DonationTableRow";
+import DonationAccordion from "./DonationAccordion";
 
-const ConfirmedDonations = observer(
+const DonationsList = observer(
   ({
+    confirmedOrPending,
     handleEdit,
     handleMakePending,
+    handleConfirm,
     handleDelete
   }: {
+    confirmedOrPending: "confirmed" | "pending";
     handleEdit: (donation: DonationType) => void;
     handleMakePending: (donation: DonationType) => void;
+    handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
   }) => {
     if (!fundraiserState.activeFundraiser) {
       return null;
     }
 
-    const { confirmedDonations } = fundraiserState.activeFundraiser;
-
-    //   const handleEdit = (row: { userId: string; amount: number }) => {
-    //     console.log("Edit:", row);
-    //     // Implement edit functionality here
-    //   };
-
-    //   const handleMakePending = (row: { userId: string; amount: number }) => {
-    //     console.log("Make Pending:", row);
-    //     // Implement make pending functionality here
-    //   };
-
-    //   const handleDelete = (row: { userId: string; amount: number }) => {
-    //     if (confirm("Are you sure you want to delete this donation?")) {
-    //       console.log("Delete:", row);
-    //     }
-    //     // Implement delete functionality here
-    //   };
+    let donationsToDisplay;
+    if (confirmedOrPending === "confirmed") {
+      donationsToDisplay = fundraiserState.activeFundraiser.confirmedDonations;
+    } else {
+      donationsToDisplay = fundraiserState.activeFundraiser.pendingDonations;
+    }
 
     return (
       <>
@@ -60,18 +52,17 @@ const ConfirmedDonations = observer(
           }}
         >
           <TableContainer component={Paper}>
-            <Table aria-label="Confirmed donors">
+            <Table aria-label={`${confirmedOrPending} donors`}>
               <TableHead>
                 <TableRow>
                   <TableCell>User</TableCell>
                   <TableCell align="right" sx={{ fontSize: "1rem" }}>
                     Amount
                   </TableCell>
-                  {/* <TableCell align="right" sx={{ fontSize: "1rem" }}>
-                  Edit
-                </TableCell> */}
                   <TableCell align="right" sx={{ fontSize: "1rem" }}>
-                    Make Pending
+                    {confirmedOrPending === "confirmed"
+                      ? "Make Pending"
+                      : "Confirm"}
                   </TableCell>
 
                   <TableCell align="right" sx={{ fontSize: "1rem" }}>
@@ -80,12 +71,14 @@ const ConfirmedDonations = observer(
                 </TableRow>
               </TableHead>
               <TableBody>
-                {confirmedDonations.map((row) => (
-                  <ConfirmedDonationRow
+                {donationsToDisplay.map((row) => (
+                  <DonationTableRow
                     row={row}
                     key={row.userId}
+                    confirmedOrPending={confirmedOrPending}
                     handleEdit={handleEdit}
                     handleMakePending={handleMakePending}
+                    handleConfirm={handleConfirm}
                     handleDelete={handleDelete}
                   />
                 ))}
@@ -106,21 +99,23 @@ const ConfirmedDonations = observer(
             flexWrap: "wrap"
           }}
         >
-          {confirmedDonations.map((donation) => {
+          {donationsToDisplay.map((donation) => {
             const user = userList.users.find(
               (user) => user.id === donation.userId
             );
 
-            return user ? (
-              <ConfirmedDonationDropdown
-                key={user.id}
-                user={user}
+            return (
+              <DonationAccordion
+                key={user ? user.id : donation.userId}
+                user={user ? user : donation.userId}
                 donation={donation}
+                confirmedOrPending={confirmedOrPending}
                 handleEdit={handleEdit}
                 handleMakePending={handleMakePending}
+                handleConfirm={handleConfirm}
                 handleDelete={handleDelete}
               />
-            ) : null;
+            );
           })}
         </Box>
       </>
@@ -128,4 +123,4 @@ const ConfirmedDonations = observer(
   }
 );
 
-export default ConfirmedDonations;
+export default DonationsList;

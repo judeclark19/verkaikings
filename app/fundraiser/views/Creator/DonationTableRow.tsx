@@ -11,20 +11,25 @@ import {
 import { DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import EditAmountField from "./EditAmountField";
+import CheckIcon from "@mui/icons-material/Check";
 
 const ConfirmedDonationRow = observer(
   ({
     row,
+    confirmedOrPending,
     handleEdit,
     handleMakePending,
+    handleConfirm,
     handleDelete
   }: {
     row: {
       userId: string;
       amount: number;
     };
+    confirmedOrPending: "confirmed" | "pending";
     handleEdit: (donation: DonationType) => void;
     handleMakePending: (donation: DonationType) => void;
+    handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
   }) => {
     const [editing, setEditing] = useState(false);
@@ -53,43 +58,66 @@ const ConfirmedDonationRow = observer(
             fontWeight: "bold",
             display: "flex",
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
+            justifyContent: "flex-end",
+            paddingRight: "0"
           }}
         >
           {editing ? (
-            <EditAmountField />
+            <EditAmountField
+              donation={row}
+              setEditing={setEditing}
+              confirmedOrPending={confirmedOrPending}
+            />
           ) : (
-            <span
-              style={{
-                color: "var(--dark-pink)"
-              }}
+            <>
+              <span
+                style={{
+                  color:
+                    confirmedOrPending === "confirmed"
+                      ? "var(--dark-pink)"
+                      : "var(--dark-green)"
+                }}
+              >
+                €{row.amount}
+              </span>{" "}
+              &nbsp;
+              <IconButton
+                color="secondary"
+                onClick={() => setEditing(!editing)}
+                aria-label="edit"
+                size="small"
+              >
+                <EditIcon />
+              </IconButton>
+            </>
+          )}
+        </TableCell>
+
+        {confirmedOrPending === "confirmed" ? (
+          <TableCell align="right">
+            <IconButton
+              color="warning"
+              onClick={() => handleMakePending(row)}
+              aria-label="make pending"
+              size="small"
             >
-              €{row.amount}
-            </span>
-          )}{" "}
-          &nbsp;
-          <IconButton
-            color="secondary"
-            onClick={() => setEditing(!editing)}
-            aria-label="edit"
-            size="small"
-            sx={{
-              marginRight: "-20px"
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        </TableCell>
-        <TableCell align="right">
-          <IconButton
-            color="warning"
-            onClick={() => handleMakePending(row)}
-            aria-label="make pending"
-            size="small"
-          >
-            <PendingIcon />
-          </IconButton>
-        </TableCell>
+              <PendingIcon />
+            </IconButton>
+          </TableCell>
+        ) : (
+          <TableCell align="right">
+            <IconButton
+              color="primary"
+              onClick={() => handleConfirm(row)}
+              aria-label="confirm"
+              size="small"
+            >
+              <CheckIcon />
+            </IconButton>
+          </TableCell>
+        )}
+
         <TableCell align="right">
           <IconButton
             color="error"

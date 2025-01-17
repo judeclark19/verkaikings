@@ -3,9 +3,8 @@ import Description from "../../editableFields/Description";
 import Instructions from "../../editableFields/Instructions";
 import { observer } from "mobx-react-lite";
 import fundraiserState, { DonationType } from "@/lib/FundraiserState";
-import ConfirmedDonations from "./ConfirmedDonations";
-import PendingDonations from "./PendingDonations";
 import AddDonationForm from "./AddDonationForm";
+import DonationsList from "./DonationsList";
 
 const Creator = observer(() => {
   if (!fundraiserState.activeFundraiser) {
@@ -109,9 +108,11 @@ const Creator = observer(() => {
             No confirmed donors yet
           </Typography>
         ) : (
-          <ConfirmedDonations
+          <DonationsList
+            confirmedOrPending="confirmed"
             handleEdit={handleEdit}
             handleMakePending={handleMakePending}
+            handleConfirm={handleConfirm}
             handleDelete={handleDeleteConfirmed}
           />
         )}
@@ -141,8 +142,10 @@ const Creator = observer(() => {
             No pending donors
           </Typography>
         ) : (
-          <PendingDonations
+          <DonationsList
+            confirmedOrPending="pending"
             handleEdit={handleEdit}
+            handleMakePending={handleMakePending}
             handleConfirm={handleConfirm}
             handleDelete={handleDeletePending}
           />

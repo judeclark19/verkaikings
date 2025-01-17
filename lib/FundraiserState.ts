@@ -197,6 +197,57 @@ export class FundraiserState {
       }
     }
   }
+
+  async updateConfirmedDonationAmount(
+    donation: DonationType,
+    newAmount: number
+  ) {
+    console.log("State Update Amount:", donation, newAmount);
+
+    try {
+      await updateDoc(this.activeFundraiserDoc!, {
+        confirmedDonations: this.activeFundraiser?.confirmedDonations.map(
+          (confirmedDonation) => {
+            if (confirmedDonation.userId === donation.userId) {
+              return { ...confirmedDonation, amount: newAmount };
+            }
+            return confirmedDonation;
+          }
+        )
+      });
+
+      appState.setSnackbarMessage("Donation amount updated.");
+    } catch (error) {
+      console.error("Error updating donation amount:", error);
+      appState.setSnackbarMessage(
+        "Error updating donation amount. Please try again."
+      );
+    }
+  }
+
+  async updatePendingDonationAmount(donation: DonationType, newAmount: number) {
+    console.log("State Update Amount:", donation, newAmount);
+
+    try {
+      await updateDoc(this.activeFundraiserDoc!, {
+        pendingDonations: this.activeFundraiser?.pendingDonations.map(
+          (pendingDonation) => {
+            if (pendingDonation.userId === donation.userId) {
+              return { ...pendingDonation, amount: newAmount };
+            }
+            return pendingDonation;
+          }
+        )
+      });
+
+      appState.setSnackbarMessage("Donation amount updated.");
+    } catch (error) {
+      console.error("Error updating donation amount:", error);
+      appState.setSnackbarMessage(
+        "Error updating donation amount. Please try again."
+      );
+    }
+  }
 }
 
 const fundraiserState = new FundraiserState();
