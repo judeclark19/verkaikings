@@ -44,8 +44,6 @@ export default function AddDonationForm() {
     event.preventDefault();
     const finalDropdownValue =
       dropdownValue === "other" ? customDonorName : dropdownValue;
-    console.log("Dropdown Value:", finalDropdownValue);
-    console.log("Number Value:", manualDonationAmount);
 
     try {
       setLoading(true);

@@ -9,6 +9,8 @@ import {
   Delete as DeleteIcon
 } from "@mui/icons-material";
 import { DonationType } from "@/lib/FundraiserState";
+import { useState } from "react";
+import EditAmountField from "./EditAmountField";
 
 const ConfirmedDonationRow = observer(
   ({
@@ -25,6 +27,8 @@ const ConfirmedDonationRow = observer(
     handleMakePending: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
   }) => {
+    const [editing, setEditing] = useState(false);
+
     return (
       <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
         <TableCell component="th" scope="row" sx={{ padding: 0 }}>
@@ -46,20 +50,27 @@ const ConfirmedDonationRow = observer(
           align="right"
           sx={{
             fontSize: "1rem",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center"
           }}
         >
-          <span
-            style={{
-              color: "var(--dark-pink)"
-            }}
-          >
-            €{row.amount}
-          </span>{" "}
+          {editing ? (
+            <EditAmountField />
+          ) : (
+            <span
+              style={{
+                color: "var(--dark-pink)"
+              }}
+            >
+              €{row.amount}
+            </span>
+          )}{" "}
           &nbsp;
           <IconButton
             color="secondary"
-            onClick={() => handleEdit(row)}
+            onClick={() => setEditing(!editing)}
             aria-label="edit"
             size="small"
             sx={{
@@ -69,16 +80,6 @@ const ConfirmedDonationRow = observer(
             <EditIcon />
           </IconButton>
         </TableCell>
-        {/* <TableCell align="right">
-          <IconButton
-            color="primary"
-            onClick={() => handleEdit(row)}
-            aria-label="edit"
-            size="small"
-          >
-            <EditIcon />
-          </IconButton>
-        </TableCell> */}
         <TableCell align="right">
           <IconButton
             color="warning"

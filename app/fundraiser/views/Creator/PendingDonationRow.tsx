@@ -8,6 +8,8 @@ import {
   HourglassEmpty as PendingIcon,
   Delete as DeleteIcon
 } from "@mui/icons-material";
+import { useState } from "react";
+import EditAmountField from "./EditAmountField";
 
 const PendingDonationRow = observer(
   ({
@@ -24,6 +26,7 @@ const PendingDonationRow = observer(
     handleConfirm: (row: { userId: string; amount: number }) => void;
     handleDelete: (row: { userId: string; amount: number }) => void;
   }) => {
+    const [editing, setEditing] = useState(false);
     return (
       <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
         <TableCell component="th" scope="row" sx={{ padding: 0 }}>
@@ -48,17 +51,21 @@ const PendingDonationRow = observer(
             fontWeight: "bold"
           }}
         >
-          <span
-            style={{
-              color: "var(--dark-green)"
-            }}
-          >
-            €{row.amount}
-          </span>{" "}
+          {editing ? (
+            <EditAmountField />
+          ) : (
+            <span
+              style={{
+                color: "var(--dark-green)"
+              }}
+            >
+              €{row.amount}
+            </span>
+          )}{" "}
           &nbsp;
           <IconButton
             color="secondary"
-            onClick={() => handleEdit(row)}
+            onClick={() => setEditing(!editing)}
             aria-label="edit"
             size="small"
             sx={{
