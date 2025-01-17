@@ -23,8 +23,6 @@ const Instructions = observer(() => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (textFieldValue !== instructions) {
-      console.log("instructions the same as before");
-
       try {
         setLoading(true);
         const fundraiserDocRef = doc(

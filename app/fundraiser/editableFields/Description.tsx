@@ -23,8 +23,6 @@ const Description = observer(() => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (textFieldValue !== description) {
-      console.log("description is the same as before");
-
       try {
         setLoading(true);
         const fundraiserDocRef = doc(
@@ -66,7 +64,7 @@ const Description = observer(() => {
           }}
           sx={{
             "& .MuiInputBase-input": {
-              resize: "vertical", // Applies directly to the internal <textarea>
+              resize: "vertical",
               height: "auto"
             },
             "& textarea": {

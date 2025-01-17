@@ -2,22 +2,20 @@ import UserListItem from "@/app/people/UserListItem";
 import userList from "@/lib/UserList";
 import { IconButton, TableCell, TableRow, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
-
 import {
   Edit as EditIcon,
   HourglassEmpty as PendingIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Check as CheckIcon
 } from "@mui/icons-material";
 import { DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import EditAmountField from "./EditAmountField";
-import CheckIcon from "@mui/icons-material/Check";
 
-const ConfirmedDonationRow = observer(
+const DonationTableRow = observer(
   ({
     row,
     confirmedOrPending,
-    handleEdit,
     handleMakePending,
     handleConfirm,
     handleDelete
@@ -27,7 +25,6 @@ const ConfirmedDonationRow = observer(
       amount: number;
     };
     confirmedOrPending: "confirmed" | "pending";
-    handleEdit: (donation: DonationType) => void;
     handleMakePending: (donation: DonationType) => void;
     handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
@@ -133,4 +130,4 @@ const ConfirmedDonationRow = observer(
   }
 );
 
-export default ConfirmedDonationRow;
+export default DonationTableRow;

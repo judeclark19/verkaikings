@@ -1,16 +1,19 @@
 import UserListItem from "@/app/people/UserListItem";
 import { UserDocType } from "@/lib/UserList";
-import { Box, Button, Typography } from "@mui/material";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import CheckIcon from "@mui/icons-material/Check";
-
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Typography
+} from "@mui/material";
 import {
   Edit as EditIcon,
   HourglassEmpty as PendingIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Check as CheckIcon,
+  ExpandMore as ExpandMoreIcon
 } from "@mui/icons-material";
 import { DonationType } from "@/lib/FundraiserState";
 

@@ -24,11 +24,8 @@ const EditAmountField = observer(
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (donation.amount === parseFloat(manualDonationAmount)) {
-        console.log("amount is the same as before");
         setEditing(false);
       } else {
-        console.log("amount is different");
-
         setLoading(true);
 
         if (confirmedOrPending === "confirmed") {

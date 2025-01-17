@@ -1,7 +1,6 @@
 import UserListItem from "@/app/people/UserListItem";
 import fundraiserState from "@/lib/FundraiserState";
 import userList from "@/lib/UserList";
-
 import { Box, List, Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import NoDonation from "./NoDonation";

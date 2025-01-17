@@ -24,7 +24,7 @@ const DonationPending = observer(() => {
       >
         €{pendingDonation?.amount}
       </strong>{" "}
-      donation is pending {creator!.firstName}'s confirmation.
+      donation is pending {creator!.firstName}&apos;s confirmation.
     </Typography>
   );
 });

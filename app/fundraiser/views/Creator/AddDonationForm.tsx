@@ -5,8 +5,7 @@ import {
   Button,
   CircularProgress,
   MenuItem,
-  TextField,
-  Typography
+  TextField
 } from "@mui/material";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";

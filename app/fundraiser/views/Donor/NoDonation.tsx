@@ -19,11 +19,10 @@ const NoDonation = observer(() => {
 
   const { creatorId, title, pendingDonations } =
     fundraiserState.activeFundraiser;
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("submitting donation amount", pendingDonationAmount);
     setLoading(true);
-    // locate fundraiser doc and create a new donation in the pendingDonations array
 
     try {
       const fundraiserDocRef = doc(
@@ -31,14 +30,11 @@ const NoDonation = observer(() => {
         "fundraisers",
         fundraiserState.activeFundraiser!.id
       );
-      console.log("fundraiserDocRef", fundraiserDocRef);
 
       const newDonation = {
         userId: appState.loggedInUser!.id,
         amount: parseFloat(pendingDonationAmount)
       };
-
-      console.log("pendingDonations", pendingDonations);
 
       await updateDoc(fundraiserDocRef, {
         pendingDonations: pendingDonations
@@ -80,7 +76,7 @@ const NoDonation = observer(() => {
         If you have donated to the cause, please also add yourself to the list
         by submitting your amount below. Then the creator will be able to
         approve your donation and you will appear on the{" "}
-        <strong>"Donors"</strong> list.
+        <strong>&ldquo;Donors&rdquo;</strong> list.
       </Typography>
 
       <form

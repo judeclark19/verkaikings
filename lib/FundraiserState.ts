@@ -2,8 +2,6 @@ import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { doc, DocumentReference, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { DocumentData } from "firebase-admin/firestore";
-import { app } from "firebase-admin";
 
 export type DonationType = {
   userId: string;
@@ -30,14 +28,13 @@ export class FundraiserState {
   activeFundraiserDoc: DocumentReference | null = null;
 
   constructor() {
-    console.log("FundraiserState constructor");
     makeAutoObservable(this);
   }
 
-  setFundraisers(data: any) {
+  setFundraisers(data: FundraiserDocType[]) {
     this.fundraisersData = data;
 
-    let activeFundraiser = this.fundraisersData.find(
+    const activeFundraiser = this.fundraisersData.find(
       (fundraiser) => fundraiser.isActive
     );
 
@@ -49,7 +46,6 @@ export class FundraiserState {
         this.activeFundraiser.id
       );
     }
-    console.log("active fundraiser", this.activeFundraiser);
   }
 
   get progress() {
@@ -113,8 +109,6 @@ export class FundraiserState {
   }
 
   async handleMakeDonationPending(donation: DonationType) {
-    console.log("State Make Pending:", donation);
-
     try {
       await updateDoc(this.activeFundraiserDoc!, {
         pendingDonations: this.activeFundraiser?.pendingDonations
@@ -135,8 +129,6 @@ export class FundraiserState {
   }
 
   async handleConfirmDonation(donation: DonationType) {
-    console.log("State Confirm:", donation);
-
     try {
       await updateDoc(this.activeFundraiserDoc!, {
         confirmedDonations: this.activeFundraiser?.confirmedDonations
@@ -158,8 +150,6 @@ export class FundraiserState {
 
   async handleDeletePendingDonation(donation: DonationType) {
     if (confirm("Are you sure you want to delete this donation?")) {
-      console.log("State Delete Pending:", donation, this.activeFundraiserDoc);
-
       try {
         await updateDoc(this.activeFundraiserDoc!, {
           pendingDonations: this.activeFundraiser?.pendingDonations.filter(
@@ -179,8 +169,6 @@ export class FundraiserState {
 
   async handleDeleteConfirmedDonation(donation: DonationType) {
     if (confirm("Are you sure you want to delete this donation?")) {
-      console.log("State Delete Confirmed:", donation);
-
       try {
         await updateDoc(this.activeFundraiserDoc!, {
           confirmedDonations: this.activeFundraiser?.confirmedDonations.filter(
@@ -202,8 +190,6 @@ export class FundraiserState {
     donation: DonationType,
     newAmount: number
   ) {
-    console.log("State Update Amount:", donation, newAmount);
-
     try {
       await updateDoc(this.activeFundraiserDoc!, {
         confirmedDonations: this.activeFundraiser?.confirmedDonations.map(
@@ -226,8 +212,6 @@ export class FundraiserState {
   }
 
   async updatePendingDonationAmount(donation: DonationType, newAmount: number) {
-    console.log("State Update Amount:", donation, newAmount);
-
     try {
       await updateDoc(this.activeFundraiserDoc!, {
         pendingDonations: this.activeFundraiser?.pendingDonations.map(

@@ -50,7 +50,7 @@ const Fundraiser = observer(() => {
           textAlign: "center"
         }}
       >
-        "No active fundraiser"
+        No active fundraiser
       </Typography>
     );
   }
