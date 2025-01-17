@@ -27,7 +27,6 @@ const Description = observer(() => {
 
       try {
         setLoading(true);
-        // If the story exists, update it
         const fundraiserDocRef = doc(
           db,
           "fundraisers",

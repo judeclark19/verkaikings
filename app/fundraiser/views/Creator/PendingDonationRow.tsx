@@ -1,6 +1,6 @@
 import UserListItem from "@/app/people/UserListItem";
 import userList from "@/lib/UserList";
-import { IconButton, TableCell, TableRow } from "@mui/material";
+import { IconButton, TableCell, TableRow, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import CheckIcon from "@mui/icons-material/Check";
 import {
@@ -32,7 +32,13 @@ const PendingDonationRow = observer(
               user={userList.users.find((user) => user.id === row.userId)!}
             />
           ) : (
-            <div>Anonymous</div>
+            <Typography
+              sx={{
+                paddingLeft: "16px"
+              }}
+            >
+              {row.userId}
+            </Typography>
           )}
         </TableCell>
         <TableCell

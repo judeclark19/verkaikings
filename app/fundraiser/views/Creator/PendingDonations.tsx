@@ -12,19 +12,17 @@ import {
 import { observer } from "mobx-react-lite";
 import PendingDonationRow from "./PendingDonationRow";
 import userList from "@/lib/UserList";
-import ConfirmedDonationDropdown from "./ConfirmedDonationDropdown";
+import PendingDonationDropdown from "./PendingDonationDropdown";
 
 const PendingDonations = observer(
   ({
     handleEdit,
     handleConfirm,
-    handleDelete,
-    handleMakePending
+    handleDelete
   }: {
     handleEdit: (donation: DonationType) => void;
     handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
-    handleMakePending: (donation: DonationType) => void;
   }) => {
     if (!fundraiserState.activeFundraiser) {
       return null;
@@ -94,12 +92,12 @@ const PendingDonations = observer(
             );
 
             return user ? (
-              <ConfirmedDonationDropdown
+              <PendingDonationDropdown
                 key={user.id}
                 user={user}
                 donation={donation}
                 handleEdit={handleEdit}
-                handleMakePending={handleMakePending}
+                handleConfirm={handleConfirm}
                 handleDelete={handleDelete}
               />
             ) : null;

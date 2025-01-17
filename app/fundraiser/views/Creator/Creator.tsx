@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import fundraiserState, { DonationType } from "@/lib/FundraiserState";
 import ConfirmedDonations from "./ConfirmedDonations";
 import PendingDonations from "./PendingDonations";
+import AddDonationForm from "./AddDonationForm";
 
 const Creator = observer(() => {
   if (!fundraiserState.activeFundraiser) {
@@ -26,8 +27,12 @@ const Creator = observer(() => {
     fundraiserState.handleConfirmDonation(donation);
   };
 
-  const handleDelete = (donation: DonationType) => {
-    fundraiserState.handleDeleteDonation(donation);
+  const handleDeletePending = (donation: DonationType) => {
+    fundraiserState.handleDeletePendingDonation(donation);
+  };
+
+  const handleDeleteConfirmed = (donation: DonationType) => {
+    fundraiserState.handleDeleteConfirmedDonation(donation);
   };
 
   return (
@@ -107,7 +112,7 @@ const Creator = observer(() => {
           <ConfirmedDonations
             handleEdit={handleEdit}
             handleMakePending={handleMakePending}
-            handleDelete={handleDelete}
+            handleDelete={handleDeleteConfirmed}
           />
         )}
 
@@ -139,10 +144,29 @@ const Creator = observer(() => {
           <PendingDonations
             handleEdit={handleEdit}
             handleConfirm={handleConfirm}
-            handleDelete={handleDelete}
-            handleMakePending={handleMakePending}
+            handleDelete={handleDeletePending}
           />
         )}
+      </Paper>
+
+      <Paper
+        sx={{
+          padding: "1rem"
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: "center"
+          }}
+        >
+          Manually add donation
+        </Typography>
+        <Typography>
+          Enter your own donation or add a donation on behalf of someone else
+          who is not a member of this site.
+        </Typography>
+        <AddDonationForm />
       </Paper>
     </Box>
   );

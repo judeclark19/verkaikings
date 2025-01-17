@@ -1,5 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
+import { doc, DocumentReference, updateDoc } from "firebase/firestore";
+import { db } from "./firebase";
+import { DocumentData } from "firebase-admin/firestore";
+import { app } from "firebase-admin";
 
 export type DonationType = {
   userId: string;
@@ -23,6 +27,7 @@ export type FundraiserDocType = {
 export class FundraiserState {
   fundraisersData: FundraiserDocType[] = [];
   activeFundraiser: FundraiserDocType | null = null;
+  activeFundraiserDoc: DocumentReference | null = null;
 
   constructor() {
     console.log("FundraiserState constructor");
@@ -38,6 +43,11 @@ export class FundraiserState {
 
     if (activeFundraiser) {
       this.activeFundraiser = activeFundraiser;
+      this.activeFundraiserDoc = doc(
+        db,
+        "fundraisers",
+        this.activeFundraiser.id
+      );
     }
     console.log("active fundraiser", this.activeFundraiser);
   }
@@ -46,15 +56,29 @@ export class FundraiserState {
     if (!this.activeFundraiser) {
       return 0;
     }
-    const { currentAmount, goalAmount } = this.activeFundraiser;
-    return (currentAmount / goalAmount) * 100;
+    return (this.parsedCurrentAmount / this.activeFundraiser.goalAmount) * 100;
   }
 
   get currentAmount() {
     if (!this.activeFundraiser) {
       return 0;
     }
-    return this.formatNumberToCurrency(this.activeFundraiser?.currentAmount);
+    return this.formatNumberToCurrency(
+      this.activeFundraiser?.confirmedDonations.reduce(
+        (acc, donation) => acc + donation.amount,
+        0
+      )
+    );
+  }
+
+  get parsedCurrentAmount() {
+    if (!this.activeFundraiser) {
+      return 0;
+    }
+    return this.activeFundraiser?.confirmedDonations.reduce(
+      (acc, donation) => acc + donation.amount,
+      0
+    );
   }
 
   get goalAmount() {
@@ -88,19 +112,89 @@ export class FundraiserState {
     // Implement edit functionality here
   }
 
-  handleMakeDonationPending(donation: DonationType) {
+  async handleMakeDonationPending(donation: DonationType) {
     console.log("State Make Pending:", donation);
-    // Implement make pending functionality here
+
+    try {
+      await updateDoc(this.activeFundraiserDoc!, {
+        pendingDonations: this.activeFundraiser?.pendingDonations
+          ? [...this.activeFundraiser.pendingDonations, donation]
+          : [donation],
+        confirmedDonations: this.activeFundraiser?.confirmedDonations.filter(
+          (confirmedDonation) => confirmedDonation.userId !== donation.userId
+        )
+      });
+
+      appState.setSnackbarMessage("Donation made pending.");
+    } catch (err) {
+      console.error("Error making donation pending:", err);
+      appState.setSnackbarMessage(
+        "Error making donation pending. Please try again."
+      );
+    }
   }
 
-  handleConfirmDonation(donation: DonationType) {
+  async handleConfirmDonation(donation: DonationType) {
     console.log("State Confirm:", donation);
-    // Implement confirm functionality here
+
+    try {
+      await updateDoc(this.activeFundraiserDoc!, {
+        confirmedDonations: this.activeFundraiser?.confirmedDonations
+          ? [...this.activeFundraiser.confirmedDonations, donation]
+          : [donation],
+        pendingDonations: this.activeFundraiser?.pendingDonations.filter(
+          (pendingDonation) => pendingDonation.userId !== donation.userId
+        )
+      });
+
+      appState.setSnackbarMessage("Donation confirmed.");
+    } catch (error) {
+      console.error("Error confirming donation:", error);
+      appState.setSnackbarMessage(
+        "Error confirming donation. Please try again."
+      );
+    }
   }
 
-  handleDeleteDonation(donation: DonationType) {
+  async handleDeletePendingDonation(donation: DonationType) {
     if (confirm("Are you sure you want to delete this donation?")) {
-      console.log("State Delete:", donation);
+      console.log("State Delete Pending:", donation, this.activeFundraiserDoc);
+
+      try {
+        await updateDoc(this.activeFundraiserDoc!, {
+          pendingDonations: this.activeFundraiser?.pendingDonations.filter(
+            (pendingDonation) => pendingDonation.userId !== donation.userId
+          )
+        });
+
+        appState.setSnackbarMessage("Donation deleted.");
+      } catch (error) {
+        console.error("Error deleting donation:", error);
+        appState.setSnackbarMessage(
+          "Error deleting donation. Please try again."
+        );
+      }
+    }
+  }
+
+  async handleDeleteConfirmedDonation(donation: DonationType) {
+    if (confirm("Are you sure you want to delete this donation?")) {
+      console.log("State Delete Confirmed:", donation);
+
+      try {
+        await updateDoc(this.activeFundraiserDoc!, {
+          confirmedDonations: this.activeFundraiser?.confirmedDonations.filter(
+            (confirmedDonation) => confirmedDonation.userId !== donation.userId
+          )
+        });
+
+        appState.setSnackbarMessage("Donation deleted.");
+      } catch (error) {
+        console.error("Error deleting donation:", error);
+        appState.setSnackbarMessage(
+          "Error deleting donation. Please try again."
+        );
+      }
     }
   }
 }

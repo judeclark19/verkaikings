@@ -145,7 +145,6 @@ const Donor = observer(() => {
         sx={{
           padding: "1rem"
         }}
-        // elevation={5}
       >
         <Typography
           variant="h3"
