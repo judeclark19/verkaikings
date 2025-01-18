@@ -52,7 +52,8 @@ const BirthdayCardList = observer(
                     paddingRight: "1rem"
                   }}
                 >
-                  &nbsp; - {formatBirthday2digit(user.birthday!)}
+                  &nbsp; -{" "}
+                  {formatBirthday2digit(user.birthday!, appState.language)}
                 </div>
               </Box>
             ))}

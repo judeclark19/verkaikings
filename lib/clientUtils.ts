@@ -1,9 +1,6 @@
 import { PhoneNumberUtil } from "google-libphonenumber";
 
-export function formatFullBirthday(input: string) {
-  // Detect the user's locale or default to "en"
-  const userLocale = navigator.language || "en";
-
+export function formatFullBirthday(input: string, userLocale: string) {
   // Check if the input is a month/day format (`--MM-DD`)
   const isMonthDayOnly = input.startsWith("--");
 
@@ -34,14 +31,11 @@ export function formatFullBirthday(input: string) {
   return date.toLocaleDateString(userLocale, options).replace(/,/g, ", ");
 }
 
-export function formatBirthday2digit(input: string) {
+export function formatBirthday2digit(input: string, userLocale: string) {
   const birthday = addYearToBirthday(input);
 
   // Parse the input string into a Date object
   const date = new Date(`${birthday}T00:00:00`);
-
-  // Detect the user's locale or default to "en"
-  const userLocale = navigator.language || "en";
 
   // Format the date using toLocaleDateString with the detected locale
   return date

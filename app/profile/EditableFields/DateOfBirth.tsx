@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import myProfileState from "../MyProfile.state";
 import CakeIcon from "@mui/icons-material/Cake";
 import DOBChangeModal from "../components/DOBChangeModal";
+import appState from "@/lib/AppState";
 
 const DateOfBirth = observer(() => {
   if (!myProfileState.user) {
@@ -37,7 +38,10 @@ const DateOfBirth = observer(() => {
             }}
           >
             {myProfileState.user.birthday
-              ? formatFullBirthday(myProfileState.user.birthday)
+              ? formatFullBirthday(
+                  myProfileState.user.birthday,
+                  appState.language
+                )
               : "(Enter your date of birth)"}{" "}
             {myProfileState.user.birthday &&
               checkIfBirthdayToday(myProfileState.user.birthday) &&
