@@ -2,6 +2,7 @@ import { Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import ByDay from "./ByDay";
 import userList from "@/lib/UserList";
+import appState from "@/lib/AppState";
 
 const ByMonth = observer(({ month }: { month: string }) => {
   function getMonthName(monthNumber: number, locale: string) {
@@ -30,7 +31,7 @@ const ByMonth = observer(({ month }: { month: string }) => {
           color
         }}
       >
-        {getMonthName(parseInt(month), navigator.language || "en")}
+        {getMonthName(parseInt(month), appState.language || "en")}
       </Typography>
       <div>
         {Object.keys(userList.usersByBirthday[month])

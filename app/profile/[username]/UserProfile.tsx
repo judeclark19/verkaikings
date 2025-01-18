@@ -254,7 +254,7 @@ const UserProfile = observer(
                 />
                 {user.birthday && (
                   <ReadOnlyContactItem
-                    value={formatFullBirthday(user.birthday)}
+                    value={formatFullBirthday(user.birthday, appState.language)}
                     icon={<CakeIcon />}
                   />
                 )}

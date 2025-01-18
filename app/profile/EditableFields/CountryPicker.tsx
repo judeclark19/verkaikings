@@ -18,7 +18,7 @@ import appState from "@/lib/AppState";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
-    const locale = navigator.language || "en"; // Detect user's locale
+    const locale = appState.language || "en"; // Detect user's locale
     const [loading, setLoading] = useState(false);
 
     // Initialize DisplayNames with locale and region options
