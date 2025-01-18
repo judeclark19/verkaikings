@@ -128,7 +128,8 @@ const Fundraiser = observer(() => {
           fontSize: "1.5rem"
         }}
       >
-        Final day to donate: {formatFullBirthday(activeFundraiser.finalDay)}{" "}
+        Final day to donate:{" "}
+        {formatFullBirthday(activeFundraiser.finalDay, appState.language)}{" "}
       </Typography>
 
       <FundraiserProgressBar width={90} />

@@ -103,11 +103,6 @@ export class FundraiserState {
     }
   }
 
-  handleEditDonation(donation: DonationType) {
-    console.log("State Edit:", donation);
-    // Implement edit functionality here
-  }
-
   async handleMakeDonationPending(donation: DonationType) {
     try {
       await updateDoc(this.activeFundraiserDoc!, {
