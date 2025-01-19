@@ -1,6 +1,6 @@
 import FundraiserProgressBar from "@/app/fundraisers/FundraiserProgressBar";
 import appState from "@/lib/AppState";
-import { ActiveFundraiser } from "@/lib/FundraiserState";
+import { Fundraiser } from "@/lib/FundraiserState";
 import { Box, Button, Skeleton, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -11,7 +11,7 @@ const FundraiserPreview = observer(
     color,
     progressBarBackgroundColor
   }: {
-    fundraiser: ActiveFundraiser;
+    fundraiser: Fundraiser;
     color: "pink" | "green";
     progressBarBackgroundColor: "dark" | "light";
   }) => {

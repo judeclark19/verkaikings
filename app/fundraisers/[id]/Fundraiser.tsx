@@ -5,7 +5,6 @@ import { observer } from "mobx-react-lite";
 import FundraiserSkeleton from "../FundraiserSkeleton";
 import appState from "@/lib/AppState";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import UserListItem from "@/app/people/UserListItem";
 import userList from "@/lib/UserList";
@@ -18,15 +17,16 @@ import GoBack from "@/components/GoBack";
 const Fundraiser = observer(() => {
   const params = useParams();
   const { id } = params;
-  const fundraiser = fundraiserState.activeFundraisers.find(
-    (fundraiser) => fundraiser.data.id === id
-  );
+  const fundraiser = [
+    ...fundraiserState.activeFundraisers,
+    ...fundraiserState.pastFundraisers
+  ].find((fundraiser) => fundraiser.data.id === id);
 
   const creator = userList.users.find(
     (user) => user.id === fundraiser!.data.creatorId
   );
 
-  const [viewAs, setViewAs] = useState("creator");
+  const isCreator = creator?.id === appState.loggedInUser?.id;
 
   if (!appState.isInitialized || !fundraiser) {
     return <FundraiserSkeleton />;
@@ -36,29 +36,6 @@ const Fundraiser = observer(() => {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center"
-        }}
-      >
-        <button
-          onClick={() => setViewAs("creator")}
-          style={{
-            backgroundColor: viewAs === "creator" ? "blue" : "white"
-          }}
-        >
-          Creator
-        </button>
-        <button
-          onClick={() => setViewAs("donor")}
-          style={{
-            backgroundColor: viewAs === "donor" ? "blue" : "white"
-          }}
-        >
-          donor
-        </button>
-      </div>
       <GoBack />
       <Typography
         variant="h1"
@@ -108,14 +85,20 @@ const Fundraiser = observer(() => {
           fontSize: "1.5rem"
         }}
       >
-        Final day to donate:{" "}
+        {fundraiser.data.isActive
+          ? `Final day to donate: `
+          : `Fundraiser ended on `}
         {formatFullBirthday(fundraiser.data.finalDay, appState.language)}{" "}
       </Typography>
 
       <FundraiserProgressBar width={90} progress={fundraiser.progress} />
       <Box>
-        {viewAs === "creator" && <Creator fundraiser={fundraiser} />}
-        {viewAs === "donor" && <Donor fundraiser={fundraiser} />}
+        {isCreator && fundraiser.data.isActive && (
+          <Creator fundraiser={fundraiser} />
+        )}
+        {(!fundraiser.data.isActive || !isCreator) && (
+          <Donor fundraiser={fundraiser} />
+        )}
       </Box>
     </>
   );

@@ -22,7 +22,7 @@ export type FundraiserDocType = {
   pendingDonations: DonationType[];
 };
 
-export class ActiveFundraiser {
+export class Fundraiser {
   data: FundraiserDocType;
   activeFundraiserDoc: DocumentReference | null = null;
 
@@ -30,7 +30,6 @@ export class ActiveFundraiser {
     makeAutoObservable(this);
     this.data = fundraiser;
     this.activeFundraiserDoc = doc(db, "fundraisers", fundraiser.id);
-    console.log("active fundrasier doc:", this.activeFundraiserDoc);
   }
 
   get currentAmount() {
@@ -209,21 +208,36 @@ export class ActiveFundraiser {
   }
 }
 
+// export class PastFundraiser {
+//   data: FundraiserDocType;
+//   pastFundraiserDoc: DocumentReference | null = null;
+
+//   constructor(fundraiser: FundraiserDocType) {
+//     makeAutoObservable(this);
+//     this.data = fundraiser;
+//     this.pastFundraiserDoc = doc(db, "fundraisers", fundraiser.id);
+//   }
+// }
+
 export class FundraiserState {
   fundraisersData: FundraiserDocType[] = [];
-  activeFundraisers: ActiveFundraiser[] = [];
+  activeFundraisers: Fundraiser[] = [];
+  pastFundraisers: Fundraiser[] = [];
 
   constructor() {
     makeAutoObservable(this);
   }
 
   setFundraisers(data: FundraiserDocType[]) {
-    this.fundraisersData = data;
     this.activeFundraisers = [];
+    this.pastFundraisers = [];
+    this.fundraisersData = data;
 
     this.fundraisersData.forEach((fundraiser) => {
       if (fundraiser.isActive) {
-        this.activeFundraisers.push(new ActiveFundraiser(fundraiser));
+        this.activeFundraisers.push(new Fundraiser(fundraiser));
+      } else {
+        this.pastFundraisers.push(new Fundraiser(fundraiser));
       }
     });
   }

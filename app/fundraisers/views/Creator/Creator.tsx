@@ -2,11 +2,11 @@ import { Box, Divider, Paper, Typography } from "@mui/material";
 import Description from "../../editableFields/Description";
 import Instructions from "../../editableFields/Instructions";
 import { observer } from "mobx-react-lite";
-import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
+import { Fundraiser, DonationType } from "@/lib/FundraiserState";
 import AddDonationForm from "./AddDonationForm";
 import DonationsList from "./DonationsList";
 
-const Creator = observer(({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
+const Creator = observer(({ fundraiser }: { fundraiser: Fundraiser }) => {
   const { confirmedDonations, pendingDonations } = fundraiser.data;
 
   const handleMakePending = (donation: DonationType) => {

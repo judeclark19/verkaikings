@@ -41,12 +41,12 @@ class AppState {
   userList: UserList = userList;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
-  fundraiser: FundraiserState = fundraiserState;
+  fundraisers: FundraiserState = fundraiserState;
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;
   eventsUnsubscribe: (() => void) | null = null;
-  fundraiserUnsubscribe: (() => void) | null = null;
+  fundraisersUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -78,7 +78,7 @@ class AppState {
       this.subscribeToUsers();
       this.subscribeToStories();
       this.subscribeToEvents();
-      this.subscribeToFundraiser();
+      this.subscribeToFundraisers();
     } else {
       this.unsubscribeFromSnapshots();
     }
@@ -91,6 +91,7 @@ class AppState {
     events: EventDocType[],
     fundraisers: FundraiserDocType[]
   ) {
+    console.log("appState.init()", fundraisers);
     if (this.isInitialized) {
       return;
     }
@@ -109,8 +110,8 @@ class AppState {
       this.myWillemijnStories.init(stories);
       this.events = eventsState;
       this.events.setAllEvents(events);
-      this.fundraiser = fundraiserState;
-      this.fundraiser.setFundraisers(fundraisers);
+      this.fundraisers = fundraiserState;
+      this.fundraisers.setFundraisers(fundraisers);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
@@ -202,8 +203,8 @@ class AppState {
     );
   }
 
-  subscribeToFundraiser() {
-    this.fundraiserUnsubscribe = onSnapshot(
+  subscribeToFundraisers() {
+    this.fundraisersUnsubscribe = onSnapshot(
       collection(db, "fundraisers"),
       (snapshot) => {
         const fundraisersData = snapshot.docs.map(
@@ -213,7 +214,7 @@ class AppState {
               ...doc.data()
             } as FundraiserDocType)
         );
-        this.fundraiser.setFundraisers(fundraisersData);
+        this.fundraisers.setFundraisers(fundraisersData);
       }
     );
   }
@@ -231,9 +232,9 @@ class AppState {
       this.eventsUnsubscribe();
       this.eventsUnsubscribe = null;
     }
-    if (this.fundraiserUnsubscribe) {
-      this.fundraiserUnsubscribe();
-      this.fundraiserUnsubscribe = null;
+    if (this.fundraisersUnsubscribe) {
+      this.fundraisersUnsubscribe();
+      this.fundraisersUnsubscribe = null;
     }
   }
 

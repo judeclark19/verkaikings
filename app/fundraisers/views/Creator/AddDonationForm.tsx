@@ -11,11 +11,11 @@ import { updateDoc } from "firebase/firestore";
 import { NumericFormat, NumberFormatValues } from "react-number-format";
 import appState from "@/lib/AppState";
 import userList from "@/lib/UserList";
-import { ActiveFundraiser } from "@/lib/FundraiserState";
+import { Fundraiser } from "@/lib/FundraiserState";
 import { observer } from "mobx-react-lite";
 
 const AddDonationForm = observer(
-  ({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
+  ({ fundraiser }: { fundraiser: Fundraiser }) => {
     const [loading, setLoading] = useState(false);
     const [dropdownValue, setDropdownValue] = useState("");
     const [customDonorName, setCustomDonorName] = useState("");

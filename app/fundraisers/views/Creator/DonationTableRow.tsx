@@ -8,7 +8,7 @@ import {
   Delete as DeleteIcon,
   Check as CheckIcon
 } from "@mui/icons-material";
-import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
+import { Fundraiser, DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import EditAmountField from "./EditAmountField";
 
@@ -21,7 +21,7 @@ const DonationTableRow = observer(
     handleConfirm,
     handleDelete
   }: {
-    fundraiser: ActiveFundraiser;
+    fundraiser: Fundraiser;
     row: {
       userId: string;
       amount: number;

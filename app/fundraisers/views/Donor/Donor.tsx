@@ -1,5 +1,5 @@
 import UserListItem from "@/app/people/UserListItem";
-import { ActiveFundraiser } from "@/lib/FundraiserState";
+import { Fundraiser } from "@/lib/FundraiserState";
 import userList from "@/lib/UserList";
 import { Box, List, Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
@@ -8,7 +8,7 @@ import appState from "@/lib/AppState";
 import DonationPending from "./DonationPending";
 import DonationConfirmed from "./DonationConfirmed";
 
-const Donor = observer(({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
+const Donor = observer(({ fundraiser }: { fundraiser: Fundraiser }) => {
   const { description, instructions, confirmedDonations, pendingDonations } =
     fundraiser.data;
 

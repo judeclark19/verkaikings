@@ -83,7 +83,8 @@ const Dashboard = observer(() => {
     <div>
       <Box
         sx={{
-          display: "grid",
+          display:
+            fundraiserState.activeFundraisers.length > 1 ? "grid" : "block",
           gridTemplateColumns: {
             xs: "1fr",
             md: "1fr 1fr"

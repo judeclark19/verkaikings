@@ -1,5 +1,5 @@
 import fundraiserState, {
-  ActiveFundraiser,
+  Fundraiser,
   DonationType
 } from "@/lib/FundraiserState";
 import {
@@ -25,7 +25,7 @@ const DonationsList = observer(
     handleConfirm,
     handleDelete
   }: {
-    fundraiser: ActiveFundraiser;
+    fundraiser: Fundraiser;
     confirmedOrPending: "confirmed" | "pending";
     handleMakePending: (donation: DonationType) => void;
     handleConfirm: (donation: DonationType) => void;

@@ -1,11 +1,11 @@
 import appState from "@/lib/AppState";
-import { ActiveFundraiser } from "@/lib/FundraiserState";
+import { Fundraiser } from "@/lib/FundraiserState";
 import userList from "@/lib/UserList";
 import { Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
 
 const DonationConfirmed = observer(
-  ({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
+  ({ fundraiser }: { fundraiser: Fundraiser }) => {
     const confirmedDonation = fundraiser.data.confirmedDonations?.find(
       (donation) => donation.userId === appState.loggedInUser?.id
     );

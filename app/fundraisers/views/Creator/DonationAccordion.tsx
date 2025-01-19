@@ -17,7 +17,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   Save as SaveIcon
 } from "@mui/icons-material";
-import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
+import { Fundraiser, DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import { NumericFormat, NumberFormatValues } from "react-number-format";
 import appState from "@/lib/AppState";
@@ -34,7 +34,7 @@ const DonationAccordion = observer(
     handleDelete
   }: {
     user: UserDocType | string;
-    fundraiser: ActiveFundraiser;
+    fundraiser: Fundraiser;
     donation: {
       userId: string;
       amount: number;
