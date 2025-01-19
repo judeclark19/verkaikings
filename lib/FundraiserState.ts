@@ -22,66 +22,52 @@ export type FundraiserDocType = {
   pendingDonations: DonationType[];
 };
 
-export class FundraiserState {
-  fundraisersData: FundraiserDocType[] = [];
-  activeFundraiser: FundraiserDocType | null = null;
+export class ActiveFundraiser {
+  data: FundraiserDocType;
   activeFundraiserDoc: DocumentReference | null = null;
 
-  constructor() {
+  constructor(fundraiser: FundraiserDocType) {
     makeAutoObservable(this);
-  }
-
-  setFundraisers(data: FundraiserDocType[]) {
-    this.fundraisersData = data;
-
-    const activeFundraiser = this.fundraisersData.find(
-      (fundraiser) => fundraiser.isActive
-    );
-
-    if (activeFundraiser) {
-      this.activeFundraiser = activeFundraiser;
-      this.activeFundraiserDoc = doc(
-        db,
-        "fundraisers",
-        this.activeFundraiser.id
-      );
-    }
-  }
-
-  get progress() {
-    if (!this.activeFundraiser) {
-      return 0;
-    }
-    return (this.parsedCurrentAmount / this.activeFundraiser.goalAmount) * 100;
+    this.data = fundraiser;
+    this.activeFundraiserDoc = doc(db, "fundraisers", fundraiser.id);
+    console.log("active fundrasier doc:", this.activeFundraiserDoc);
   }
 
   get currentAmount() {
-    if (!this.activeFundraiser) {
+    if (
+      !this.data.confirmedDonations ||
+      this.data.confirmedDonations.length === 0
+    ) {
       return 0;
     }
+
     return this.formatNumberToCurrency(
-      this.activeFundraiser?.confirmedDonations.reduce(
+      this.data.confirmedDonations.reduce(
         (acc, donation) => acc + donation.amount,
         0
       )
     );
   }
 
+  get goalAmount() {
+    return this.formatNumberToCurrency(this.data.goalAmount);
+  }
+
   get parsedCurrentAmount() {
-    if (!this.activeFundraiser) {
+    if (
+      !this.data.confirmedDonations ||
+      this.data.confirmedDonations.length === 0
+    ) {
       return 0;
     }
-    return this.activeFundraiser?.confirmedDonations.reduce(
+    return this.data.confirmedDonations.reduce(
       (acc, donation) => acc + donation.amount,
       0
     );
   }
 
-  get goalAmount() {
-    if (!this.activeFundraiser) {
-      return 0;
-    }
-    return this.formatNumberToCurrency(this.activeFundraiser?.goalAmount);
+  get progress() {
+    return (this.parsedCurrentAmount / this.data.goalAmount) * 100;
   }
 
   formatNumberToCurrency(number: number) {
@@ -91,25 +77,21 @@ export class FundraiserState {
     }).format(number);
   }
 
-  setActiveFundraiserDescription(description: string) {
-    if (this.activeFundraiser) {
-      this.activeFundraiser.description = description;
-    }
+  setFundraiserDescription(description: string) {
+    this.data.description = description;
   }
 
-  setActiveFundraiserInstructions(instructions: string) {
-    if (this.activeFundraiser) {
-      this.activeFundraiser.instructions = instructions;
-    }
+  setFundraiserInstructions(instructions: string) {
+    this.data.instructions = instructions;
   }
 
   async handleMakeDonationPending(donation: DonationType) {
     try {
       await updateDoc(this.activeFundraiserDoc!, {
-        pendingDonations: this.activeFundraiser?.pendingDonations
-          ? [...this.activeFundraiser.pendingDonations, donation]
+        pendingDonations: this.data.pendingDonations
+          ? [...this.data.pendingDonations, donation]
           : [donation],
-        confirmedDonations: this.activeFundraiser?.confirmedDonations.filter(
+        confirmedDonations: this.data.confirmedDonations.filter(
           (confirmedDonation) => confirmedDonation.userId !== donation.userId
         )
       });
@@ -126,10 +108,10 @@ export class FundraiserState {
   async handleConfirmDonation(donation: DonationType) {
     try {
       await updateDoc(this.activeFundraiserDoc!, {
-        confirmedDonations: this.activeFundraiser?.confirmedDonations
-          ? [...this.activeFundraiser.confirmedDonations, donation]
+        confirmedDonations: this.data.confirmedDonations
+          ? [...this.data.confirmedDonations, donation]
           : [donation],
-        pendingDonations: this.activeFundraiser?.pendingDonations.filter(
+        pendingDonations: this.data.pendingDonations.filter(
           (pendingDonation) => pendingDonation.userId !== donation.userId
         )
       });
@@ -143,30 +125,11 @@ export class FundraiserState {
     }
   }
 
-  async handleDeletePendingDonation(donation: DonationType) {
-    if (confirm("Are you sure you want to delete this donation?")) {
-      try {
-        await updateDoc(this.activeFundraiserDoc!, {
-          pendingDonations: this.activeFundraiser?.pendingDonations.filter(
-            (pendingDonation) => pendingDonation.userId !== donation.userId
-          )
-        });
-
-        appState.setSnackbarMessage("Donation deleted.");
-      } catch (error) {
-        console.error("Error deleting donation:", error);
-        appState.setSnackbarMessage(
-          "Error deleting donation. Please try again."
-        );
-      }
-    }
-  }
-
   async handleDeleteConfirmedDonation(donation: DonationType) {
     if (confirm("Are you sure you want to delete this donation?")) {
       try {
         await updateDoc(this.activeFundraiserDoc!, {
-          confirmedDonations: this.activeFundraiser?.confirmedDonations.filter(
+          confirmedDonations: this.data.confirmedDonations.filter(
             (confirmedDonation) => confirmedDonation.userId !== donation.userId
           )
         });
@@ -187,7 +150,7 @@ export class FundraiserState {
   ) {
     try {
       await updateDoc(this.activeFundraiserDoc!, {
-        confirmedDonations: this.activeFundraiser?.confirmedDonations.map(
+        confirmedDonations: this.data.confirmedDonations.map(
           (confirmedDonation) => {
             if (confirmedDonation.userId === donation.userId) {
               return { ...confirmedDonation, amount: newAmount };
@@ -209,14 +172,12 @@ export class FundraiserState {
   async updatePendingDonationAmount(donation: DonationType, newAmount: number) {
     try {
       await updateDoc(this.activeFundraiserDoc!, {
-        pendingDonations: this.activeFundraiser?.pendingDonations.map(
-          (pendingDonation) => {
-            if (pendingDonation.userId === donation.userId) {
-              return { ...pendingDonation, amount: newAmount };
-            }
-            return pendingDonation;
+        pendingDonations: this.data.pendingDonations.map((pendingDonation) => {
+          if (pendingDonation.userId === donation.userId) {
+            return { ...pendingDonation, amount: newAmount };
           }
-        )
+          return pendingDonation;
+        })
       });
 
       appState.setSnackbarMessage("Donation amount updated.");
@@ -226,6 +187,45 @@ export class FundraiserState {
         "Error updating donation amount. Please try again."
       );
     }
+  }
+
+  async handleDeletePendingDonation(donation: DonationType) {
+    if (confirm("Are you sure you want to delete this donation?")) {
+      try {
+        await updateDoc(this.activeFundraiserDoc!, {
+          pendingDonations: this.data.pendingDonations.filter(
+            (pendingDonation) => pendingDonation.userId !== donation.userId
+          )
+        });
+
+        appState.setSnackbarMessage("Donation deleted.");
+      } catch (error) {
+        console.error("Error deleting donation:", error);
+        appState.setSnackbarMessage(
+          "Error deleting donation. Please try again."
+        );
+      }
+    }
+  }
+}
+
+export class FundraiserState {
+  fundraisersData: FundraiserDocType[] = [];
+  activeFundraisers: ActiveFundraiser[] = [];
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setFundraisers(data: FundraiserDocType[]) {
+    this.fundraisersData = data;
+    this.activeFundraisers = [];
+
+    this.fundraisersData.forEach((fundraiser) => {
+      if (fundraiser.isActive) {
+        this.activeFundraisers.push(new ActiveFundraiser(fundraiser));
+      }
+    });
   }
 }
 

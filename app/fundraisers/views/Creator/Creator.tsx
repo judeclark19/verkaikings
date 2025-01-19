@@ -2,32 +2,27 @@ import { Box, Divider, Paper, Typography } from "@mui/material";
 import Description from "../../editableFields/Description";
 import Instructions from "../../editableFields/Instructions";
 import { observer } from "mobx-react-lite";
-import fundraiserState, { DonationType } from "@/lib/FundraiserState";
+import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
 import AddDonationForm from "./AddDonationForm";
 import DonationsList from "./DonationsList";
 
-const Creator = observer(() => {
-  if (!fundraiserState.activeFundraiser) {
-    return null;
-  }
-
-  const { confirmedDonations, pendingDonations } =
-    fundraiserState.activeFundraiser;
+const Creator = observer(({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
+  const { confirmedDonations, pendingDonations } = fundraiser.data;
 
   const handleMakePending = (donation: DonationType) => {
-    fundraiserState.handleMakeDonationPending(donation);
+    fundraiser.handleMakeDonationPending(donation);
   };
 
   const handleConfirm = (donation: DonationType) => {
-    fundraiserState.handleConfirmDonation(donation);
+    fundraiser.handleConfirmDonation(donation);
   };
 
   const handleDeletePending = (donation: DonationType) => {
-    fundraiserState.handleDeletePendingDonation(donation);
+    fundraiser.handleDeletePendingDonation(donation);
   };
 
   const handleDeleteConfirmed = (donation: DonationType) => {
-    fundraiserState.handleDeleteConfirmedDonation(donation);
+    fundraiser.handleDeleteConfirmedDonation(donation);
   };
 
   return (
@@ -47,7 +42,8 @@ const Creator = observer(() => {
       {/* Description */}
       <Paper
         sx={{
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
       >
         <Typography
@@ -58,14 +54,15 @@ const Creator = observer(() => {
         >
           Description
         </Typography>
-        <Description />
+        <Description fundraiser={fundraiser} />
       </Paper>
 
       {/* Instructions */}
       <Paper
         sx={{
           width: "100%",
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
         elevation={10}
       >
@@ -77,12 +74,13 @@ const Creator = observer(() => {
         >
           How to donate
         </Typography>
-        <Instructions />
+        <Instructions fundraiser={fundraiser} />
       </Paper>
 
       <Paper
         sx={{
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
         elevation={5}
       >
@@ -95,7 +93,7 @@ const Creator = observer(() => {
           Confirmed Donors
         </Typography>
 
-        {confirmedDonations.length === 0 ? (
+        {!confirmedDonations || confirmedDonations.length === 0 ? (
           <Typography
             sx={{
               textAlign: "center"
@@ -106,6 +104,7 @@ const Creator = observer(() => {
         ) : (
           <DonationsList
             confirmedOrPending="confirmed"
+            fundraiser={fundraiser}
             handleMakePending={handleMakePending}
             handleConfirm={handleConfirm}
             handleDelete={handleDeleteConfirmed}
@@ -128,7 +127,7 @@ const Creator = observer(() => {
           Pending Donors
         </Typography>
 
-        {pendingDonations.length === 0 ? (
+        {!pendingDonations || pendingDonations.length === 0 ? (
           <Typography
             sx={{
               textAlign: "center"
@@ -138,6 +137,7 @@ const Creator = observer(() => {
           </Typography>
         ) : (
           <DonationsList
+            fundraiser={fundraiser}
             confirmedOrPending="pending"
             handleMakePending={handleMakePending}
             handleConfirm={handleConfirm}
@@ -148,7 +148,8 @@ const Creator = observer(() => {
 
       <Paper
         sx={{
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
       >
         <Typography
@@ -163,7 +164,7 @@ const Creator = observer(() => {
           Enter your own donation or add a donation on behalf of someone else
           who is not a member of this site.
         </Typography>
-        <AddDonationForm />
+        <AddDonationForm fundraiser={fundraiser} />
       </Paper>
     </Box>
   );

@@ -1,5 +1,5 @@
 import appState from "@/lib/AppState";
-import fundraiserState, { DonationType } from "@/lib/FundraiserState";
+import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
 import { CircularProgress, IconButton, TextField } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -8,11 +8,13 @@ import SaveIcon from "@mui/icons-material/Save";
 
 const EditAmountField = observer(
   ({
+    fundraiser,
     donation,
     setEditing,
     confirmedOrPending,
     includeSaveButton = true
   }: {
+    fundraiser: ActiveFundraiser;
     donation: DonationType;
     setEditing: (editing: boolean) => void;
     confirmedOrPending: "confirmed" | "pending";
@@ -31,12 +33,12 @@ const EditAmountField = observer(
         setLoading(true);
 
         if (confirmedOrPending === "confirmed") {
-          await fundraiserState.updateConfirmedDonationAmount(
+          await fundraiser.updateConfirmedDonationAmount(
             donation,
             parseFloat(manualDonationAmount)
           );
         } else {
-          await fundraiserState.updatePendingDonationAmount(
+          await fundraiser.updatePendingDonationAmount(
             donation,
             parseFloat(manualDonationAmount)
           );

@@ -12,7 +12,8 @@ import { useEffect, useState } from "react";
 import BirthdayCardList from "./BirthdayCardList";
 import CakeIcon from "@mui/icons-material/Cake";
 import userList, { UserDocType } from "@/lib/UserList";
-import FundraiserPreview from "./FundraiserPreview";
+import FundraiserPreview from "../../app/fundraisers/FundraiserPreview";
+import fundraiserState from "@/lib/FundraiserState";
 
 const Dashboard = observer(() => {
   const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
@@ -80,7 +81,29 @@ const Dashboard = observer(() => {
 
   return (
     <div>
-      <FundraiserPreview />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "1fr 1fr"
+          },
+          gap: 2,
+          mb: 2
+        }}
+      >
+        {fundraiserState.activeFundraisers
+          .slice()
+          .sort((a, b) => a.data.finalDay.localeCompare(b.data.finalDay))
+          .map((activeFundraiser, i) => (
+            <FundraiserPreview
+              key={activeFundraiser.data.id}
+              fundraiser={activeFundraiser}
+              color={i % 2 === 0 ? "pink" : "green"}
+              progressBarBackgroundColor="dark"
+            />
+          ))}
+      </Box>
 
       <Box
         sx={{

@@ -1,59 +1,38 @@
 "use client";
 
-import appState from "@/lib/AppState";
 import fundraiserState from "@/lib/FundraiserState";
-import userList from "@/lib/UserList";
-import { Skeleton, Typography, Box } from "@mui/material";
 import { observer } from "mobx-react-lite";
+import FundraiserSkeleton from "../FundraiserSkeleton";
+import appState from "@/lib/AppState";
+import { useParams } from "next/navigation";
 import { useState } from "react";
-import Creator from "./views/Creator/Creator";
-import Donor from "./views/Donor/Donor";
+import { Box, Typography } from "@mui/material";
+import UserListItem from "@/app/people/UserListItem";
+import userList from "@/lib/UserList";
 import { formatFullBirthday } from "@/lib/clientUtils";
-import FundraiserProgressBar from "./FundraiserProgressBar";
-import UserListItem from "../people/UserListItem";
+import FundraiserProgressBar from "../FundraiserProgressBar";
+import Creator from "../views/Creator/Creator";
+import Donor from "../views/Donor/Donor";
+import GoBack from "@/components/GoBack";
 
 const Fundraiser = observer(() => {
-  const { activeFundraiser } = fundraiserState;
+  const params = useParams();
+  const { id } = params;
+  const fundraiser = fundraiserState.activeFundraisers.find(
+    (fundraiser) => fundraiser.data.id === id
+  );
+
   const creator = userList.users.find(
-    (user) => user.id === activeFundraiser?.creatorId
+    (user) => user.id === fundraiser!.data.creatorId
   );
 
   const [viewAs, setViewAs] = useState("creator");
 
-  if (!appState.isInitialized) {
-    return (
-      <>
-        <Skeleton
-          variant="text"
-          sx={{
-            fontSize: "5rem",
-            textAlign: "center",
-            margin: "auto",
-            mb: 2,
-            width: "50%"
-          }}
-        />
-        <Skeleton
-          variant="rectangular"
-          height={500}
-          sx={{ marginBottom: "32px" }}
-        />
-      </>
-    );
+  if (!appState.isInitialized || !fundraiser) {
+    return <FundraiserSkeleton />;
   }
 
-  if (!activeFundraiser) {
-    return (
-      <Typography
-        variant="h1"
-        sx={{
-          textAlign: "center"
-        }}
-      >
-        No active fundraiser
-      </Typography>
-    );
-  }
+  document.title = `${fundraiser.data.title} | Willemijn's World Website`;
 
   return (
     <>
@@ -80,6 +59,7 @@ const Fundraiser = observer(() => {
           donor
         </button>
       </div>
+      <GoBack />
       <Typography
         variant="h1"
         sx={{
@@ -87,7 +67,7 @@ const Fundraiser = observer(() => {
           mb: 2
         }}
       >
-        {activeFundraiser.title}
+        {fundraiser.data.title}
       </Typography>
       <Box
         sx={{
@@ -118,8 +98,8 @@ const Fundraiser = observer(() => {
           fontSize: "2rem"
         }}
       >
-        Amount raised: €{fundraiserState.currentAmount} (of goal €
-        {fundraiserState.goalAmount})
+        Amount raised: €{fundraiser.currentAmount} (of goal €
+        {fundraiser.data.goalAmount})
       </Typography>
       <Typography
         variant="h4"
@@ -129,13 +109,13 @@ const Fundraiser = observer(() => {
         }}
       >
         Final day to donate:{" "}
-        {formatFullBirthday(activeFundraiser.finalDay, appState.language)}{" "}
+        {formatFullBirthday(fundraiser.data.finalDay, appState.language)}{" "}
       </Typography>
 
-      <FundraiserProgressBar width={90} />
+      <FundraiserProgressBar width={90} progress={fundraiser.progress} />
       <Box>
-        {viewAs === "creator" && <Creator />}
-        {viewAs === "donor" && <Donor />}
+        {viewAs === "creator" && <Creator fundraiser={fundraiser} />}
+        {viewAs === "donor" && <Donor fundraiser={fundraiser} />}
       </Box>
     </>
   );

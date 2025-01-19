@@ -1,5 +1,5 @@
 import UserListItem from "@/app/people/UserListItem";
-import fundraiserState from "@/lib/FundraiserState";
+import { ActiveFundraiser } from "@/lib/FundraiserState";
 import userList from "@/lib/UserList";
 import { Box, List, Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
@@ -8,13 +8,9 @@ import appState from "@/lib/AppState";
 import DonationPending from "./DonationPending";
 import DonationConfirmed from "./DonationConfirmed";
 
-const Donor = observer(() => {
-  if (!fundraiserState.activeFundraiser) {
-    return null;
-  }
-
+const Donor = observer(({ fundraiser }: { fundraiser: ActiveFundraiser }) => {
   const { description, instructions, confirmedDonations, pendingDonations } =
-    fundraiserState.activeFundraiser;
+    fundraiser.data;
 
   const donationIsPending = !!pendingDonations?.some(
     (donation) => donation.userId === appState.loggedInUser?.id
@@ -43,7 +39,8 @@ const Donor = observer(() => {
       {description && (
         <Paper
           sx={{
-            padding: "1rem"
+            padding: "1rem",
+            height: "fit-content"
           }}
         >
           <Typography
@@ -69,7 +66,8 @@ const Donor = observer(() => {
           elevation={10}
           sx={{
             width: "100%",
-            padding: "1rem"
+            padding: "1rem",
+            height: "fit-content"
           }}
         >
           <Typography
@@ -93,7 +91,8 @@ const Donor = observer(() => {
       {/* Donors */}
       <Paper
         sx={{
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
         elevation={5}
       >
@@ -142,7 +141,8 @@ const Donor = observer(() => {
       {/* Your donation */}
       <Paper
         sx={{
-          padding: "1rem"
+          padding: "1rem",
+          height: "fit-content"
         }}
       >
         <Typography
@@ -154,9 +154,9 @@ const Donor = observer(() => {
           Your donation
         </Typography>
 
-        {noDonation && <NoDonation />}
-        {donationIsPending && <DonationPending />}
-        {donationIsConfirmed && <DonationConfirmed />}
+        {noDonation && <NoDonation fundraiser={fundraiser} />}
+        {donationIsPending && <DonationPending fundraiser={fundraiser} />}
+        {donationIsConfirmed && <DonationConfirmed fundraiser={fundraiser} />}
       </Paper>
     </Box>
   );

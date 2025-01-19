@@ -1,4 +1,7 @@
-import fundraiserState, { DonationType } from "@/lib/FundraiserState";
+import fundraiserState, {
+  ActiveFundraiser,
+  DonationType
+} from "@/lib/FundraiserState";
 import {
   Box,
   Paper,
@@ -16,25 +19,27 @@ import DonationAccordion from "./DonationAccordion";
 
 const DonationsList = observer(
   ({
+    fundraiser,
     confirmedOrPending,
     handleMakePending,
     handleConfirm,
     handleDelete
   }: {
+    fundraiser: ActiveFundraiser;
     confirmedOrPending: "confirmed" | "pending";
     handleMakePending: (donation: DonationType) => void;
     handleConfirm: (donation: DonationType) => void;
     handleDelete: (donation: DonationType) => void;
   }) => {
-    if (!fundraiserState.activeFundraiser) {
+    if (!fundraiser) {
       return null;
     }
 
     let donationsToDisplay;
     if (confirmedOrPending === "confirmed") {
-      donationsToDisplay = fundraiserState.activeFundraiser.confirmedDonations;
+      donationsToDisplay = fundraiser.data.confirmedDonations;
     } else {
-      donationsToDisplay = fundraiserState.activeFundraiser.pendingDonations;
+      donationsToDisplay = fundraiser.data.pendingDonations;
     }
 
     return (
@@ -71,8 +76,9 @@ const DonationsList = observer(
               <TableBody>
                 {donationsToDisplay.map((row) => (
                   <DonationTableRow
-                    row={row}
                     key={row.userId}
+                    fundraiser={fundraiser}
+                    row={row}
                     confirmedOrPending={confirmedOrPending}
                     handleMakePending={handleMakePending}
                     handleConfirm={handleConfirm}
@@ -105,6 +111,7 @@ const DonationsList = observer(
               <DonationAccordion
                 key={user ? user.id : donation.userId}
                 user={user ? user : donation.userId}
+                fundraiser={fundraiser}
                 donation={donation}
                 confirmedOrPending={confirmedOrPending}
                 handleMakePending={handleMakePending}

@@ -17,7 +17,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   Save as SaveIcon
 } from "@mui/icons-material";
-import fundraiserState, { DonationType } from "@/lib/FundraiserState";
+import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import { NumericFormat, NumberFormatValues } from "react-number-format";
 import appState from "@/lib/AppState";
@@ -26,6 +26,7 @@ import { observer } from "mobx-react-lite";
 const DonationAccordion = observer(
   ({
     user,
+    fundraiser,
     donation,
     confirmedOrPending,
     handleMakePending,
@@ -33,6 +34,7 @@ const DonationAccordion = observer(
     handleDelete
   }: {
     user: UserDocType | string;
+    fundraiser: ActiveFundraiser;
     donation: {
       userId: string;
       amount: number;
@@ -189,12 +191,12 @@ const DonationAccordion = observer(
                   parseFloat(donationAmount) !== donation.amount
                 ) {
                   if (confirmedOrPending === "confirmed") {
-                    fundraiserState.updateConfirmedDonationAmount(
+                    fundraiser.updateConfirmedDonationAmount(
                       donation,
                       parseFloat(donationAmount)
                     );
                   } else {
-                    fundraiserState.updatePendingDonationAmount(
+                    fundraiser.updatePendingDonationAmount(
                       donation,
                       parseFloat(donationAmount)
                     );

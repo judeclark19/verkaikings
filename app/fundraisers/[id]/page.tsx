@@ -2,11 +2,11 @@ import { Metadata } from "next/types";
 import Fundraiser from "./Fundraiser";
 
 export const metadata: Metadata = {
-  title: "Fundraiser | Willemijn's World Website"
+  title: "Fundraisers | Willemijn's World Website"
 };
 
-const FundraiserPage = () => {
+const FundraiserDetailPage = () => {
   return <Fundraiser />;
 };
 
-export default FundraiserPage;
+export default FundraiserDetailPage;

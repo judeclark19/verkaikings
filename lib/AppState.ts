@@ -41,7 +41,7 @@ class AppState {
   userList: UserList = userList;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
-  fundraiser: FundraiserState = new FundraiserState();
+  fundraiser: FundraiserState = fundraiserState;
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;

@@ -49,9 +49,9 @@ export const eventsLink: NavLinkType = {
   icon: EventIcon
 };
 
-export const fundraiserLink: NavLinkType = {
-  title: "Fundraiser",
-  href: "/fundraiser",
+export const fundraisersLink: NavLinkType = {
+  title: "Fundraisers",
+  href: "/fundraisers",
   protected: true,
   icon: EuroIcon
 };
@@ -110,7 +110,7 @@ export const peopleLinks: NavLinkGroupType = {
 
 export const moreLinks: NavLinkGroupType = {
   title: "More",
-  links: [eventsLink, fundraiserLink]
+  links: [eventsLink, fundraisersLink]
 };
 
 // old, not in use

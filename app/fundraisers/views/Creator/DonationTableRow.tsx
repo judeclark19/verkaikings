@@ -8,18 +8,20 @@ import {
   Delete as DeleteIcon,
   Check as CheckIcon
 } from "@mui/icons-material";
-import fundraiserState, { DonationType } from "@/lib/FundraiserState";
+import { ActiveFundraiser, DonationType } from "@/lib/FundraiserState";
 import { useState } from "react";
 import EditAmountField from "./EditAmountField";
 
 const DonationTableRow = observer(
   ({
+    fundraiser,
     row,
     confirmedOrPending,
     handleMakePending,
     handleConfirm,
     handleDelete
   }: {
+    fundraiser: ActiveFundraiser;
     row: {
       userId: string;
       amount: number;
@@ -62,6 +64,7 @@ const DonationTableRow = observer(
         >
           {editing ? (
             <EditAmountField
+              fundraiser={fundraiser}
               donation={row}
               setEditing={setEditing}
               confirmedOrPending={confirmedOrPending}
@@ -76,7 +79,7 @@ const DonationTableRow = observer(
                       : "var(--dark-green)"
                 }}
               >
-                €{fundraiserState.formatNumberToCurrency(row.amount)}
+                €{fundraiser.formatNumberToCurrency(row.amount)}
               </span>{" "}
               &nbsp;
               <IconButton
