@@ -1,6 +1,7 @@
 import { NavLinkType } from "@/components/Navbar/navLinks.data";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
+
 export const isNavLinkActive = (
   pathname: string,
   searchParams: URLSearchParams,

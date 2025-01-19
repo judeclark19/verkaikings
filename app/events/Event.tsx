@@ -185,7 +185,8 @@ const Event = observer(
               Event Details
             </Typography>
             <Typography>
-              <strong>Date:</strong> {formatFullBirthday(event.date)}
+              <strong>Date:</strong>{" "}
+              {formatFullBirthday(event.date, appState.language)}
             </Typography>
             <Typography>
               <strong>Time:</strong> {event.time}
