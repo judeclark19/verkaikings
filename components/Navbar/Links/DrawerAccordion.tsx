@@ -131,7 +131,7 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
                   : "transparent"
               }}
             >
-              <DrawerLink link={submenuLink} parentLink={submenuLink} />
+              <DrawerLink link={submenuLink} />
             </Box>
           ))}
         </Box>
