@@ -1,7 +1,4 @@
-import fundraiserState, {
-  Fundraiser,
-  DonationType
-} from "@/lib/FundraiserState";
+import { Fundraiser, DonationType } from "@/lib/FundraiserState";
 import {
   Box,
   Paper,

@@ -87,7 +87,9 @@ const DrawerLinkWithSubmenu = ({
                   : "transparent"
             }}
           >
-            <DrawerLink link={submenuLink} parentLink={link} />
+            {/* <DrawerLink link={submenuLink} parentLink={link} />
+             */}
+            <DrawerLink link={submenuLink} />
           </Box>
         ))}
       </Box>
