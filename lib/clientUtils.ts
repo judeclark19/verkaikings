@@ -1,4 +1,47 @@
+import { NavLinkType } from "@/components/Navbar/navLinks.data";
 import { PhoneNumberUtil } from "google-libphonenumber";
+
+export const isNavLinkActive = (
+  pathname: string,
+  searchParams: URLSearchParams,
+  link: NavLinkType
+) => {
+  if (pathname !== link.href) return false;
+
+  if (
+    pathname === link.href &&
+    link.paramsOptional &&
+    searchParams.size === 0
+  ) {
+    return true;
+  }
+
+  if (pathname === link.href) {
+    if (link.params) {
+      for (const [key, value] of Object.entries(link.params)) {
+        if (searchParams.get(key) !== value) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+};
+
+export const createNavLinkPathString = (link: NavLinkType) => {
+  if (link.params) {
+    return (
+      link.href +
+      "?" +
+      Object.keys(link.params)
+        .map((key) => `${key}=${link.params![key]}`)
+        .join("&")
+    );
+  } else {
+    return link.href;
+  }
+};
 
 export function formatFullBirthday(input: string, userLocale: string) {
   // Check if the input is a month/day format (`--MM-DD`)

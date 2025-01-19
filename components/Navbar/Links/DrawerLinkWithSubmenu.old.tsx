@@ -3,6 +3,8 @@ import Link from "next/link";
 import { NavLinkType } from "../navLinks.data";
 import DrawerLink from "./DrawerLink";
 
+// OLD COMPONENT, not in use just keeping for reference
+
 const DrawerLinkWithSubmenu = ({
   link,
   isActive,

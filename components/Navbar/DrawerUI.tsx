@@ -7,7 +7,12 @@ import {
   ListItemText,
   Typography
 } from "@mui/material";
-import { homeLink, myProfileLink, peopleLinks } from "./navLinks.data";
+import {
+  homeLink,
+  moreLinks,
+  myProfileLink,
+  peopleLinks
+} from "./navLinks.data";
 import DrawerLink from "./Links/DrawerLink";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
@@ -21,7 +26,7 @@ import {
 import { styled } from "styled-components";
 import notificationsState from "@/app/notifications/Notifications.state";
 import Link from "next/link";
-import DrawerLinkWithSubmenu from "./Links/DrawerLinkWithSubmenu";
+import DrawerAccordion from "./Links/DrawerAccordion";
 
 const ListStyle = styled(List)`
   a,
@@ -63,20 +68,27 @@ function DrawerUI({
             <DrawerLink link={myProfileLink} />
 
             {/* People */}
-            <DrawerLinkWithSubmenu
+            {/* <DrawerLinkWithSubmenu
               link={peopleLinks}
               isActive={isActive(peopleLinks.href)}
               searchParams={searchParams}
-            />
+            /> */}
             {/* EVENTS */}
-            <DrawerLink
+            {/* <DrawerLink
               link={{
                 href: "/events",
                 title: "Events",
                 icon: EventIcon,
                 protected: true
               }}
-            />
+            /> */}
+
+            {/* More links */}
+            {/* <DrawerLinkWithSubmenu2 linkGroup={moreLinks} /> */}
+
+            {/* accordions */}
+            <DrawerAccordion linkGroup={peopleLinks} />
+            <DrawerAccordion linkGroup={moreLinks} />
 
             {/* NOTIFICATIONS */}
             <ListItem
