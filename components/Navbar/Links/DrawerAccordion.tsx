@@ -5,18 +5,18 @@ import {
   Box,
   Typography
 } from "@mui/material";
-import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+// import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { NavLinkGroupType } from "../navLinks.data";
 import DrawerLink from "./DrawerLink";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
+// import { useState } from "react";
 import { isNavLinkActive } from "@/lib/clientUtils";
 
 const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [expanded, setExpanded] = useState(false);
+  // const [expanded, setExpanded] = useState(false);
 
   if (!pathname) return null;
 
@@ -38,10 +38,11 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
           backgroundImage: "none"
         }
       }}
-      onChange={() => setExpanded(!expanded)}
+      expanded={true}
+      // onChange={() => setExpanded(!expanded)}
     >
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon sx={{ color: "background.default" }} />}
+        // expandIcon={<ExpandMoreIcon sx={{ color: "background.default" }} />}
         aria-controls={`linkgroup-${linkGroup.title}-content`}
         id={`linkgroup-${linkGroup.title}-header`}
         onClick={(event) => {
@@ -49,13 +50,15 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
         }}
         sx={{
           backgroundColor:
-            !expanded &&
+            // !expanded &&
             linkGroup.links!.some((link) =>
               isNavLinkActive(pathname, searchParams, link)
             )
               ? "primary.main"
               : "transparent",
-          transition: "background-color 0.3s ease"
+          transition: "background-color 0.3s ease",
+          cursor: "auto",
+          pointerEvents: "none"
         }}
       >
         <Box

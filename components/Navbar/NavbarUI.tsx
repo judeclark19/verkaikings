@@ -16,6 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
+  eventsLink,
   homeLink,
   moreLinks,
   myProfileLink,
@@ -151,7 +152,7 @@ const NavbarUI = observer(
                     }}
                   />
 
-                  <SubmenuDropdown linkGroup={moreLinks} />
+                  {/* <SubmenuDropdown linkGroup={moreLinks} />
                   <Divider
                     orientation="vertical"
                     flexItem
@@ -159,13 +160,13 @@ const NavbarUI = observer(
                       borderColor: "background.default",
                       margin: "0 8px"
                     }}
-                  />
+                  /> */}
 
                   {/* EVENTS */}
-                  {/* <AppBarLink
+                  <AppBarLink
                     link={eventsLink}
                     isActive={isActive(eventsLink.href)}
-                  /> */}
+                  />
 
                   {/* NOTIFICATIONS */}
                   <NotificationsDropdown />

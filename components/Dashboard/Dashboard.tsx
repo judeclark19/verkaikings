@@ -81,7 +81,8 @@ const Dashboard = observer(() => {
 
   return (
     <div>
-      <Box
+      {/* FUNDRAISERS */}
+      {/* <Box
         sx={{
           display:
             fundraiserState.activeFundraisers.length > 1 ? "grid" : "block",
@@ -104,7 +105,7 @@ const Dashboard = observer(() => {
               progressBarBackgroundColor="dark"
             />
           ))}
-      </Box>
+      </Box> */}
 
       <Box
         sx={{
