@@ -66,6 +66,11 @@ const Answer = observer(
           return;
         }
 
+        if (answerText.trim() === answer.text) {
+          setEditing(false);
+          return;
+        }
+
         setLoading(true);
 
         try {
