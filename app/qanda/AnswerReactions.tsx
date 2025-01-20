@@ -36,86 +36,63 @@ const AnswerReactions = observer(
         return;
       }
 
-      // Check if the user already reacted with this type
-      const existingReaction = reactions.find(
+      const qAndASnapshot = await getDoc(qAndADocRef);
+
+      if (!qAndASnapshot.exists()) {
+        console.error("No data found in the document.");
+        return;
+      }
+
+      const qAndAData = qAndASnapshot.data();
+
+      const existingReaction = answer.reactions.find(
         (reaction) =>
           reaction.authorId === appState.loggedInUser!.id &&
           reaction.type === reactionType
       );
 
-      const qAndASnapshot = await getDoc(qAndADocRef);
-
-      if (!qAndASnapshot.exists()) {
-        throw new Error("No data found in the document.");
-      }
-
-      const qAndAData = qAndASnapshot.data();
-
+      let updatedAnswers;
       if (existingReaction) {
-        // remove reaction
-        try {
-          // Find the answer and update reactions
-          const updatedAnswers = qAndAData.answers.map(
-            (answerData: AnswerType) => {
-              if (answerData.id === answer.id) {
-                return {
-                  ...answerData,
-                  reactions: answerData.reactions.filter(
-                    (reaction) =>
-                      !(
-                        reaction.authorId === existingReaction.authorId &&
-                        reaction.type === existingReaction.type
-                      )
-                  )
-                };
-              }
-              return answer;
-            }
-          );
-
-          // Update the document with the modified answers array
-          await updateDoc(qAndADocRef, {
-            answers: updatedAnswers
-          });
-
-          // console.log("Reaction removed successfully.");
-        } catch (error) {
-          console.error(`Error removing reaction: ${error}`);
-          appState.setSnackbarMessage(`Error removing reaction: ${error}`);
-        }
+        // Remove reaction
+        updatedAnswers = qAndAData.answers.map((answerData: AnswerType) => {
+          if (answerData.id === answer.id) {
+            return {
+              ...answerData,
+              reactions: answerData.reactions.filter(
+                (reaction) =>
+                  reaction.authorId !== existingReaction.authorId ||
+                  reaction.type !== existingReaction.type
+              )
+            };
+          }
+          return answerData;
+        });
       } else {
-        // Add the reaction
+        // Add reaction
         const newReaction: ReactionType = {
           authorId: appState.loggedInUser.id,
           type: reactionType,
           createdAt: new Date().toISOString()
         };
 
-        try {
-          // Locate the correct answer and add the reaction
-          const updatedAnswers = qAndAData.answers.map(
-            (answerData: AnswerType) => {
-              if (answerData.id === answer.id) {
-                return {
-                  ...answerData,
-                  reactions: [...(answerData.reactions || []), newReaction]
-                };
-              }
-              return answerData;
-            }
-          );
+        updatedAnswers = qAndAData.answers.map((answerData: AnswerType) => {
+          if (answerData.id === answer.id) {
+            return {
+              ...answerData,
+              reactions: [...(answerData.reactions || []), newReaction]
+            };
+          }
+          return answerData;
+        });
+      }
 
-          // Update the document with the modified answers array
-          await updateDoc(qAndADocRef, {
-            answers: updatedAnswers
-          });
-        } catch (error) {
-          alert(`Error adding reaction: ${error}`);
-          console.error("Error adding reaction:", error);
-        }
+      try {
+        await updateDoc(qAndADocRef, { answers: updatedAnswers });
+      } catch (error) {
+        console.error("Error updating reactions:", error);
+        appState.setSnackbarMessage(`Error updating reactions: ${error}`);
       }
     };
-
     return (
       <>
         <Box

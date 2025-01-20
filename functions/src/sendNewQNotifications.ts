@@ -49,7 +49,7 @@ export async function sendNewQNotifications(
     // Notify all other users
     const allUsersSnapshot = await adminDb.collection("users").get();
     const otherUsers = allUsersSnapshot.docs.filter(
-      (doc) => doc.id !== newQData.authorId
+      (doc) => doc.id !== newQData.creatorId
     );
 
     const userIds = otherUsers.map((doc) => doc.id);
