@@ -87,7 +87,6 @@ const NewEventModal = observer(() => {
         description,
         attendees: [user.uid]
       };
-      console.log("new event: ", newEvent);
 
       // create a new event in the database
       const eventsCollectionRef = collection(db, "events");

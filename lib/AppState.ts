@@ -19,14 +19,16 @@ import myWillemijnStories, {
 } from "./MyWillemijnStories";
 import { registerPushNotifications } from "./clientUtils";
 import eventsState, { EventDocType, Events } from "@/app/events/Events.state";
+import fundraiserState, {
+  FundraiserDocType,
+  FundraiserState
+} from "./FundraiserState";
 
 class AppState {
   isInitialized = false;
   language: string = "en";
   dayJsLocale: string = "en";
-  userList: UserList = userList;
-  myWillemijnStories: MyWillemijnStories = myWillemijnStories;
-  events: Events = eventsState;
+
   loggedInUser: UserDocType | null = null;
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
@@ -36,10 +38,15 @@ class AppState {
   snackbarOpen = false;
   snackbarMessage = "";
 
+  userList: UserList = userList;
+  myWillemijnStories: MyWillemijnStories = myWillemijnStories;
+  events: Events = eventsState;
+  fundraisers: FundraiserState = fundraiserState;
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;
   eventsUnsubscribe: (() => void) | null = null;
+  fundraisersUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -51,6 +58,7 @@ class AppState {
         const users = await getDocs(collection(db, "users"));
         const stories = await getDocs(collection(db, "myWillemijnStories"));
         const events = await getDocs(collection(db, "events"));
+        const fundraisers = await getDocs(collection(db, "fundraisers"));
         this.init(
           users.docs.map(
             (doc) => ({ id: doc.id, ...doc.data() } as UserDocType)
@@ -61,12 +69,16 @@ class AppState {
           ),
           events.docs.map(
             (doc) => ({ id: doc.id, ...doc.data() } as EventDocType)
+          ),
+          fundraisers.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as FundraiserDocType)
           )
         );
       }
       this.subscribeToUsers();
       this.subscribeToStories();
       this.subscribeToEvents();
+      this.subscribeToFundraisers();
     } else {
       this.unsubscribeFromSnapshots();
     }
@@ -76,8 +88,10 @@ class AppState {
     users: UserDocType[],
     userId: string,
     stories: StoryDocType[],
-    events: EventDocType[]
+    events: EventDocType[],
+    fundraisers: FundraiserDocType[]
   ) {
+    console.log("appState.init()", fundraisers);
     if (this.isInitialized) {
       return;
     }
@@ -88,14 +102,16 @@ class AppState {
     }
 
     this.initPromise = (async () => {
-      // this.language = navigator.language || "en";
-      this.language = "nl-NL";
+      this.language = navigator.language || "en";
+      // this.language = "en-GB";
       this.userList = userList;
       this.userList.init(users);
       this.myWillemijnStories = myWillemijnStories;
       this.myWillemijnStories.init(stories);
       this.events = eventsState;
       this.events.setAllEvents(events);
+      this.fundraisers = fundraiserState;
+      this.fundraisers.setFundraisers(fundraisers);
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
@@ -187,6 +203,22 @@ class AppState {
     );
   }
 
+  subscribeToFundraisers() {
+    this.fundraisersUnsubscribe = onSnapshot(
+      collection(db, "fundraisers"),
+      (snapshot) => {
+        const fundraisersData = snapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data()
+            } as FundraiserDocType)
+        );
+        this.fundraisers.setFundraisers(fundraisersData);
+      }
+    );
+  }
+
   unsubscribeFromSnapshots() {
     if (this.userUnsubscribe) {
       this.userUnsubscribe();
@@ -199,6 +231,10 @@ class AppState {
     if (this.eventsUnsubscribe) {
       this.eventsUnsubscribe();
       this.eventsUnsubscribe = null;
+    }
+    if (this.fundraisersUnsubscribe) {
+      this.fundraisersUnsubscribe();
+      this.fundraisersUnsubscribe = null;
     }
   }
 
@@ -363,6 +399,11 @@ class AppState {
   setSnackbarMessage(message: string) {
     this.snackbarMessage = message;
     this.setSnackbarOpen(true);
+
+    // set timeout 3 seconds
+    setTimeout(() => {
+      this.setSnackbarOpen(false);
+    }, 3000);
   }
 
   setSnackbarOpen(open: boolean) {

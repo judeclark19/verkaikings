@@ -1,3 +1,4 @@
+import appState from "@/lib/AppState";
 import { db } from "@/lib/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
@@ -68,7 +69,7 @@ export class Events {
     const eventDocRef = doc(db, "events", eventId);
     try {
       await deleteDoc(eventDocRef);
-      console.log("Event deleted successfully!");
+      appState.setSnackbarMessage("Event deleted.");
     } catch (error) {
       console.error("Error deleting event:", error);
     }

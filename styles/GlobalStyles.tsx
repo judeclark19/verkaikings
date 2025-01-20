@@ -3,7 +3,11 @@ import { createGlobalStyle } from "styled-components";
 const GlobalStyles = createGlobalStyle`
 
   :root {
+    --light-pink: #F8E3E7;
     --med-pink: #E59AA8;
+    --dark-pink: #D25169;
+    --dark-green: #A3AE6A;
+    --darker-green: #869150;
   }
 
   body {

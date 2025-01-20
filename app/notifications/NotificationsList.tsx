@@ -11,9 +11,9 @@ import {
 import { observer } from "mobx-react-lite";
 import notificationsState from "./Notifications.state";
 import NotificationListItem from "./NotificationsListItem";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import appState from "@/lib/AppState";
+import GoBack from "@/components/GoBack";
 
 const NotificationsList = observer(() => {
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
@@ -32,14 +32,7 @@ const NotificationsList = observer(() => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<ArrowBackIcon />}
-        onClick={() => window.history.back()}
-      >
-        Go Back
-      </Button>
+      <GoBack />
       <Typography
         variant="h1"
         sx={{

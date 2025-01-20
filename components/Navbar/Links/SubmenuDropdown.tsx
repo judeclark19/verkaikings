@@ -1,14 +1,15 @@
 import { Button, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { NavLinkType } from "../navLinks.data";
+import { NavLinkGroupType } from "../navLinks.data";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, MouseEvent } from "react";
+import { createNavLinkPathString, isNavLinkActive } from "@/lib/clientUtils";
 
 export default function SubmenuDropdown({
-  parentLink
+  linkGroup
 }: {
-  parentLink: NavLinkType;
+  linkGroup: NavLinkGroupType;
 }) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -21,8 +22,6 @@ export default function SubmenuDropdown({
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const isActive = (path: string) => pathname === path;
 
   return (
     <div
@@ -39,11 +38,17 @@ export default function SubmenuDropdown({
         onClick={handleClick}
         color="inherit"
         sx={{
-          fontWeight: isActive(parentLink.href) ? "700" : "400",
+          fontWeight: linkGroup.links.some((link) => {
+            return isNavLinkActive(pathname, searchParams, link);
+          })
+            ? "700"
+            : "400",
           display: "flex",
           alignItems: "center",
           height: "100%",
-          backgroundColor: isActive(parentLink.href)
+          backgroundColor: linkGroup.links.some((link) => {
+            return isNavLinkActive(pathname, searchParams, link);
+          })
             ? "primary.main"
             : "transparent",
 
@@ -64,7 +69,7 @@ export default function SubmenuDropdown({
           />
         }
       >
-        People
+        {linkGroup.title}
       </Button>
       <Menu
         id="basic-menu"
@@ -85,23 +90,25 @@ export default function SubmenuDropdown({
           }
         }}
       >
-        {parentLink.submenu!.map((link) => {
+        {linkGroup.links.map((link) => {
           return (
             <MenuItem
-              key={link.href}
+              key={link.title}
               onClick={handleClose}
               component={Link}
-              href={link.href}
+              href={createNavLinkPathString(link)}
               sx={{
-                fontWeight: isActive(link.href) ? "700" : "400",
-                textDecoration: isActive(link.href) ? "underline" : "none",
+                fontWeight: isNavLinkActive(pathname, searchParams, link)
+                  ? "700"
+                  : "400",
+                textDecoration: isNavLinkActive(pathname, searchParams, link)
+                  ? "underline"
+                  : "none",
                 fontSize: "14px",
                 transition: "background-color 0.3s ease",
-                backgroundColor:
-                  isActive(parentLink.href) &&
-                  searchParams.get(parentLink.paramKey!) === link.paramValue
-                    ? "primary.main"
-                    : "primary.dark",
+                backgroundColor: isNavLinkActive(pathname, searchParams, link)
+                  ? "primary.main"
+                  : "primary.dark",
                 color: "background.default",
                 "&:hover": {
                   textDecoration: "underline",
