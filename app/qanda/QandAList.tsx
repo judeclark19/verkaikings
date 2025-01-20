@@ -59,6 +59,7 @@ const QuandAList = observer(() => {
             sx={{
               textAlign: "center"
             }}
+            color="text.secondary"
           >
             No questions yet...
           </Typography>

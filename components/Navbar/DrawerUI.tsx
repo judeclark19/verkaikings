@@ -8,7 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import {
-  eventsLink,
+  // eventsLink,
   homeLink,
   moreLinks,
   myProfileLink,

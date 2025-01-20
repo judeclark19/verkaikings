@@ -13,7 +13,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import QandAComments from "./QandAComments";
+import QandAAnswers from "./QandAAnswers";
 import { useState } from "react";
 import {
   Delete as DeleteIcon,
@@ -74,6 +74,7 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         maxWidth: 670,
         height: "fit-content"
       }}
+      id={qAndA.id}
     >
       <div
         style={{
@@ -83,7 +84,6 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         }}
       >
         <Typography>
-          On{" "}
           {qAndA.createdAt.toDate().toLocaleString(appState.language, {
             dateStyle: "medium",
             timeStyle: "short"
@@ -198,7 +198,7 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         </>
       )}
 
-      <QandAComments qAndA={qAndA} qAndADocRef={qAndADocRef} />
+      <QandAAnswers qAndA={qAndA} qAndADocRef={qAndADocRef} />
     </Paper>
   );
 });

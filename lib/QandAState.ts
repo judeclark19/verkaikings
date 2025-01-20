@@ -1,11 +1,18 @@
 import { Timestamp } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
 
-export type CommentType = {
+export type ReactionType = {
+  authorId: string;
+  type: "like" | "love" | "laugh";
+  createdAt: string;
+};
+
+export type AnswerType = {
   id: string;
   authorId: string;
   createdAt: string;
   text: string;
+  reactions: ReactionType[];
 };
 
 export type QandADocType = {
@@ -13,7 +20,7 @@ export type QandADocType = {
   question: string;
   creatorId: string;
   createdAt: Timestamp;
-  comments: CommentType[];
+  answers: AnswerType[];
 };
 
 export class QandAState {
