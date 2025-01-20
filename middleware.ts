@@ -20,6 +20,7 @@ export const config = {
     "/dashboard/:path*",
     "/notifcations/:path*",
     "/events/:path*",
-    "/fundraiser/:path*"
+    "/fundraiser/:path*",
+    "/qanda/:path*"
   ] // Routes to protect
 };
