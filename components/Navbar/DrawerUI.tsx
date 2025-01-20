@@ -71,8 +71,8 @@ function DrawerUI({
             <DrawerAccordion linkGroup={peopleLinks} />
 
             {/* More */}
-            {/* <DrawerAccordion linkGroup={moreLinks} /> */}
-            <DrawerLink link={eventsLink} />
+            <DrawerAccordion linkGroup={moreLinks} />
+            {/* <DrawerLink link={eventsLink} /> */}
 
             {/* NOTIFICATIONS */}
             <ListItem
