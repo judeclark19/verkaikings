@@ -19,6 +19,8 @@ export const config = {
     "/people/:path*",
     "/dashboard/:path*",
     "/notifcations/:path*",
-    "/events/:path*"
+    "/events/:path*",
+    "/fundraiser/:path*",
+    "/qanda/:path*"
   ] // Routes to protect
 };

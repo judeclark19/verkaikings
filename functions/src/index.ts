@@ -5,6 +5,7 @@ import {runBirthdayCheck} from "./birthdayCheck";
 import {sendWelcomeNotifications} from "./sendWelcomeNotifications";
 import {sendNewStoryNotifications} from "./sendNewStoryNotifications";
 import {sendNewEventNotifications} from "./sendNewEventNotifications";
+import {sendNewQNotifications} from "./sendNewQNotifications";
 
 exports.sendWelcomeNotifications = onDocumentCreated(
   "users/{docId}",
@@ -29,6 +30,11 @@ exports.birthdayCheck = onSchedule(
 exports.sendNewEventNotifications = onDocumentCreated(
   "events/{docId}",
   sendNewEventNotifications
+);
+
+exports.sendNewQNotifications = onDocumentCreated(
+  "qanda/{docId}",
+  sendNewQNotifications
 );
 
 // (async () => {

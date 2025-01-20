@@ -16,21 +16,22 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  eventsLink,
+  // eventsLink,
   homeLink,
+  moreLinks,
   myProfileLink,
   peopleLinks
 } from "./navLinks.data";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie";
-import SubmenuDropdown from "./Links/SubmenuDropdown";
 import DrawerUI from "./DrawerUI";
 import { observer } from "mobx-react-lite";
 import myProfileState from "@/app/profile/MyProfile.state";
 import NotificationsDropdown from "./Notifications/NotificationsDropdown";
 import notificationsState from "@/app/notifications/Notifications.state";
 import AppBarLink from "./Links/AppBarLink";
+import SubmenuDropdown from "./Links/SubmenuDropdown";
 
 const NavbarUI = observer(
   ({ isLoggedIn }: { isLoggedIn: boolean; userId?: string }) => {
@@ -141,7 +142,17 @@ const NavbarUI = observer(
                   />
 
                   {/* PEOPLE */}
-                  <SubmenuDropdown parentLink={peopleLinks} />
+                  <SubmenuDropdown linkGroup={peopleLinks} />
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                      borderColor: "background.default",
+                      margin: "0 8px"
+                    }}
+                  />
+
+                  <SubmenuDropdown linkGroup={moreLinks} />
                   <Divider
                     orientation="vertical"
                     flexItem
@@ -152,10 +163,10 @@ const NavbarUI = observer(
                   />
 
                   {/* EVENTS */}
-                  <AppBarLink
+                  {/* <AppBarLink
                     link={eventsLink}
                     isActive={isActive(eventsLink.href)}
-                  />
+                  /> */}
 
                   {/* NOTIFICATIONS */}
                   <NotificationsDropdown />

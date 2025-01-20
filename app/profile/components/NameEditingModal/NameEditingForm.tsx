@@ -49,10 +49,8 @@ const NameEditingForm = observer(
           if (userDocSnapshot.exists()) {
             // Access the document data
             const userData = userDocSnapshot.data();
-            // console.log("User data:", userData);
             myProfileState.setUser(userData as UserDocType);
           }
-          console.log("Firebase displayName updated successfully");
         }
         appState.setSnackbarMessage("Name updated successfully");
       } catch (error) {

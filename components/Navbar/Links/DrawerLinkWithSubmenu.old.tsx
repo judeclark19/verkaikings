@@ -3,6 +3,8 @@ import Link from "next/link";
 import { NavLinkType } from "../navLinks.data";
 import DrawerLink from "./DrawerLink";
 
+// OLD COMPONENT, not in use just keeping for reference
+
 const DrawerLinkWithSubmenu = ({
   link,
   isActive,
@@ -85,7 +87,9 @@ const DrawerLinkWithSubmenu = ({
                   : "transparent"
             }}
           >
-            <DrawerLink link={submenuLink} parentLink={link} />
+            {/* <DrawerLink link={submenuLink} parentLink={link} />
+             */}
+            <DrawerLink link={submenuLink} />
           </Box>
         ))}
       </Box>

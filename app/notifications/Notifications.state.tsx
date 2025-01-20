@@ -119,8 +119,6 @@ export class NotificationsState {
           })
         ) as NotificationDocType[];
 
-        // console.log("Live Notifications:", notifications);
-
         this.setNotifications(notifications);
         this.updatePageTitle();
       }

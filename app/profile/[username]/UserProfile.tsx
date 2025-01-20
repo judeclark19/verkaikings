@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Avatar, Box, Button, Divider, Paper, Typography } from "@mui/material";
+import { Avatar, Box, Divider, Paper, Typography } from "@mui/material";
 import { checkIfBirthdayToday, formatFullBirthday } from "@/lib/clientUtils";
 import MyProfile from "../MyProfile";
 import appState from "@/lib/AppState";
@@ -10,8 +10,7 @@ import { ProfileSkeleton, ReadOnlyContactItem } from "../components";
 import {
   AccountCircle as AccountCircleIcon,
   Cake as CakeIcon,
-  Public as PublicIcon,
-  ArrowBack as ArrowBackIcon
+  Public as PublicIcon
 } from "@mui/icons-material";
 import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import SocialsList from "./SocialsList";
@@ -22,6 +21,7 @@ import FlagComponent from "@/components/Flag";
 import EventsList from "../EventsList";
 import { UserDocType } from "@/lib/UserList";
 import { StoryDocType } from "@/lib/MyWillemijnStories";
+import GoBack from "@/components/GoBack";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
@@ -109,15 +109,7 @@ const UserProfile = observer(
 
     return (
       <>
-        {/* back button */}
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => window.history.back()}
-        >
-          Go Back
-        </Button>
+        <GoBack />
         <Box
           sx={{
             display: "flex",
@@ -240,7 +232,7 @@ const UserProfile = observer(
                 }}
                 justifyContent={{
                   xs: "center",
-                  md: "start"
+                  sm: "start"
                 }}
               >
                 <ReadOnlyContactItem

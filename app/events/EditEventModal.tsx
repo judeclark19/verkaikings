@@ -108,7 +108,6 @@ const EditEventModal = observer(
         const eventDocRef = doc(db, "events", event.id);
         await setDoc(eventDocRef, updatedEventInfo, { merge: true });
 
-        console.log("updated info: ", updatedEventInfo);
         setSuccess("Event updated successfully.");
 
         setTimeout(() => {

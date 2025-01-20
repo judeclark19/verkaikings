@@ -7,21 +7,27 @@ import {
   ListItemText,
   Typography
 } from "@mui/material";
-import { homeLink, myProfileLink, peopleLinks } from "./navLinks.data";
+import {
+  // eventsLink,
+  homeLink,
+  moreLinks,
+  myProfileLink,
+  peopleLinks
+} from "./navLinks.data";
 import DrawerLink from "./Links/DrawerLink";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   AppRegistration as AppRegistrationIcon,
   Login as LoginIcon,
   Logout as LogoutIcon,
   Notifications as NotificationsIcon,
-  NotificationsActive as NotificationsActiveIcon,
-  Event as EventIcon
+  NotificationsActive as NotificationsActiveIcon
+  // Event as EventIcon
 } from "@mui/icons-material";
 import { styled } from "styled-components";
 import notificationsState from "@/app/notifications/Notifications.state";
 import Link from "next/link";
-import DrawerLinkWithSubmenu from "./Links/DrawerLinkWithSubmenu";
+import DrawerAccordion from "./Links/DrawerAccordion";
 
 const ListStyle = styled(List)`
   a,
@@ -45,7 +51,6 @@ function DrawerUI({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isActive = (path: string) => pathname === path;
 
   return (
@@ -63,20 +68,11 @@ function DrawerUI({
             <DrawerLink link={myProfileLink} />
 
             {/* People */}
-            <DrawerLinkWithSubmenu
-              link={peopleLinks}
-              isActive={isActive(peopleLinks.href)}
-              searchParams={searchParams}
-            />
-            {/* EVENTS */}
-            <DrawerLink
-              link={{
-                href: "/events",
-                title: "Events",
-                icon: EventIcon,
-                protected: true
-              }}
-            />
+            <DrawerAccordion linkGroup={peopleLinks} />
+
+            {/* More */}
+            <DrawerAccordion linkGroup={moreLinks} />
+            {/* <DrawerLink link={eventsLink} /> */}
 
             {/* NOTIFICATIONS */}
             <ListItem

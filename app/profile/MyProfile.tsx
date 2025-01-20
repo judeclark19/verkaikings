@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Divider, Paper, Typography } from "@mui/material";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 import {
   City,
   Country,
@@ -20,7 +20,6 @@ import {
   NameEditingModal,
   PasswordChangeModal
 } from "./components";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { FaWhatsapp } from "react-icons/fa";
 import { checkIfBirthdayToday } from "@/lib/clientUtils";
 import { db } from "@/lib/firebase";
@@ -28,6 +27,7 @@ import { useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import EventsList from "./EventsList";
 import { UserDocType } from "@/lib/UserList";
+import GoBack from "@/components/GoBack";
 
 const MyProfile = observer(() => {
   useEffect(() => {
@@ -60,15 +60,8 @@ const MyProfile = observer(() => {
 
   return (
     <>
-      {/* Back button */}
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<ArrowBackIcon />}
-        onClick={() => window.history.back()}
-      >
-        Go Back
-      </Button>
+      <GoBack />
+
       <Box
         sx={{
           display: "flex",
