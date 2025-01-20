@@ -77,12 +77,20 @@ const NotificationsMenuItem = observer(
             <Typography
               variant="h4"
               sx={{
-                m: 0
+                m: 0,
+                mb: 1,
+                textWrap: "wrap"
               }}
             >
               {notification.title}
             </Typography>
-            <div style={{ fontSize: "12px", color: "text.secondary" }}>
+            <div
+              style={{
+                fontSize: "12px",
+                color: "text.secondary",
+                marginBottom: "8px"
+              }}
+            >
               {notification.body}
             </div>
             <Typography variant="caption" display="block">

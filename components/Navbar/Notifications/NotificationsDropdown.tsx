@@ -108,6 +108,7 @@ const NotificationsDropdown = observer(() => {
           },
           "& .MuiMenu-list": {
             minWidth: "250px",
+            maxWidth: "400px",
             backgroundColor: "rgb(75,75,75)",
             display: "flex",
             flexDirection: "column",
