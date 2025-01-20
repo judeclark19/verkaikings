@@ -35,7 +35,7 @@ const NewAnswerForm = observer(
 
         // Create a new answer
         const newAnswer: AnswerType = {
-          id: doc(collection(db, `qanda/${qAndA.id}/ansswers`)).id,
+          id: doc(collection(db, `qanda/${qAndA.id}/answers`)).id,
           authorId: appState.loggedInUser!.id,
           createdAt: new Date().toISOString(),
           text: answerText,
@@ -84,6 +84,7 @@ const NewAnswerForm = observer(
             fullWidth
             variant="outlined"
             value={answerText}
+            required
             onChange={(e) => setAnswerText(e.target.value)}
           />
           <Button
