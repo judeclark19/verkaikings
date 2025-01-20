@@ -9,8 +9,8 @@ import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { NavLinkGroupType } from "../navLinks.data";
 import DrawerLink from "./DrawerLink";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { isNavLinkActive } from "@/lib/clientUtils";
+import { useState } from "react";
 
 const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
   const pathname = usePathname();
@@ -38,6 +38,7 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
           backgroundImage: "none"
         }
       }}
+      // expanded={true}
       onChange={() => setExpanded(!expanded)}
     >
       <AccordionSummary
@@ -56,6 +57,8 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
               ? "primary.main"
               : "transparent",
           transition: "background-color 0.3s ease"
+          // cursor: "auto",
+          // pointerEvents: "none"
         }}
       >
         <Box

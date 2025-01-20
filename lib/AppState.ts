@@ -23,6 +23,7 @@ import fundraiserState, {
   FundraiserDocType,
   FundraiserState
 } from "./FundraiserState";
+import qAndAState, { QandADocType, QandAState } from "./QandAState";
 
 class AppState {
   isInitialized = false;
@@ -42,11 +43,14 @@ class AppState {
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
   fundraisers: FundraiserState = fundraiserState;
+  qAndA: QandAState = qAndAState;
+
   initPromise: Promise<void> | null = null;
   userUnsubscribe: (() => void) | null = null;
   storyUnsubscribe: (() => void) | null = null;
   eventsUnsubscribe: (() => void) | null = null;
   fundraisersUnsubscribe: (() => void) | null = null;
+  qAndAUnsubscribe: (() => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -59,6 +63,7 @@ class AppState {
         const stories = await getDocs(collection(db, "myWillemijnStories"));
         const events = await getDocs(collection(db, "events"));
         const fundraisers = await getDocs(collection(db, "fundraisers"));
+        const qAndA = await getDocs(collection(db, "qanda"));
         this.init(
           users.docs.map(
             (doc) => ({ id: doc.id, ...doc.data() } as UserDocType)
@@ -72,6 +77,9 @@ class AppState {
           ),
           fundraisers.docs.map(
             (doc) => ({ id: doc.id, ...doc.data() } as FundraiserDocType)
+          ),
+          qAndA.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as QandADocType)
           )
         );
       }
@@ -79,6 +87,7 @@ class AppState {
       this.subscribeToStories();
       this.subscribeToEvents();
       this.subscribeToFundraisers();
+      this.subscribeToQandA();
     } else {
       this.unsubscribeFromSnapshots();
     }
@@ -89,9 +98,9 @@ class AppState {
     userId: string,
     stories: StoryDocType[],
     events: EventDocType[],
-    fundraisers: FundraiserDocType[]
+    fundraisers: FundraiserDocType[],
+    qAndA: QandADocType[]
   ) {
-    console.log("appState.init()", fundraisers);
     if (this.isInitialized) {
       return;
     }
@@ -103,7 +112,7 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
-      // this.language = "en-GB";
+      // this.language = "nl-NL";
       this.userList = userList;
       this.userList.init(users);
       this.myWillemijnStories = myWillemijnStories;
@@ -112,6 +121,9 @@ class AppState {
       this.events.setAllEvents(events);
       this.fundraisers = fundraiserState;
       this.fundraisers.setFundraisers(fundraisers);
+      this.qAndA = qAndAState;
+      this.qAndA.setQandA(qAndA);
+
       this.loggedInUser = users.find((user) => user.id === userId) || null;
       await this.loadPDCfromDB();
 
@@ -219,6 +231,19 @@ class AppState {
     );
   }
 
+  subscribeToQandA() {
+    this.qAndAUnsubscribe = onSnapshot(collection(db, "qanda"), (snapshot) => {
+      const qAndAData = snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data()
+          } as QandADocType)
+      );
+      this.qAndA.setQandA(qAndAData);
+    });
+  }
+
   unsubscribeFromSnapshots() {
     if (this.userUnsubscribe) {
       this.userUnsubscribe();
@@ -235,6 +260,10 @@ class AppState {
     if (this.fundraisersUnsubscribe) {
       this.fundraisersUnsubscribe();
       this.fundraisersUnsubscribe = null;
+    }
+    if (this.qAndAUnsubscribe) {
+      this.qAndAUnsubscribe();
+      this.qAndAUnsubscribe = null;
     }
   }
 

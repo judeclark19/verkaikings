@@ -8,7 +8,8 @@ import {
   Map as MapIcon,
   MenuBook as MenuBookIcon,
   Event as EventIcon,
-  Euro as EuroIcon
+  Euro as EuroIcon,
+  QuestionAnswer as QuestionAnswerIcon
 } from "@mui/icons-material";
 
 export type NavLinkType = {
@@ -40,20 +41,6 @@ export const myProfileLink: NavLinkType = {
   href: "/profile",
   protected: true,
   icon: AccountCircleIcon
-};
-
-export const eventsLink: NavLinkType = {
-  title: "Events",
-  href: "/events",
-  protected: true,
-  icon: EventIcon
-};
-
-export const fundraisersLink: NavLinkType = {
-  title: "Fundraisers",
-  href: "/fundraisers",
-  protected: true,
-  icon: EuroIcon
 };
 
 export const peopleLinks: NavLinkGroupType = {
@@ -108,9 +95,30 @@ export const peopleLinks: NavLinkGroupType = {
   ]
 };
 
+export const eventsLink: NavLinkType = {
+  title: "Events",
+  href: "/events",
+  protected: true,
+  icon: EventIcon
+};
+
+export const fundraisersLink: NavLinkType = {
+  title: "Fundraisers",
+  href: "/fundraisers",
+  protected: true,
+  icon: EuroIcon
+};
+
+export const qAndALink: NavLinkType = {
+  title: "Q and A",
+  href: "/qanda",
+  protected: true,
+  icon: QuestionAnswerIcon
+};
+
 export const moreLinks: NavLinkGroupType = {
   title: "More",
-  links: [eventsLink, fundraisersLink]
+  links: [eventsLink, qAndALink]
 };
 
 // old, not in use

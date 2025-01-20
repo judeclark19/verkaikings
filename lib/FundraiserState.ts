@@ -208,17 +208,6 @@ export class Fundraiser {
   }
 }
 
-// export class PastFundraiser {
-//   data: FundraiserDocType;
-//   pastFundraiserDoc: DocumentReference | null = null;
-
-//   constructor(fundraiser: FundraiserDocType) {
-//     makeAutoObservable(this);
-//     this.data = fundraiser;
-//     this.pastFundraiserDoc = doc(db, "fundraisers", fundraiser.id);
-//   }
-// }
-
 export class FundraiserState {
   fundraisersData: FundraiserDocType[] = [];
   activeFundraisers: Fundraiser[] = [];

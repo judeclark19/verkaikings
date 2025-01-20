@@ -8,6 +8,7 @@ import {
   Typography
 } from "@mui/material";
 import {
+  // eventsLink,
   homeLink,
   moreLinks,
   myProfileLink,
@@ -71,6 +72,7 @@ function DrawerUI({
 
             {/* More */}
             <DrawerAccordion linkGroup={moreLinks} />
+            {/* <DrawerLink link={eventsLink} /> */}
 
             {/* NOTIFICATIONS */}
             <ListItem
