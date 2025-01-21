@@ -1,4 +1,4 @@
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { NavLinkGroupType } from "../navLinks.data";
@@ -117,6 +117,14 @@ export default function SubmenuDropdown({
                 padding: "0.75rem 1.5rem"
               }}
             >
+              <ListItemIcon
+                sx={{
+                  color: "background.default",
+                  minWidth: "40px"
+                }}
+              >
+                {link.icon && <link.icon />}
+              </ListItemIcon>
               {link.title.toUpperCase()}
             </MenuItem>
           );
