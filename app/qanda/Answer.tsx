@@ -123,7 +123,7 @@ const Answer = observer(
             {answerAuthor?.firstName} {answerAuthor?.lastName}
           </Link>
         </Typography>
-        <Typography variant="body2" sx={{ fontSize: 12, color: "gray" }}>
+        <Typography variant="body2" sx={{ fontSize: 12, color: "gray", mb: 1 }}>
           {new Date(answer.createdAt).toLocaleString()}
         </Typography>
 
@@ -151,6 +151,11 @@ const Answer = observer(
                     value={answerText}
                     required
                     onChange={(e) => setAnswerText(e.target.value)}
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        fontSize: "14px"
+                      }
+                    }}
                   />
                   <Button
                     variant="outlined"
@@ -180,12 +185,11 @@ const Answer = observer(
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "end"
+                  alignItems: "center",
+                  gap: 1
                 }}
               >
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  {answer.text}
-                </Typography>
+                <Typography variant="body2">{answer.text}</Typography>
                 <Button
                   variant="outlined"
                   sx={{
@@ -202,9 +206,7 @@ const Answer = observer(
             )}
           </>
         ) : (
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            {answer.text}
-          </Typography>
+          <Typography variant="body2">{answer.text}</Typography>
         )}
 
         {isOwnAnswer && (
