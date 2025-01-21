@@ -100,7 +100,7 @@ const AnswerReactions = observer(
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mt: 2
+            mt: 1
           }}
         >
           <ButtonGroup variant="text" size="small">
