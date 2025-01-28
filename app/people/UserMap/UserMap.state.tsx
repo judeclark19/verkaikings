@@ -8,21 +8,22 @@ type MapItem = {
   countryAbbr: string;
 };
 
-class UserMapState {
+export class UserMapState {
   usersWithCity: UserDocType[] = [];
   isInitialized = false;
   mapItems: MapItem[] = [];
-  cityNames: Record<string, string> = {};
   openInfoWindow: google.maps.InfoWindow | null = null;
   markers = new Map<string, google.maps.marker.AdvancedMarkerElement>();
   infoWindows = new Map<string, google.maps.InfoWindow>();
   map: google.maps.Map | null = null;
   visibleMarkerCount = 0; // Observable property to track visible markers
 
-  constructor(users: UserDocType[], cityNames: Record<string, string>) {
+  constructor() {
     makeAutoObservable(this);
+  }
+
+  init(users: UserDocType[]) {
     this.usersWithCity = users.filter((user) => user.cityId);
-    this.cityNames = cityNames;
 
     // INIT MAP ITEMS
     Object.keys(userList.usersByCountry).forEach((country) => {
@@ -166,4 +167,5 @@ class UserMapState {
   }
 }
 
-export default UserMapState;
+const userMap = new UserMapState();
+export default userMap;
