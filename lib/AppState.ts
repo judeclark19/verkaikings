@@ -1,4 +1,3 @@
-import UserMapState from "@/app/people/UserMap/UserMap.state";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserDocType, UserList } from "./UserList";
@@ -24,6 +23,7 @@ import fundraiserState, {
   FundraiserState
 } from "./FundraiserState";
 import qAndAState, { QandADocType, QandAState } from "./QandAState";
+import userMap, { UserMapState } from "@/app/people/UserMap/UserMap.state";
 
 class AppState {
   isInitialized = false;
@@ -34,12 +34,12 @@ class AppState {
   cityNames: Record<string, string> = {};
   cityDetails: Record<string, google.maps.places.PlaceResult> = {};
   countryNames: Record<string, string> = {};
-  userMap: UserMapState | null = null;
 
   snackbarOpen = false;
   snackbarMessage = "";
 
   userList: UserList = userList;
+  userMap: UserMapState = userMap;
   myWillemijnStories: MyWillemijnStories = myWillemijnStories;
   events: Events = eventsState;
   fundraisers: FundraiserState = fundraiserState;
@@ -115,6 +115,7 @@ class AppState {
       // this.language = "nl-NL";
       this.userList = userList;
       this.userList.init(users);
+
       this.myWillemijnStories = myWillemijnStories;
       this.myWillemijnStories.init(stories);
       this.events = eventsState;
@@ -152,6 +153,10 @@ class AppState {
       if (!appState.userList.query) {
         this.userList.setUsersByBirthday(users);
       }
+
+      this.userMap = userMap;
+      this.userMap.init(users);
+
       this.setPDCinDB();
       myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);
@@ -364,10 +369,6 @@ class AppState {
       type: "region"
     });
     return displayNames.of(isoCode.toUpperCase());
-  }
-
-  initUserMap() {
-    this.userMap = new UserMapState(this.userList.users, this.cityNames);
   }
 
   formatCityAndStatefromAddress(

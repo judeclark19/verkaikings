@@ -58,7 +58,6 @@ export class UserList {
 
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
-    appState.initUserMap();
   }
 
   setFilteredUsers(users: UserDocType[]) {

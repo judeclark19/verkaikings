@@ -83,7 +83,11 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
           alignItems: "center"
         }}
       >
-        <Typography>
+        <Typography
+          sx={{
+            color: "primary.dark"
+          }}
+        >
           {qAndA.createdAt.toDate().toLocaleString(appState.language, {
             dateStyle: "medium",
             timeStyle: "short"
@@ -115,16 +119,7 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         )}
       </div>
 
-      {!isOwnQuestion && (
-        <Typography
-          variant="h3"
-          sx={{
-            color: "primary.dark"
-          }}
-        >
-          {qAndA.question}
-        </Typography>
-      )}
+      {!isOwnQuestion && <Typography variant="h3">{qAndA.question}</Typography>}
 
       {isOwnQuestion && (
         <>
@@ -174,14 +169,7 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
             </Box>
           ) : (
             <Box display="flex" alignItems="center" gap={1}>
-              <Typography
-                variant="h3"
-                sx={{
-                  color: "primary.dark"
-                }}
-              >
-                {qAndA.question}
-              </Typography>
+              <Typography variant="h3">{qAndA.question}</Typography>
               <Button
                 variant="outlined"
                 sx={{
