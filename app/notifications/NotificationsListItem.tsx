@@ -65,10 +65,7 @@ const NotificationListItem = observer(
           transform:
             visibility[notif.id] || visibility[notif.id] === undefined
               ? "translateX(0)"
-              : "translateX(-100px)",
-          "&:hover": {
-            backgroundColor: notif.read ? "rgb(25,25,25)" : "var(--med-pink)"
-          }
+              : "translateX(-100px)"
         }}
       >
         <ListItemText
@@ -127,6 +124,7 @@ const NotificationListItem = observer(
               xs: "100%",
               sm: "auto"
             },
+            height: "50px",
             justifyContent: "flex-end"
           }}
         >
