@@ -23,7 +23,7 @@ import {
 import Cookies from "js-cookie";
 import { MuiPhone, PhoneData } from "./MuiPhone";
 import PasswordInput from "@/components/PasswordInput";
-import { cleanNameString } from "@/lib/clientUtils";
+import { cleanNameString, sendNotification } from "@/lib/clientUtils";
 
 type PhoneNumberDoc = {
   id: string;
@@ -97,6 +97,13 @@ const SignupForm = () => {
     } else {
       setError(
         `Sorry, that phone number was not found on our members list. If you think this may be a mistake, please send a message in the "Verkaikings Website" of our WhatsApp community.`
+      );
+      // notify admin
+      sendNotification(
+        "6pHYz7jcr7WoqoRWcnIXEn0Y1bm1",
+        "Failed sign up",
+        `${phoneData.phone}`,
+        ""
       );
     }
     setChecking(false);
