@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
-import { EmojiEmotions, Favorite, ThumbUp } from "@mui/icons-material";
+import { Favorite, ThumbUp } from "@mui/icons-material";
 import { AnswerType, ReactionName, ReactionType } from "@/lib/QandAState";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
