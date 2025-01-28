@@ -13,13 +13,13 @@ import {
 } from "@mui/material";
 import { DocumentReference, updateDoc } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
-import AnswerReactions from "./AnswerReactions";
 import { useState } from "react";
 import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Save as SaveIcon
 } from "@mui/icons-material";
+import Reactions from "@/components/Reactions/Reactions";
 
 const Answer = observer(
   ({
@@ -225,8 +225,11 @@ const Answer = observer(
           </IconButton>
         )}
 
-        <AnswerReactions answer={answer} qAndADocRef={qAndADocRef} />
-
+        <Reactions
+          collection="qanda"
+          document={answer}
+          documentRef={qAndADocRef}
+        />
         {!noDivider && (
           <Divider
             sx={{
