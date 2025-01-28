@@ -1,10 +1,14 @@
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import { EmojiEmotions, Favorite, ThumbUp } from "@mui/icons-material";
-import { AnswerType, ReactionType } from "@/lib/QandAState";
+import { AnswerType, ReactionName, ReactionType } from "@/lib/QandAState";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
 import { DocumentReference, getDoc, updateDoc } from "firebase/firestore";
 import Tooltip from "@/components/Tooltip";
+import WowIcon from "@/components/WowIcon";
+import MindBlownIcon from "@/components/MindBlownIcon";
+import { cloneElement } from "react";
+import LaughIcon from "@/components/LaughIcon";
 
 const AnswerReactions = observer(
   ({
@@ -16,11 +20,11 @@ const AnswerReactions = observer(
   }) => {
     const reactions = answer.reactions || [];
 
-    const countReactions = (type: "like" | "love" | "laugh") =>
+    const countReactions = (type: ReactionName) =>
       reactions.filter((reaction: ReactionType) => reaction.type === type)
         .length;
 
-    const getReactionUsers = (type: "like" | "love" | "laugh") =>
+    const getReactionUsers = (type: ReactionName) =>
       reactions
         .filter((reaction) => reaction.type === type)
         .map((reaction) => {
@@ -30,7 +34,7 @@ const AnswerReactions = observer(
           return user ? `${user.firstName} ${user.lastName}` : "Unknown User";
         });
 
-    const handleReaction = async (reactionType: "like" | "love" | "laugh") => {
+    const handleReaction = async (reactionType: ReactionName) => {
       if (!appState.loggedInUser) {
         console.error("User must be logged in to react.");
         return;
@@ -107,14 +111,16 @@ const AnswerReactions = observer(
             {[
               { type: "like", icon: <ThumbUp />, label: "Likes" },
               { type: "love", icon: <Favorite />, label: "Loves" },
-              { type: "laugh", icon: <EmojiEmotions />, label: "Laughs" }
+              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
+              { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
+              {
+                type: "mindBlown",
+                icon: <MindBlownIcon count={0} />,
+                label: "Minds Blown"
+              }
             ].map(({ type, icon, label }) => {
-              const reactionCount = countReactions(
-                type as "like" | "love" | "laugh"
-              );
-              const reactionUsers = getReactionUsers(
-                type as "like" | "love" | "laugh"
-              );
+              const reactionCount = countReactions(type as ReactionName);
+              const reactionUsers = getReactionUsers(type as ReactionName);
 
               return (
                 <Tooltip
@@ -148,10 +154,8 @@ const AnswerReactions = observer(
                           : "text.secondary"
                     }}
                     id={`answer-${type}`}
-                    startIcon={icon}
-                    onClick={() =>
-                      handleReaction(type as "like" | "love" | "laugh")
-                    }
+                    startIcon={cloneElement(icon, { count: reactionCount })}
+                    onClick={() => handleReaction(type as ReactionName)}
                   >
                     <Typography
                       sx={{

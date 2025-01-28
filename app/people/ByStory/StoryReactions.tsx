@@ -8,13 +8,17 @@ import {
   onSnapshot,
   DocumentReference
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { cloneElement, useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
 import { StoryDocType, StoryReactionType } from "@/lib/MyWillemijnStories";
 import Tooltip from "@/components/Tooltip";
+import { ReactionName } from "@/lib/QandAState";
+import WowIcon from "@/components/WowIcon";
+import MindBlownIcon from "@/components/MindBlownIcon";
+import LaughIcon from "@/components/LaughIcon";
 
 const StoryReactions = ({ story }: { story?: StoryDocType }) => {
   const [reactions, setReactions] = useState<StoryReactionType[]>(
@@ -43,7 +47,7 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
 
   if (!story) return null;
 
-  const handleReaction = async (reactionType: "like" | "love" | "laugh") => {
+  const handleReaction = async (reactionType: ReactionName) => {
     if (!appState.loggedInUser) {
       console.error("User must be logged in to react.");
       return;
@@ -97,11 +101,11 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
     }
   };
 
-  const countReactions = (type: "like" | "love" | "laugh") =>
+  const countReactions = (type: ReactionName) =>
     reactions.filter((reaction: StoryReactionType) => reaction.type === type)
       .length;
 
-  const getReactionUsers = (type: "like" | "love" | "laugh") =>
+  const getReactionUsers = (type: ReactionName) =>
     reactions
       .filter((reaction) => reaction.type === type)
       .map((reaction) => {
@@ -124,7 +128,13 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
         {[
           { type: "like", icon: <ThumbUp />, label: "Likes" },
           { type: "love", icon: <Favorite />, label: "Loves" },
-          { type: "laugh", icon: <EmojiEmotions />, label: "Laughs" }
+          { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
+          { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
+          {
+            type: "mindBlown",
+            icon: <MindBlownIcon count={0} />,
+            label: "Minds Blown"
+          }
         ].map(({ type, icon, label }) => {
           const reactionCount = countReactions(
             type as "like" | "love" | "laugh"
@@ -165,7 +175,7 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
                       : "text.secondary"
                 }}
                 id={`story-${type}`}
-                startIcon={icon}
+                startIcon={cloneElement(icon, { count: reactionCount })}
                 onClick={() =>
                   handleReaction(type as "like" | "love" | "laugh")
                 }

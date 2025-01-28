@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
+import { ReactionName } from "./QandAState";
 
 export type StoryCommentType = {
   id: string;
@@ -10,7 +11,7 @@ export type StoryCommentType = {
 
 export type StoryReactionType = {
   authorId: string;
-  type: "like" | "love" | "laugh";
+  type: ReactionName;
   createdAt: string;
 };
 
