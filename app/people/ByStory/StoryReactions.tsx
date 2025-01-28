@@ -1,4 +1,4 @@
-import { EmojiEmotions, Favorite, ThumbUp } from "@mui/icons-material";
+import { Favorite, ThumbUp } from "@mui/icons-material";
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import {
   doc,
