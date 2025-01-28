@@ -1,10 +1,9 @@
 const WowIcon = ({ count }: { count: number }) => {
-  console.log("wow count:", count);
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18px"
-      height="18px"
+      width="22px"
+      height="22px"
       viewBox="0 0 24 24"
       fill="none"
     >
@@ -13,7 +12,6 @@ const WowIcon = ({ count }: { count: number }) => {
         cy="12"
         r="9.5"
         fill={count > 0 ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
-        stroke={count > 0 ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
         stroke-linecap="round"
       />
       <circle // left eye

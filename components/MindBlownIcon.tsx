@@ -5,8 +5,8 @@ const MindBlownIcon = ({ count }: { count: number }) => {
       fill={count > 0 ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
       version="1.1"
       id="Layer_1"
-      width="18px"
-      height="18px"
+      width="20px"
+      height="20px"
       viewBox="0 0 229 260"
       enable-background="new 0 0 229 260"
     >

@@ -8,6 +8,7 @@ import Tooltip from "@/components/Tooltip";
 import WowIcon from "@/components/WowIcon";
 import MindBlownIcon from "@/components/MindBlownIcon";
 import { cloneElement } from "react";
+import LaughIcon from "@/components/LaughIcon";
 
 const AnswerReactions = observer(
   ({
@@ -110,7 +111,7 @@ const AnswerReactions = observer(
             {[
               { type: "like", icon: <ThumbUp />, label: "Likes" },
               { type: "love", icon: <Favorite />, label: "Loves" },
-              { type: "laugh", icon: <EmojiEmotions />, label: "Laughs" },
+              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
               { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
               {
                 type: "mindBlown",

@@ -18,6 +18,7 @@ import Tooltip from "@/components/Tooltip";
 import { ReactionName } from "@/lib/QandAState";
 import WowIcon from "@/components/WowIcon";
 import MindBlownIcon from "@/components/MindBlownIcon";
+import LaughIcon from "@/components/LaughIcon";
 
 const StoryReactions = ({ story }: { story?: StoryDocType }) => {
   const [reactions, setReactions] = useState<StoryReactionType[]>(
@@ -127,7 +128,7 @@ const StoryReactions = ({ story }: { story?: StoryDocType }) => {
         {[
           { type: "like", icon: <ThumbUp />, label: "Likes" },
           { type: "love", icon: <Favorite />, label: "Loves" },
-          { type: "laugh", icon: <EmojiEmotions />, label: "Laughs" },
+          { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
           { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
           {
             type: "mindBlown",
