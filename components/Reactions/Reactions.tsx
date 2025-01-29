@@ -1,24 +1,43 @@
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import { Favorite, ThumbUp } from "@mui/icons-material";
-import { AnswerType, ReactionName, ReactionType } from "@/lib/QandAState";
+import { AnswerType } from "@/lib/QandAState";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
-import { DocumentReference, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  DocumentReference,
+  getDoc,
+  updateDoc
+} from "firebase/firestore";
 import Tooltip from "@/components/Tooltip";
-import WowIcon from "@/components/WowIcon";
-import MindBlownIcon from "@/components/MindBlownIcon";
+import WowIcon from "@/components/Reactions/WowIcon";
+import MindBlownIcon from "@/components/Reactions/MindBlownIcon";
 import { cloneElement } from "react";
-import LaughIcon from "@/components/LaughIcon";
+import LaughIcon from "@/components/Reactions/LaughIcon";
+import { StoryDocType } from "@/lib/MyWillemijnStories";
+import { sendNotification } from "@/lib/clientUtils";
+import myProfileState from "@/app/profile/MyProfile.state";
 
-const AnswerReactions = observer(
+export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
+
+export type ReactionType = {
+  authorId: string;
+  type: ReactionName;
+  createdAt: string;
+};
+
+const Reactions = observer(
   ({
-    answer,
-    qAndADocRef
+    collection,
+    document,
+    documentRef
   }: {
-    answer: AnswerType;
-    qAndADocRef: DocumentReference;
+    collection: "myWillemijnStories" | "qanda";
+    document: StoryDocType | AnswerType;
+    documentRef: DocumentReference;
   }) => {
-    const reactions = answer.reactions || [];
+    const reactions = document.reactions || [];
 
     const countReactions = (type: ReactionName) =>
       reactions.filter((reaction: ReactionType) => reaction.type === type)
@@ -34,22 +53,22 @@ const AnswerReactions = observer(
           return user ? `${user.firstName} ${user.lastName}` : "Unknown User";
         });
 
-    const handleReaction = async (reactionType: ReactionName) => {
+    const handleQandAReaction = async (reactionType: ReactionName) => {
       if (!appState.loggedInUser) {
         console.error("User must be logged in to react.");
         return;
       }
 
-      const qAndASnapshot = await getDoc(qAndADocRef);
+      const snapshot = await getDoc(documentRef);
 
-      if (!qAndASnapshot.exists()) {
+      if (!snapshot.exists()) {
         console.error("No data found in the document.");
         return;
       }
 
-      const qAndAData = qAndASnapshot.data();
+      const snapshotData = snapshot.data();
 
-      const existingReaction = answer.reactions.find(
+      const existingReaction = document.reactions.find(
         (reaction) =>
           reaction.authorId === appState.loggedInUser!.id &&
           reaction.type === reactionType
@@ -58,8 +77,8 @@ const AnswerReactions = observer(
       let updatedAnswers;
       if (existingReaction) {
         // Remove reaction
-        updatedAnswers = qAndAData.answers.map((answerData: AnswerType) => {
-          if (answerData.id === answer.id) {
+        updatedAnswers = snapshotData.answers.map((answerData: AnswerType) => {
+          if (answerData.id === document.id) {
             return {
               ...answerData,
               reactions: answerData.reactions.filter(
@@ -79,8 +98,8 @@ const AnswerReactions = observer(
           createdAt: new Date().toISOString()
         };
 
-        updatedAnswers = qAndAData.answers.map((answerData: AnswerType) => {
-          if (answerData.id === answer.id) {
+        updatedAnswers = snapshotData.answers.map((answerData: AnswerType) => {
+          if (answerData.id === document.id) {
             return {
               ...answerData,
               reactions: [...(answerData.reactions || []), newReaction]
@@ -91,12 +110,66 @@ const AnswerReactions = observer(
       }
 
       try {
-        await updateDoc(qAndADocRef, { answers: updatedAnswers });
+        await updateDoc(documentRef, { answers: updatedAnswers });
       } catch (error) {
         console.error("Error updating reactions:", error);
         appState.setSnackbarMessage(`Error updating reactions: ${error}`);
       }
     };
+    const handleStoryReaction = async (reactionType: ReactionName) => {
+      if (!appState.loggedInUser) {
+        console.error("User must be logged in to react.");
+        return;
+      }
+
+      // Check if the user already reacted with this type
+      const existingReaction = reactions.find(
+        (reaction) =>
+          reaction.authorId === appState.loggedInUser!.id &&
+          reaction.type === reactionType
+      );
+
+      if (existingReaction) {
+        try {
+          await updateDoc(documentRef, {
+            reactions: arrayRemove(existingReaction)
+          });
+        } catch (error) {
+          alert(`Error removing reaction: ${error}`);
+          console.error("Error removing reaction:", error);
+        }
+      } else {
+        // Add the reaction
+        const newReaction: ReactionType = {
+          authorId: appState.loggedInUser.id,
+          type: reactionType,
+          createdAt: new Date().toISOString()
+        };
+
+        try {
+          await updateDoc(documentRef, {
+            reactions: arrayUnion(newReaction)
+          });
+
+          // send a notification to the author of the story
+
+          if (document.authorId !== appState.loggedInUser.id) {
+            sendNotification(
+              document.authorId,
+              "New reaction on your story",
+              `${myProfileState.user!.firstName} ${
+                myProfileState.user!.lastName
+              } left a "${reactionType}"`,
+              `/profile?notif=story-${reactionType}`
+            );
+          }
+        } catch (error) {
+          alert(`Error adding reaction: ${error}`);
+          console.error("Error adding reaction:", error);
+        }
+      }
+    };
+
     return (
       <>
         <Box
@@ -155,7 +228,13 @@ const AnswerReactions = observer(
                     }}
                     id={`answer-${type}`}
                     startIcon={cloneElement(icon, { count: reactionCount })}
-                    onClick={() => handleReaction(type as ReactionName)}
+                    onClick={() => {
+                      if (collection === "myWillemijnStories") {
+                        handleStoryReaction(type as ReactionName);
+                      } else if (collection === "qanda") {
+                        handleQandAReaction(type as ReactionName);
+                      }
+                    }}
                   >
                     <Typography
                       sx={{
@@ -176,4 +255,4 @@ const AnswerReactions = observer(
   }
 );
 
-export default AnswerReactions;
+export default Reactions;

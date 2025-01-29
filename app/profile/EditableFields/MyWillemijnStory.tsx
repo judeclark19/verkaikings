@@ -14,8 +14,8 @@ import { db } from "@/lib/firebase";
 import { EditBtn } from ".";
 import appState from "@/lib/AppState";
 import StoryComments from "@/app/people/ByStory/StoryComments";
-import StoryReactions from "@/app/people/ByStory/StoryReactions";
 import SaveIcon from "@mui/icons-material/Save";
+import Reactions from "@/components/Reactions/Reactions";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
@@ -114,6 +114,7 @@ const MyWillemijnStory = observer(() => {
 
       {isEditing ? (
         <TextField
+          sx={{ mb: 1 }}
           label="My Willemijn Story"
           multiline
           rows={10}
@@ -128,7 +129,7 @@ const MyWillemijnStory = observer(() => {
           variant="outlined"
         />
       ) : (
-        <Paper>
+        <Paper sx={{ mb: 2 }}>
           <Typography
             sx={{
               minHeight: "125px",
@@ -146,7 +147,13 @@ const MyWillemijnStory = observer(() => {
         </Paper>
       )}
 
-      {mws && mws.storyContent && <StoryReactions story={mws} />}
+      {mws && mws.storyContent && (
+        <Reactions
+          collection="myWillemijnStories"
+          document={mws}
+          documentRef={doc(db, "myWillemijnStories", mws.id)}
+        />
+      )}
       {mws && mws.storyContent && <StoryComments story={mws} />}
     </>
   );

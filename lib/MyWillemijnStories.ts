@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
-import { ReactionName } from "./QandAState";
+import { ReactionType } from "@/components/Reactions/Reactions";
 
 export type StoryCommentType = {
   id: string;
@@ -9,19 +9,13 @@ export type StoryCommentType = {
   text: string;
 };
 
-export type StoryReactionType = {
-  authorId: string;
-  type: ReactionName;
-  createdAt: string;
-};
-
 export type StoryDocType = {
   id: string;
   authorId: string;
   storyContent: string;
   createdAt: string;
   comments: StoryCommentType[];
-  reactions: StoryReactionType[];
+  reactions: ReactionType[];
 };
 
 export class MyWillemijnStories {

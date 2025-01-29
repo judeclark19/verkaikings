@@ -1,13 +1,6 @@
+import { ReactionType } from "@/components/Reactions/Reactions";
 import { Timestamp } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-
-export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
-
-export type ReactionType = {
-  authorId: string;
-  type: ReactionName;
-  createdAt: string;
-};
 
 export type AnswerType = {
   id: string;

@@ -16,12 +16,14 @@ import { FaWhatsapp, FaTransgender, FaCity } from "react-icons/fa";
 import SocialsList from "./SocialsList";
 import { observer } from "mobx-react-lite";
 import StoryComments from "@/app/people/ByStory/StoryComments";
-import StoryReactions from "@/app/people/ByStory/StoryReactions";
 import FlagComponent from "@/components/Flag";
 import EventsList from "../EventsList";
 import { UserDocType } from "@/lib/UserList";
 import { StoryDocType } from "@/lib/MyWillemijnStories";
 import GoBack from "@/components/GoBack";
+import Reactions from "@/components/Reactions/Reactions";
+import { db } from "@/lib/firebase";
+import { doc } from "firebase/firestore";
 
 const UserProfile = observer(
   ({ decodedToken }: { decodedToken: { email: string; user_id: string } }) => {
@@ -346,10 +348,18 @@ const UserProfile = observer(
                   <Box
                     sx={{
                       p: 1,
-                      mt: -3
+                      mt: -2
                     }}
                   >
-                    <StoryReactions story={usersWillemijnStory} />
+                    <Reactions
+                      collection="myWillemijnStories"
+                      document={usersWillemijnStory}
+                      documentRef={doc(
+                        db,
+                        "myWillemijnStories",
+                        usersWillemijnStory.id
+                      )}
+                    />
                     <StoryComments story={usersWillemijnStory} />
                   </Box>
                 </Paper>

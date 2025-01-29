@@ -14,11 +14,11 @@ import userList, { UserDocType } from "@/lib/UserList";
 import { doc, onSnapshot } from "firebase/firestore";
 import { PeopleViews } from "../PeopleList";
 import StoryComments from "./StoryComments";
-import StoryReactions from "./StoryReactions";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { deleteQueryParam } from "@/lib/clientUtils";
 import { StoryDocType } from "@/lib/MyWillemijnStories";
+import Reactions from "@/components/Reactions/Reactions";
 
 const Column = observer(({ users }: { users: UserDocType[] }) => {
   const [stories, setStories] = useState<Record<string, StoryDocType>>({});
@@ -68,13 +68,19 @@ const Column = observer(({ users }: { users: UserDocType[] }) => {
           >
             <CardContent>
               <UserListItem user={user} />
-              <Typography sx={{ marginTop: 1 }}>
+              <Typography sx={{ mt: 1, mb: 2 }}>
                 {story?.storyContent || (
                   <Skeleton variant="text" width="100%" height={150} />
                 )}
               </Typography>
 
-              {story && <StoryReactions story={storyDoc!} />}
+              {story && (
+                <Reactions
+                  collection="myWillemijnStories"
+                  document={storyDoc!}
+                  documentRef={doc(db, "myWillemijnStories", storyDoc!.id)}
+                />
+              )}
               {story && <StoryComments story={storyDoc!} />}
             </CardContent>
           </Card>
