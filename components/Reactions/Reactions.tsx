@@ -180,7 +180,13 @@ const Reactions = observer(
             mt: 1
           }}
         >
-          <ButtonGroup variant="text" size="small">
+          <ButtonGroup
+            variant="text"
+            size="small"
+            sx={{
+              flexWrap: "wrap"
+            }}
+          >
             {[
               { type: "like", icon: <ThumbUp />, label: "Likes" },
               { type: "love", icon: <Favorite />, label: "Loves" },
@@ -217,14 +223,21 @@ const Reactions = observer(
                 >
                   <Button
                     sx={{
-                      px: 1,
+                      backgroundColor:
+                        window.innerWidth < 400
+                          ? "rgba(255, 255, 255, 0.3)"
+                          : "transparent",
+                      px: window.innerWidth < 400 ? 0.5 : 1,
                       color:
                         type === "love" && reactionCount > 0
                           ? "primary.dark"
-                          : (type === "like" || type === "laugh") &&
-                            reactionCount > 0
+                          : type !== "love" && reactionCount > 0
                           ? "warning.main"
-                          : "text.secondary"
+                          : "text.secondary",
+                      justifyContent: "space-around",
+                      "& .MuiButton-startIcon": {
+                        marginRight: window.innerWidth < 400 ? "4px" : "8px"
+                      }
                     }}
                     id={`answer-${type}`}
                     startIcon={cloneElement(icon, { count: reactionCount })}
@@ -239,7 +252,8 @@ const Reactions = observer(
                     <Typography
                       sx={{
                         color:
-                          reactionCount > 0 ? "text.primary" : "text.secondary" // Reaction count color
+                          reactionCount > 0 ? "text.primary" : "text.secondary",
+                        fontSize: window.innerWidth < 400 ? 14 : 16
                       }}
                     >
                       {reactionCount}
