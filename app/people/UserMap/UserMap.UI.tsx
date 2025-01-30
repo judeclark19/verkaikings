@@ -8,13 +8,21 @@ import { deleteQueryParam } from "@/lib/clientUtils";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const hasInitializedRef = useRef(false); // Track if initialization has occurred
 
   useEffect(() => {
-    if (!mapRef.current || !appState.userMap || !appState.isInitialized) return;
+    if (
+      !mapRef.current ||
+      !appState.userMap ||
+      hasInitializedRef.current ||
+      !appState.isInitialized
+    )
+      return;
 
     async function initialize() {
-      if (!mapRef.current) return;
-      await appState.userMap.initializeMap(mapRef.current);
+      hasInitializedRef.current = true; // Prevent further initialization
+
+      appState.userMap?.initializeMap(mapRef.current as HTMLElement);
     }
 
     initialize();

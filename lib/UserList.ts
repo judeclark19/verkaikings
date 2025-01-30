@@ -80,6 +80,10 @@ export class UserList {
       if (!cityId) cityId = "No city listed";
 
       if (!this.usersByCountry[countryAbbr]) {
+        if (!appState.countryNames[countryAbbr]) {
+          appState.addCountryToList(countryAbbr);
+        }
+
         this.usersByCountry[countryAbbr] = {
           countryName: appState.countryNames[countryAbbr] || "",
           cities: {

@@ -10,7 +10,7 @@ import FlagComponent from "@/components/Flag";
 const Country = observer(() => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  if (!myProfileState.countryAbbr) {
+  if (myProfileState.countryAbbr === null) {
     return <Skeleton />;
   }
   return (
@@ -33,7 +33,7 @@ const Country = observer(() => {
         }}
       >
         {myProfileState.user!.countryAbbr ? (
-          <FlagComponent countryCode={myProfileState.user!.countryAbbr} />
+          <FlagComponent countryCode={myProfileState.countryAbbr} />
         ) : (
           <PublicIcon />
         )}
