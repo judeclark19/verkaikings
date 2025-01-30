@@ -27,10 +27,6 @@ const CityPicker = observer(
     );
     const [suggestions, setSuggestions] = useState<any[]>([]);
 
-    useEffect(() => {
-      console.log(suggestions);
-    }, [suggestions]);
-
     // Fetch city suggestions
     const fetchAutocomplete = async (query: string) => {
       if (!query) {
@@ -66,13 +62,13 @@ const CityPicker = observer(
       const newDisplayName = appState.formatCityAndStatefromAddress(
         appState.cityDetails[placeId]?.addressComponents
       );
-      console.log("newDisplayName", newDisplayName);
+
       myProfileState.setCityName(newDisplayName);
       myProfileState.setPlaceId(placeId);
       setCountry(
-        appState.cityDetails[placeId]?.addressComponents?.find((c: any) =>
-          c.types.includes("country")
-        )?.shortText || ""
+        appState.cityDetails[placeId]?.addressComponents
+          ?.find((c: any) => c.types.includes("country"))
+          ?.shortText.toLowerCase() || ""
       );
     };
 

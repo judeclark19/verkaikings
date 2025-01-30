@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import appState from "@/lib/AppState";
 import userList, { UserDocType } from "@/lib/UserList";
 
@@ -26,6 +26,8 @@ export class UserMapState {
     this.usersWithCity = users.filter((user) => user.cityId);
 
     // INIT MAP ITEMS
+    this.mapItems = [];
+
     Object.keys(userList.usersByCountry).forEach((country) => {
       const countryObject = userList.usersByCountry[country];
       Object.keys(countryObject.cities).forEach((city) => {
@@ -50,44 +52,33 @@ export class UserMapState {
       mapId: process.env.NEXT_PUBLIC_USERMAP_ID
     });
 
-    const service = new window.google.maps.places.PlacesService(this.map);
+    this.mapItems.forEach(async (mapItem) => {
+      let cachedPlace = appState.cityDetails[mapItem.cityId];
 
-    this.mapItems.forEach((mapItem) => {
-      const cachedPlace = appState.cityDetails[mapItem.cityId];
-      if (cachedPlace) {
-        this.createMarker(cachedPlace, mapItem);
-      } else {
-        service.getDetails(
-          { placeId: mapItem.cityId },
-          (
-            place: google.maps.places.PlaceResult | null,
-            status: google.maps.places.PlacesServiceStatus
-          ) => {
-            if (
-              status === google.maps.places.PlacesServiceStatus.OK &&
-              place?.geometry?.location
-            ) {
-              appState.cityNames[mapItem.cityId] = place.name || "";
-              appState.setPDCinDB();
-              console.log("$$$ Creating marker from API:", place);
-              this.createMarker(place, mapItem);
-            } else {
-              console.error("Place details could not be retrieved:", status);
-            }
-          }
-        );
+      if (!cachedPlace) {
+        cachedPlace = await appState.fetchCityDetails(mapItem.cityId);
       }
+      this.createMarker(cachedPlace, mapItem);
     });
 
     this.isInitialized = true;
     this.updateVisibleMarkerCount(); // Update visible markers after initialization
   }
 
-  createMarker(place: google.maps.places.PlaceResult, mapItem: MapItem) {
+  createMarker(place: any, mapItem: MapItem) {
+    const position = place.location
+      ? { lat: place.location.latitude, lng: place.location.longitude }
+      : null;
+
+    if (!position) {
+      console.error("No valid location found for place:", place);
+      return;
+    }
+
     const marker = new google.maps.marker.AdvancedMarkerElement({
       map: this.map,
-      position: place.geometry?.location,
-      title: place.name
+      position,
+      title: place.displayName?.text || "Unknown Place"
     });
 
     this.markers.set(mapItem.cityId, marker);

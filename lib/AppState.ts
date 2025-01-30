@@ -215,9 +215,6 @@ class AppState {
         this.userList.setUsersByBirthday(users);
       }
 
-      this.userMap = userMap;
-      this.userMap.init(users);
-
       this.setPDCinDB();
       myProfileState.init(this.loggedInUser!, userId);
       this.setInitialized(true);

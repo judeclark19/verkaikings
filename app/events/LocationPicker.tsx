@@ -24,7 +24,8 @@ const LocationPicker = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          input: query
+          input: query,
+          includedPrimaryTypes: ["establishment"] // Only fetch establishments
         })
       });
 
@@ -55,9 +56,7 @@ const LocationPicker = ({
     <Autocomplete
       freeSolo
       options={suggestions}
-      getOptionLabel={(option) =>
-        option.placePrediction.structuredFormat.mainText.text
-      }
+      getOptionLabel={(option) => option.placePrediction.text.text}
       onInputChange={(_, value) => fetchAutocomplete(value)}
       onChange={(_, newValue) => newValue && handleSelect(newValue)}
       renderInput={(params) => (
