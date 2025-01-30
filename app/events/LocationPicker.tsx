@@ -1,75 +1,92 @@
-import { TextField } from "@mui/material";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
-import { getDetails } from "use-places-autocomplete";
+import { Autocomplete, TextField } from "@mui/material";
+import { Dispatch, SetStateAction, useState } from "react";
+
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const AUTOCOMPLETE_ENDPOINT = `https://places.googleapis.com/v1/places:autocomplete?key=${API_KEY}`;
+
+type Suggestion = {
+  placePrediction: {
+    placeId: string;
+    structuredFormat: {
+      mainText: { text: string };
+    };
+    text: { text: string };
+  };
+};
 
 const LocationPicker = ({
   setLocationUrl,
-  locationName,
   setLocationName
 }: {
   setLocationUrl: Dispatch<SetStateAction<string | null>>;
-  locationName: string;
   setLocationName: (locationName: string) => void;
 }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-  useEffect(() => {
-    const initAutocomplete = () => {
-      if (inputRef.current) {
-        const autocomplete = new window.google.maps.places.Autocomplete(
-          inputRef.current,
-          { types: ["establishment"] }
-        );
+  const fetchAutocomplete = async (query: string) => {
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
 
-        autocomplete.addListener("place_changed", () => {
-          const place = autocomplete.getPlace();
-          if (place && place.place_id) {
-            handleSelect(place.place_id);
-            setLocationName(place.name || place.formatted_address || "");
-          }
-        });
-      }
-    };
-
-    initAutocomplete();
-  }, []);
-
-  const handleSelect = async (placeId: string) => {
     try {
-      const details = await getDetails({ placeId });
-      if (typeof details !== "string" && details.name && details.url) {
-        setLocationName(details.name);
-        setLocationUrl(details.url);
-      } else {
-        console.error("Details fetched are invalid or missing name");
-      }
+      const response = await fetch(AUTOCOMPLETE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: query,
+          includedPrimaryTypes: ["establishment"] // Only fetch establishments
+        })
+      });
+
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+    } catch (error) {
+      console.error("Error fetching autocomplete:", error);
+    }
+  };
+
+  const handleSelect = async (suggestion: Suggestion) => {
+    const placeId = suggestion.placePrediction.placeId;
+    setLocationName(suggestion.placePrediction.structuredFormat.mainText.text);
+
+    // Fetch Place Details
+    try {
+      const response = await fetch(
+        `https://places.googleapis.com/v1/places/${placeId}?key=${API_KEY}&fields=googleMapsUri`
+      );
+      const data = await response.json();
+      setLocationUrl(data.googleMapsUri || null);
     } catch (error) {
       console.error("Error fetching place details:", error);
     }
   };
 
   return (
-    <div>
-      <TextField
-        variant="outlined"
-        inputRef={inputRef}
-        value={locationName}
-        fullWidth
-        onChange={(e) => {
-          if (!e.target.value) {
-            setLocationName("");
-            setLocationUrl(null);
-          }
-          setLocationName(e.target.value);
-        }}
-        label="Location"
-        slotProps={{
-          inputLabel: {
-            shrink: true
-          }
-        }}
-      />
-    </div>
+    <Autocomplete
+      freeSolo
+      options={suggestions}
+      getOptionLabel={(option) => {
+        if (typeof option === "string") return "";
+        return option.placePrediction.text.text;
+      }}
+      onInputChange={(_, value) => {
+        setLocationName(value);
+        fetchAutocomplete(value);
+      }}
+      onChange={(_, newValue) => {
+        if (newValue && typeof newValue !== "string") {
+          handleSelect(newValue);
+        }
+        if (typeof newValue === "string") {
+          setLocationUrl(null);
+          setLocationName(newValue);
+        }
+      }}
+      renderInput={(params) => (
+        <TextField {...params} label="Location" variant="outlined" fullWidth />
+      )}
+    />
   );
 };
 

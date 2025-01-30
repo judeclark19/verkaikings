@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { TextField } from "@mui/material";
+import { FormEvent, useRef, useState } from "react";
+import { Autocomplete, TextField } from "@mui/material";
 import {
   collection,
   doc,
@@ -16,141 +16,140 @@ import SaveBtn from "./SaveBtn";
 import appState from "@/lib/AppState";
 import userList, { UserDocType } from "@/lib/UserList";
 
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const AUTOCOMPLETE_ENDPOINT = `https://places.googleapis.com/v1/places:autocomplete?key=${API_KEY}`;
+
+type Suggestion = {
+  placePrediction: {
+    placeId: string;
+    text: { text: string };
+  };
+};
+
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
-    const inputRef = useRef<HTMLInputElement | null>(null);
     const [loading, setLoading] = useState(false);
     const [country, setCountry] = useState<string | null>(
       myProfileState.countryAbbr
     );
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const initialValue = useRef(
+      myProfileState.cityName ? `${myProfileState.cityName}` : null
+    ).current;
 
-    useEffect(() => {
-      if (inputRef.current) {
-        const autocomplete = new window.google.maps.places.Autocomplete(
-          inputRef.current,
-          {
-            types: ["(cities)"]
-          }
-        );
-
-        autocomplete.addListener("place_changed", () => {
-          const place = autocomplete.getPlace();
-          if (
-            place.formatted_address &&
-            place.place_id &&
-            place.address_components
-          ) {
-            myProfileState.setCityName(
-              appState.formatCityAndStatefromAddress(place.address_components)
-            );
-            myProfileState.setPlaceId(place.place_id);
-            const countryComponent = place.address_components.find(
-              (component) => component.types.includes("country")
-            );
-            const countryCodeFromAddressComponents = countryComponent
-              ? countryComponent.short_name
-              : "";
-            setCountry(countryCodeFromAddressComponents);
-          }
-        });
-      }
-    }, []);
-
-    const handleSubmit = async (event: FormEvent) => {
-      event.preventDefault();
-
-      const changedCity =
-        myProfileState.placeId !== myProfileState.user!.cityId;
-
-      const userDoc = doc(db, "users", myProfileState.userId!);
-
-      // case 1: user clears the city
-      if (inputRef.current!.value === "") {
-        setLoading(true);
-        updateDoc(userDoc, {
-          cityId: null
-        })
-          .then(() => {
-            console.log("User's city removed.", myProfileState.cityName);
-            appState.setSnackbarMessage("City removed successfully.");
-          })
-          .catch((error) => {
-            appState.setSnackbarMessage(
-              "Error removing city. Please try again."
-            );
-            console.error("Error updating user's city: ", error);
-          })
-          .finally(() => {
-            setLoading(false);
-            setIsEditing(false);
-          });
-
+    // Fetch city suggestions
+    const fetchAutocomplete = async (query: string) => {
+      if (!query) {
+        setSuggestions([]);
         return;
       }
 
-      // case 2: user does not change the city
-      if (!changedCity) {
+      try {
+        const response = await fetch(AUTOCOMPLETE_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input: query,
+            includedPrimaryTypes: ["(cities)"] // Only fetch cities
+          })
+        });
+
+        const data = await response.json();
+        setSuggestions(data.suggestions || []);
+      } catch (error) {
+        console.error("Error fetching autocomplete:", error);
+      }
+    };
+
+    // Handle city selection
+    const handleSelect = async (suggestion: Suggestion) => {
+      const placeId = suggestion.placePrediction.placeId;
+
+      if (!appState.cityDetails[placeId]) {
+        await appState.fetchCityDetails(placeId);
+      }
+
+      const newDisplayName = appState.formatCityAndStatefromAddress(
+        appState.cityDetails[placeId]?.addressComponents
+      );
+
+      myProfileState.setCityName(newDisplayName);
+      myProfileState.setPlaceId(placeId);
+      setCountry(
+        appState.cityDetails[placeId]?.addressComponents
+          ?.find(
+            (c: {
+              longText: string;
+              shortText: string;
+              types: string[];
+              languageCode: string;
+            }) => c.types.includes("country")
+          )
+          ?.shortText.toLowerCase() || ""
+      );
+    };
+
+    const handleSubmit = async (event: FormEvent) => {
+      event.preventDefault();
+      const changedCity =
+        myProfileState.placeId !== myProfileState.user!.cityId;
+      const userDoc = doc(db, "users", myProfileState.userId!);
+
+      // User cleared the city
+      if (!myProfileState.cityName) {
+        setLoading(true);
+        await updateDoc(userDoc, { cityId: null });
+        setLoading(false);
         setIsEditing(false);
         return;
       }
 
-      // case 3: user changes the city
-      setLoading(true);
+      // User did not change the city
+      if (!changedCity) {
+        console.log("City not changed");
+        setIsEditing(false);
+        myProfileState.setCityName(initialValue);
+        return;
+      }
 
-      // check if city is in cache
+      // Fetch city and country data if not cached
       if (!appState.cityNames[myProfileState.placeId!]) {
         await appState.fetchCityDetails(myProfileState.placeId!);
       }
-
-      // check if country is in cache
       if (country && !appState.countryNames[country]) {
         appState.addCountryToList(country);
       }
 
-      async function fetchUsers() {
-        const users = await getDocs(collection(db, "users"));
-        return users.docs.map((doc) => doc.data());
-      }
+      setLoading(true);
 
-      updateDoc(userDoc, {
+      await updateDoc(userDoc, {
         cityId: myProfileState.placeId,
         countryAbbr: country?.toLowerCase() || null
-      })
-        .then(async () => {
-          // Fetch the updated document
-          const updatedDoc = await getDoc(userDoc);
-          const updatedUserData = updatedDoc.data();
+      });
 
-          if (updatedUserData) {
-            // Update the user list with the fetched users
-            fetchUsers().then((users) => {
-              userList.setUsers(users as UserDocType[]);
-            });
+      // Fetch updated user data
+      const updatedDoc = await getDoc(userDoc);
+      const updatedUserData = updatedDoc.data() as UserDocType;
 
-            // Update MyProfile state with new document data
-            myProfileState.setUser(updatedUserData as UserDocType);
+      if (updatedUserData) {
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        userList.setUsers(
+          usersSnapshot.docs.map((doc) => doc.data()) as UserDocType[]
+        );
 
-            // Check if the country was changed, and update country details in MyProfile state
-            if (country && country !== myProfileState.countryAbbr) {
-              myProfileState.setCountryAbbr(country.toLowerCase());
-              myProfileState.setCountryName(country);
-            }
+        myProfileState.setUser(updatedUserData);
+        if (country && country !== myProfileState.countryAbbr) {
+          myProfileState.setCountryAbbr(country.toLowerCase());
+          myProfileState.setCountryName(country);
+        }
 
-            appState.setSnackbarMessage(
-              `City successfully updated to ${updatedUserData.cityName}`
-            );
-          } else {
-            console.error("No data found in the updated document.");
-          }
-        })
-        .catch((error) => {
-          appState.setSnackbarMessage("Error updating city. Please try again.");
-          console.error("Error updating user's city: ", error);
-        })
-        .finally(() => {
-          setLoading(false);
-          setIsEditing(false);
-        });
+        appState.setSnackbarMessage(
+          `City successfully updated to ${myProfileState.cityName}`
+        );
+      }
+
+      setLoading(false);
+      setIsEditing(false);
     };
 
     return (
@@ -164,20 +163,32 @@ const CityPicker = observer(
           width: "100%"
         }}
       >
-        <TextField
-          label="Enter your city"
-          variant="outlined"
+        <Autocomplete
+          freeSolo
           fullWidth
-          inputRef={inputRef}
+          options={suggestions}
+          //   getOptionLabel={(option) => option.placePrediction.text.text}
+          getOptionLabel={(option) =>
+            typeof option === "string"
+              ? option
+              : option.placePrediction.text.text || ""
+          }
           value={myProfileState.cityName || ""}
-          onChange={(e) => {
-            myProfileState.setCityName(e.target.value);
+          onInputChange={(_, value) => {
+            fetchAutocomplete(value);
+            myProfileState.setCityName(value);
           }}
-          slotProps={{
-            inputLabel: {
-              shrink: true
-            }
-          }}
+          onChange={(_, newValue) =>
+            newValue && typeof newValue !== "string" && handleSelect(newValue)
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Enter your city"
+              variant="outlined"
+              fullWidth
+            />
+          )}
         />
         <SaveBtn loading={loading} />
       </form>

@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { PeopleViews } from "@/app/people/PeopleList";
 import { addYearToBirthday } from "./clientUtils";
+import userMap from "@/app/people/UserMap/UserMap.state";
 
 type CountryUsersType = {
   countryName: string;
@@ -58,6 +59,8 @@ export class UserList {
 
     this.setUsersByCountry(users);
     this.setUsersByBirthday(users);
+
+    userMap.init(users);
   }
 
   setFilteredUsers(users: UserDocType[]) {
@@ -77,6 +80,10 @@ export class UserList {
       if (!cityId) cityId = "No city listed";
 
       if (!this.usersByCountry[countryAbbr]) {
+        if (!appState.countryNames[countryAbbr]) {
+          appState.addCountryToList(countryAbbr);
+        }
+
         this.usersByCountry[countryAbbr] = {
           countryName: appState.countryNames[countryAbbr] || "",
           cities: {

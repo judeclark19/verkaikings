@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import appState from "@/lib/AppState";
+import appState, { CityDetails } from "@/lib/AppState";
 import userList, { UserDocType } from "@/lib/UserList";
 
 type MapItem = {
@@ -26,6 +26,8 @@ export class UserMapState {
     this.usersWithCity = users.filter((user) => user.cityId);
 
     // INIT MAP ITEMS
+    this.mapItems = [];
+
     Object.keys(userList.usersByCountry).forEach((country) => {
       const countryObject = userList.usersByCountry[country];
       Object.keys(countryObject.cities).forEach((city) => {
@@ -40,54 +42,57 @@ export class UserMapState {
     });
   }
 
-  initializeMap(mapContainer: HTMLElement) {
-    if (!window.google || !appState.isInitialized) return;
+  async initializeMap(mapContainer: HTMLElement) {
+    if (!appState.isInitialized) return;
     console.log("Initializing map...");
 
-    this.map = new window.google.maps.Map(mapContainer, {
+    const { Map } = (await google.maps.importLibrary(
+      "maps"
+    )) as google.maps.MapsLibrary;
+
+    this.map = new Map(mapContainer, {
       center: { lat: 20, lng: 0 },
       zoom: 2,
       mapId: process.env.NEXT_PUBLIC_USERMAP_ID
     });
 
-    const service = new window.google.maps.places.PlacesService(this.map);
+    for (const mapItem of this.mapItems) {
+      let cachedPlace: CityDetails | null =
+        appState.cityDetails[mapItem.cityId];
 
-    this.mapItems.forEach((mapItem) => {
-      const cachedPlace = appState.cityDetails[mapItem.cityId];
-      if (cachedPlace) {
-        this.createMarker(cachedPlace, mapItem);
-      } else {
-        service.getDetails(
-          { placeId: mapItem.cityId },
-          (
-            place: google.maps.places.PlaceResult | null,
-            status: google.maps.places.PlacesServiceStatus
-          ) => {
-            if (
-              status === google.maps.places.PlacesServiceStatus.OK &&
-              place?.geometry?.location
-            ) {
-              appState.cityNames[mapItem.cityId] = place.name || "";
-              appState.setPDCinDB();
-              console.log("$$$ Creating marker from API:", place);
-              this.createMarker(place, mapItem);
-            } else {
-              console.error("Place details could not be retrieved:", status);
-            }
-          }
-        );
+      if (!cachedPlace) {
+        cachedPlace = await appState.fetchCityDetails(mapItem.cityId);
       }
-    });
+      await this.createMarker(cachedPlace, mapItem);
+    }
 
     this.isInitialized = true;
-    this.updateVisibleMarkerCount(); // Update visible markers after initialization
+    this.updateVisibleMarkerCount();
   }
 
-  createMarker(place: google.maps.places.PlaceResult, mapItem: MapItem) {
-    const marker = new google.maps.marker.AdvancedMarkerElement({
+  async createMarker(place: CityDetails | null, mapItem: MapItem) {
+    if (!place) {
+      return;
+    }
+
+    const position = place.location
+      ? { lat: place.location.latitude, lng: place.location.longitude }
+      : null;
+
+    if (!position) {
+      console.error("No valid location found for place:", place);
+      return;
+    }
+
+    // Import the marker module dynamically
+    const { AdvancedMarkerElement } = (await google.maps.importLibrary(
+      "marker"
+    )) as google.maps.MarkerLibrary;
+
+    const marker = new AdvancedMarkerElement({
       map: this.map,
-      position: place.geometry?.location,
-      title: place.name
+      position,
+      title: place.displayName?.text || "Unknown Place"
     });
 
     this.markers.set(mapItem.cityId, marker);

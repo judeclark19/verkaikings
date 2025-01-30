@@ -25,6 +25,24 @@ import fundraiserState, {
 import qAndAState, { QandADocType, QandAState } from "./QandAState";
 import userMap, { UserMapState } from "@/app/people/UserMap/UserMap.state";
 
+export type CityDetails = {
+  addressComponents: {
+    longText: string;
+    shortText: string;
+    types: string[];
+    languageCode: string;
+  }[];
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  googleMapsUri: string;
+  displayName: {
+    text: string;
+    languageCode: string;
+  };
+};
+
 class AppState {
   isInitialized = false;
   language: string = "en";
@@ -32,7 +50,8 @@ class AppState {
 
   loggedInUser: UserDocType | null = null;
   cityNames: Record<string, string> = {};
-  cityDetails: Record<string, google.maps.places.PlaceResult> = {};
+  cityDetails: Record<string, CityDetails> = {};
+
   countryNames: Record<string, string> = {};
 
   snackbarOpen = false;
@@ -112,7 +131,7 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
-      // this.language = "nl-NL";
+      // this.language = "nl";
       this.userList = userList;
       this.userList.init(users);
 
@@ -132,10 +151,11 @@ class AppState {
       await requestNotificationPermission(userId);
 
       // Fetch city names and details
-      const cityIdsOfUsers = users.map((user) => user.cityId);
-      for (const cityIdOfUser of cityIdsOfUsers) {
-        if (!cityIdOfUser) continue;
+      const cityIdsOfUsers = users
+        .filter((user) => user.cityId)
+        .map((user) => user.cityId);
 
+      for (const cityIdOfUser of cityIdsOfUsers) {
         if (!this.cityNames[cityIdOfUser] || !this.cityDetails[cityIdOfUser]) {
           await this.fetchCityDetails(cityIdOfUser);
         }
@@ -153,9 +173,6 @@ class AppState {
       if (!appState.userList.query) {
         this.userList.setUsersByBirthday(users);
       }
-
-      this.userMap = userMap;
-      this.userMap.init(users);
 
       this.setPDCinDB();
       myProfileState.init(this.loggedInUser!, userId);
@@ -348,11 +365,11 @@ class AppState {
         );
         const data = await response.json();
 
-        if (data.result) {
+        if (data.addressComponents) {
           this.cityNames[cityId] = this.formatCityAndStatefromAddress(
-            data.result.address_components
+            data.addressComponents
           );
-          this.cityDetails[cityId] = data.result;
+          this.cityDetails[cityId] = data;
         }
 
         this.setPDCinDB();
@@ -372,7 +389,12 @@ class AppState {
   }
 
   formatCityAndStatefromAddress(
-    addressComponents: google.maps.GeocoderAddressComponent[]
+    addressComponents: {
+      longText: string;
+      shortText: string;
+      types: string[];
+      languageCode: string;
+    }[]
   ) {
     let city = "";
     let state = "";
@@ -382,23 +404,23 @@ class AppState {
       component.types.includes("country")
     );
     const countryCodeFromAddressComponents = countryComponent
-      ? countryComponent.short_name
+      ? countryComponent.shortText
       : "";
 
     addressComponents.forEach((component) => {
       if (component.types.includes("locality")) {
-        city = component.long_name;
+        city = component.longText;
       } else if (component.types.includes("sublocality") && !city) {
-        city = component.long_name;
+        city = component.longText;
       } else if (component.types.includes("administrative_area_level_1")) {
-        state = component.short_name;
+        state = component.shortText;
       }
     });
 
     if (!city) {
       addressComponents.forEach((component) => {
         if (component.types.includes("administrative_area_level_2")) {
-          city = component.long_name;
+          city = component.longText;
         }
       });
     }

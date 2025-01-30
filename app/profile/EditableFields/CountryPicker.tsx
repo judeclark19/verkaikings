@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Box,
-  SelectChangeEvent
-} from "@mui/material";
+import { FormControl, Box, Autocomplete, TextField } from "@mui/material";
 import { countries } from "countries-list";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
@@ -15,6 +8,7 @@ import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
 import userList, { UserDocType } from "@/lib/UserList";
 import appState from "@/lib/AppState";
+import FlagComponent from "@/components/Flag";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -27,28 +21,38 @@ const CountryPicker = observer(
     // Generate array of country codes
     const countryArray = Object.keys(countries);
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
-      myProfileState.setCountryAbbr(event.target.value.toLowerCase());
+    const handleChange = (newValue: string | null) => {
+      if (newValue) {
+        myProfileState.setCountryAbbr(newValue.toLowerCase());
+      }
       const changedCountry =
-        event.target.value.toLowerCase() !== myProfileState.user!.countryAbbr;
+        newValue?.toLowerCase() !== myProfileState.user!.countryAbbr;
 
       if (changedCountry) {
-        myProfileState.setCountryName(event.target.value.toLowerCase());
+        myProfileState.setCountryName(newValue?.toLowerCase() || "");
       }
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+
       const changedCountry =
         myProfileState.countryAbbr !== myProfileState.user!.countryAbbr;
 
-      if (!changedCountry) {
+      if (!changedCountry || !myProfileState.countryAbbr) {
         setIsEditing(false);
         return;
       }
 
       const userDoc = doc(db, "users", myProfileState.userId!);
       setLoading(true);
+
+      if (
+        myProfileState.countryAbbr &&
+        !appState.countryNames[myProfileState.countryAbbr]
+      ) {
+        appState.addCountryToList(myProfileState.countryAbbr);
+      }
 
       async function fetchUsers() {
         const users = await getDocs(collection(db, "users"));
@@ -60,14 +64,31 @@ const CountryPicker = observer(
         cityId: null
       })
         .then(() => {
-          fetchUsers().then((users) => {
-            userList.setUsers(users as UserDocType[]);
-          });
+          try {
+            myProfileState.setCityName(null);
+            myProfileState.setPlaceId(null);
+            fetchUsers().then((users) => {
+              userList.setUsers(users as UserDocType[]);
+            });
 
-          console.log("Country updated");
-          appState.setSnackbarMessage("Country updated successfully.");
-          myProfileState.setCityName(null);
-          myProfileState.setPlaceId(null);
+            console.log("Country updated");
+            myProfileState.setCountryName(
+              myProfileState.countryAbbr
+                ? appState.countryNames[myProfileState.countryAbbr]
+                : ""
+            );
+            appState.setSnackbarMessage("Country updated successfully.");
+          } catch (error) {
+            if (error instanceof RangeError) {
+              console.error(
+                "RangeError: invalid argument =>",
+                myProfileState.countryAbbr,
+                error
+              );
+              return; // do not rethrow so it doesn't trigger the Firestore catch
+            }
+            throw error; // rethrow anything else
+          }
         })
         .catch((error) => {
           appState.setSnackbarMessage("Error updating country.");
@@ -95,21 +116,46 @@ const CountryPicker = observer(
               gap: "1rem"
             }}
           >
-            <InputLabel id="country-picker-select-label">Country</InputLabel>
-            <Select
-              labelId="country-picker-select-label"
-              id="country-picker-select"
-              value={myProfileState.countryAbbr?.toUpperCase() || ""}
-              onChange={handleChange}
-              label="Country"
-              fullWidth
-            >
-              {countryArray.map((code) => (
-                <MenuItem key={code} value={code}>
-                  {displayNames.of(code)} {/* Localized country name */}
-                </MenuItem>
-              ))}
-            </Select>
+            <Autocomplete
+              id="country-select"
+              sx={{
+                flexGrow: 1
+              }}
+              options={countryArray}
+              autoHighlight
+              value={myProfileState.countryAbbr?.toUpperCase() || null} // Ensure value is a valid option
+              getOptionLabel={(option) => displayNames.of(option) || option} // Show country name, fallback to code
+              onChange={(_, newValue) => {
+                handleChange(newValue);
+              }}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <Box
+                    key={key}
+                    component="li"
+                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                    {...optionProps}
+                  >
+                    <FlagComponent countryCode={option} />
+                    {appState.formatCountryNameFromISOCode(option) || option}
+                  </Box>
+                );
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Choose a country"
+                  fullWidth
+                  slotProps={{
+                    htmlInput: {
+                      ...params.inputProps,
+                      autoComplete: "new-password" // disable autocomplete and autofill
+                    }
+                  }}
+                />
+              )}
+            />
 
             <SaveBtn loading={loading} />
           </Box>

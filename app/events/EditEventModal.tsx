@@ -17,13 +17,13 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import LocationPicker from "./LocationPicker";
 import { doc, setDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import { EventDocType } from "./Events.state";
 import Tooltip from "@/components/Tooltip";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
+import LocationPicker from "./LocationPicker";
 
 const style = {
   position: "absolute",
@@ -210,7 +210,6 @@ const EditEventModal = observer(
 
               <LocationPicker
                 setLocationUrl={setLocationUrl}
-                locationName={locationName}
                 setLocationName={setLocationName}
               />
 

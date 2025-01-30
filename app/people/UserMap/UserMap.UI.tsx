@@ -21,17 +21,8 @@ const UserMap = observer(() => {
 
     async function initialize() {
       hasInitializedRef.current = true; // Prevent further initialization
-      if (window.google) {
-        // Initialize the map
-        appState.userMap?.initializeMap(mapRef.current as HTMLElement);
-      } else {
-        // Attach an event listener to wait for the Google Maps library to load
-        const onGoogleLoad = () =>
-          appState.userMap?.initializeMap(mapRef.current as HTMLElement);
 
-        window.addEventListener("load", onGoogleLoad);
-        return () => window.removeEventListener("load", onGoogleLoad);
-      }
+      appState.userMap?.initializeMap(mapRef.current as HTMLElement);
     }
 
     initialize();
