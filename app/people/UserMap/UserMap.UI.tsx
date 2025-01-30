@@ -8,30 +8,13 @@ import { deleteQueryParam } from "@/lib/clientUtils";
 
 const UserMap = observer(() => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const hasInitializedRef = useRef(false); // Track if initialization has occurred
 
   useEffect(() => {
-    if (
-      !mapRef.current ||
-      !appState.userMap ||
-      hasInitializedRef.current ||
-      !appState.isInitialized
-    )
-      return;
+    if (!mapRef.current || !appState.userMap || !appState.isInitialized) return;
 
     async function initialize() {
-      hasInitializedRef.current = true; // Prevent further initialization
-      if (window.google) {
-        // Initialize the map
-        appState.userMap?.initializeMap(mapRef.current as HTMLElement);
-      } else {
-        // Attach an event listener to wait for the Google Maps library to load
-        const onGoogleLoad = () =>
-          appState.userMap?.initializeMap(mapRef.current as HTMLElement);
-
-        window.addEventListener("load", onGoogleLoad);
-        return () => window.removeEventListener("load", onGoogleLoad);
-      }
+      if (!mapRef.current) return;
+      await appState.userMap.initializeMap(mapRef.current);
     }
 
     initialize();

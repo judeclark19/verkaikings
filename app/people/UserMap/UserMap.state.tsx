@@ -42,30 +42,34 @@ export class UserMapState {
     });
   }
 
-  initializeMap(mapContainer: HTMLElement) {
-    if (!window.google || !appState.isInitialized) return;
+  async initializeMap(mapContainer: HTMLElement) {
+    if (!appState.isInitialized) return;
     console.log("Initializing map...");
 
-    this.map = new window.google.maps.Map(mapContainer, {
+    const { Map } = (await google.maps.importLibrary(
+      "maps"
+    )) as google.maps.MapsLibrary;
+
+    this.map = new Map(mapContainer, {
       center: { lat: 20, lng: 0 },
       zoom: 2,
       mapId: process.env.NEXT_PUBLIC_USERMAP_ID
     });
 
-    this.mapItems.forEach(async (mapItem) => {
+    for (const mapItem of this.mapItems) {
       let cachedPlace = appState.cityDetails[mapItem.cityId];
 
       if (!cachedPlace) {
         cachedPlace = await appState.fetchCityDetails(mapItem.cityId);
       }
-      this.createMarker(cachedPlace, mapItem);
-    });
+      await this.createMarker(cachedPlace, mapItem);
+    }
 
     this.isInitialized = true;
-    this.updateVisibleMarkerCount(); // Update visible markers after initialization
+    this.updateVisibleMarkerCount();
   }
 
-  createMarker(place: any, mapItem: MapItem) {
+  async createMarker(place: any, mapItem: MapItem) {
     const position = place.location
       ? { lat: place.location.latitude, lng: place.location.longitude }
       : null;
@@ -75,7 +79,12 @@ export class UserMapState {
       return;
     }
 
-    const marker = new google.maps.marker.AdvancedMarkerElement({
+    // Import the marker module dynamically
+    const { AdvancedMarkerElement } = (await google.maps.importLibrary(
+      "marker"
+    )) as google.maps.MarkerLibrary;
+
+    const marker = new AdvancedMarkerElement({
       map: this.map,
       position,
       title: place.displayName?.text || "Unknown Place"
