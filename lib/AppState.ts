@@ -32,7 +32,67 @@ class AppState {
 
   loggedInUser: UserDocType | null = null;
   cityNames: Record<string, string> = {};
-  cityDetails: Record<string, google.maps.places.PlaceResult> = {};
+  // cityDetails: Record<string, google.maps.places.PlaceResult> = {};
+  cityDetails: Record<string, any> = {}; // TODO: custom type
+  // {
+  //     "addressComponents": [
+  //         {
+  //             "longText": "Hanover",
+  //             "shortText": "Hanover",
+  //             "types": [
+  //                 "locality",
+  //                 "political"
+  //             ],
+  //             "languageCode": "en"
+  //         },
+  //         {
+  //             "longText": "Hanover Region",
+  //             "shortText": "Hanover Region",
+  //             "types": [
+  //                 "administrative_area_level_3",
+  //                 "political"
+  //             ],
+  //             "languageCode": "en"
+  //         },
+  //         {
+  //             "longText": "Lower Saxony",
+  //             "shortText": "NDS",
+  //             "types": [
+  //                 "administrative_area_level_1",
+  //                 "political"
+  //             ],
+  //             "languageCode": "en"
+  //         },
+  //         {
+  //             "longText": "Germany",
+  //             "shortText": "DE",
+  //             "types": [
+  //                 "country",
+  //                 "political"
+  //             ],
+  //             "languageCode": "en"
+  //         },
+  //         {
+  //             "longText": "30",
+  //             "shortText": "30",
+  //             "types": [
+  //                 "postal_code_prefix",
+  //                 "postal_code"
+  //             ],
+  //             "languageCode": "en-US"
+  //         }
+  //     ],
+  //     "location": {
+  //         "latitude": 52.375891599999996,
+  //         "longitude": 9.732010400000002
+  //     },
+  //     "googleMapsUri": "https://maps.google.com/?cid=298834536935737120",
+  //     "displayName": {
+  //         "text": "Hanover",
+  //         "languageCode": "en"
+  //     }
+  // }
+
   countryNames: Record<string, string> = {};
 
   snackbarOpen = false;
