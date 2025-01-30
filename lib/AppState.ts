@@ -132,10 +132,11 @@ class AppState {
       await requestNotificationPermission(userId);
 
       // Fetch city names and details
-      const cityIdsOfUsers = users.map((user) => user.cityId);
-      for (const cityIdOfUser of cityIdsOfUsers) {
-        if (!cityIdOfUser) continue;
+      const cityIdsOfUsers = users
+        .filter((user) => user.cityId)
+        .map((user) => user.cityId);
 
+      for (const cityIdOfUser of cityIdsOfUsers) {
         if (!this.cityNames[cityIdOfUser] || !this.cityDetails[cityIdOfUser]) {
           await this.fetchCityDetails(cityIdOfUser);
         }
@@ -275,7 +276,8 @@ class AppState {
   async loadPDCfromDB() {
     console.log("Loading place data cache from database...", this.language);
     try {
-      const pdcDocRef = doc(db, "placeDataCache", this.language);
+      // const pdcDocRef = doc(db, "placeDataCache", this.language);
+      const pdcDocRef = doc(db, "placeDataCache", "new");
       const pdcSnapshot = await getDoc(pdcDocRef);
 
       if (!pdcSnapshot.data()) {
@@ -320,7 +322,8 @@ class AppState {
         cityDetails: toJS(this.cityDetails) // Save detailed location data
       };
 
-      const pdcDocRef = doc(db, "placeDataCache", this.language);
+      // const pdcDocRef = doc(db, "placeDataCache", this.language);
+      const pdcDocRef = doc(db, "placeDataCache", "new");
       updateDoc(pdcDocRef, {
         cityNames: JSON.stringify(data.cityNames),
         cityDetails: JSON.stringify(data.cityDetails)
@@ -348,11 +351,11 @@ class AppState {
         );
         const data = await response.json();
 
-        if (data.result) {
+        if (data.addressComponents) {
           this.cityNames[cityId] = this.formatCityAndStatefromAddress(
-            data.result.address_components
+            data.addressComponents
           );
-          this.cityDetails[cityId] = data.result;
+          this.cityDetails[cityId] = data;
         }
 
         this.setPDCinDB();
@@ -372,7 +375,12 @@ class AppState {
   }
 
   formatCityAndStatefromAddress(
-    addressComponents: google.maps.GeocoderAddressComponent[]
+    addressComponents: {
+      longText: string;
+      shortText: string;
+      types: string[];
+      languageCode: string;
+    }[]
   ) {
     let city = "";
     let state = "";
@@ -382,23 +390,23 @@ class AppState {
       component.types.includes("country")
     );
     const countryCodeFromAddressComponents = countryComponent
-      ? countryComponent.short_name
+      ? countryComponent.shortText
       : "";
 
     addressComponents.forEach((component) => {
       if (component.types.includes("locality")) {
-        city = component.long_name;
+        city = component.longText;
       } else if (component.types.includes("sublocality") && !city) {
-        city = component.long_name;
+        city = component.longText;
       } else if (component.types.includes("administrative_area_level_1")) {
-        state = component.short_name;
+        state = component.shortText;
       }
     });
 
     if (!city) {
       addressComponents.forEach((component) => {
         if (component.types.includes("administrative_area_level_2")) {
-          city = component.long_name;
+          city = component.longText;
         }
       });
     }

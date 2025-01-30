@@ -21,9 +21,14 @@ export async function GET(req: Request) {
 
   try {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=${language}&key=${apiKey}`;
+    const apiUrl = `https://places.googleapis.com/v1/places/${placeId}?key=${apiKey}&languageCode=${language}&fields=displayName,addressComponents,googleMapsUri,location`;
 
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
     const data = await response.json();
 
     return NextResponse.json(data);
