@@ -25,6 +25,24 @@ import fundraiserState, {
 import qAndAState, { QandADocType, QandAState } from "./QandAState";
 import userMap, { UserMapState } from "@/app/people/UserMap/UserMap.state";
 
+export type CityDetails = {
+  addressComponents: {
+    longText: string;
+    shortText: string;
+    types: string[];
+    languageCode: string;
+  }[];
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  googleMapsUri: string;
+  displayName: {
+    text: string;
+    languageCode: string;
+  };
+};
+
 class AppState {
   isInitialized = false;
   language: string = "en";
@@ -32,66 +50,7 @@ class AppState {
 
   loggedInUser: UserDocType | null = null;
   cityNames: Record<string, string> = {};
-  // cityDetails: Record<string, google.maps.places.PlaceResult> = {};
-  cityDetails: Record<string, any> = {}; // TODO: custom type
-  // {
-  //     "addressComponents": [
-  //         {
-  //             "longText": "Hanover",
-  //             "shortText": "Hanover",
-  //             "types": [
-  //                 "locality",
-  //                 "political"
-  //             ],
-  //             "languageCode": "en"
-  //         },
-  //         {
-  //             "longText": "Hanover Region",
-  //             "shortText": "Hanover Region",
-  //             "types": [
-  //                 "administrative_area_level_3",
-  //                 "political"
-  //             ],
-  //             "languageCode": "en"
-  //         },
-  //         {
-  //             "longText": "Lower Saxony",
-  //             "shortText": "NDS",
-  //             "types": [
-  //                 "administrative_area_level_1",
-  //                 "political"
-  //             ],
-  //             "languageCode": "en"
-  //         },
-  //         {
-  //             "longText": "Germany",
-  //             "shortText": "DE",
-  //             "types": [
-  //                 "country",
-  //                 "political"
-  //             ],
-  //             "languageCode": "en"
-  //         },
-  //         {
-  //             "longText": "30",
-  //             "shortText": "30",
-  //             "types": [
-  //                 "postal_code_prefix",
-  //                 "postal_code"
-  //             ],
-  //             "languageCode": "en-US"
-  //         }
-  //     ],
-  //     "location": {
-  //         "latitude": 52.375891599999996,
-  //         "longitude": 9.732010400000002
-  //     },
-  //     "googleMapsUri": "https://maps.google.com/?cid=298834536935737120",
-  //     "displayName": {
-  //         "text": "Hanover",
-  //         "languageCode": "en"
-  //     }
-  // }
+  cityDetails: Record<string, CityDetails> = {};
 
   countryNames: Record<string, string> = {};
 
@@ -172,7 +131,7 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
-      // this.language = "nl-NL";
+      // this.language = "nl";
       this.userList = userList;
       this.userList.init(users);
 
@@ -333,8 +292,7 @@ class AppState {
   async loadPDCfromDB() {
     console.log("Loading place data cache from database...", this.language);
     try {
-      // const pdcDocRef = doc(db, "placeDataCache", this.language);
-      const pdcDocRef = doc(db, "placeDataCache", "new");
+      const pdcDocRef = doc(db, "placeDataCache", this.language);
       const pdcSnapshot = await getDoc(pdcDocRef);
 
       if (!pdcSnapshot.data()) {
@@ -379,8 +337,7 @@ class AppState {
         cityDetails: toJS(this.cityDetails) // Save detailed location data
       };
 
-      // const pdcDocRef = doc(db, "placeDataCache", this.language);
-      const pdcDocRef = doc(db, "placeDataCache", "new");
+      const pdcDocRef = doc(db, "placeDataCache", this.language);
       updateDoc(pdcDocRef, {
         cityNames: JSON.stringify(data.cityNames),
         cityDetails: JSON.stringify(data.cityDetails)

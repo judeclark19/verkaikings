@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Box,
-  SelectChangeEvent,
-  Autocomplete,
-  TextField
-} from "@mui/material";
+import { FormControl, Box, Autocomplete, TextField } from "@mui/material";
 import { countries } from "countries-list";
 import myProfileState from "../MyProfile.state";
 import { observer } from "mobx-react-lite";
@@ -17,6 +8,7 @@ import { db } from "@/lib/firebase";
 import SaveBtn from "./SaveBtn";
 import userList, { UserDocType } from "@/lib/UserList";
 import appState from "@/lib/AppState";
+import FlagComponent from "@/components/Flag";
 
 const CountryPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
@@ -29,13 +21,15 @@ const CountryPicker = observer(
     // Generate array of country codes
     const countryArray = Object.keys(countries);
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
-      myProfileState.setCountryAbbr(event.target.value.toLowerCase());
+    const handleChange = (newValue: string | null) => {
+      if (newValue) {
+        myProfileState.setCountryAbbr(newValue.toLowerCase());
+      }
       const changedCountry =
-        event.target.value.toLowerCase() !== myProfileState.user!.countryAbbr;
+        newValue?.toLowerCase() !== myProfileState.user!.countryAbbr;
 
       if (changedCountry) {
-        myProfileState.setCountryName(event.target.value.toLowerCase());
+        myProfileState.setCountryName(newValue?.toLowerCase() || "");
       }
     };
 
@@ -132,14 +126,7 @@ const CountryPicker = observer(
               value={myProfileState.countryAbbr?.toUpperCase() || null} // Ensure value is a valid option
               getOptionLabel={(option) => displayNames.of(option) || option} // Show country name, fallback to code
               onChange={(_, newValue) => {
-                console.log("changed country", newValue);
-                myProfileState.setCountryAbbr(newValue?.toLowerCase() || "");
-                const changedCountry =
-                  newValue?.toLowerCase() !== myProfileState.user!.countryAbbr;
-
-                if (changedCountry) {
-                  myProfileState.setCountryName(newValue?.toLowerCase() || "");
-                }
+                handleChange(newValue);
               }}
               renderOption={(props, option) => {
                 const { key, ...optionProps } = props;
@@ -150,13 +137,7 @@ const CountryPicker = observer(
                     sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
                     {...optionProps}
                   >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      srcSet={`https://flagcdn.com/w40/${option.toLowerCase()}.png 2x`}
-                      src={`https://flagcdn.com/w20/${option.toLowerCase()}.png`}
-                      alt=""
-                    />
+                    <FlagComponent countryCode={option} />
                     {appState.formatCountryNameFromISOCode(option) || option}
                   </Box>
                 );

@@ -4,6 +4,16 @@ import { Dispatch, SetStateAction, useState } from "react";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const AUTOCOMPLETE_ENDPOINT = `https://places.googleapis.com/v1/places:autocomplete?key=${API_KEY}`;
 
+type Suggestion = {
+  placePrediction: {
+    placeId: string;
+    structuredFormat: {
+      mainText: { text: string };
+    };
+    text: { text: string };
+  };
+};
+
 const LocationPicker = ({
   setLocationUrl,
   setLocationName
@@ -11,7 +21,7 @@ const LocationPicker = ({
   setLocationUrl: Dispatch<SetStateAction<string | null>>;
   setLocationName: (locationName: string) => void;
 }) => {
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   const fetchAutocomplete = async (query: string) => {
     if (!query) {
@@ -36,7 +46,7 @@ const LocationPicker = ({
     }
   };
 
-  const handleSelect = async (suggestion: any) => {
+  const handleSelect = async (suggestion: Suggestion) => {
     const placeId = suggestion.placePrediction.placeId;
     setLocationName(suggestion.placePrediction.structuredFormat.mainText.text);
 
@@ -56,9 +66,23 @@ const LocationPicker = ({
     <Autocomplete
       freeSolo
       options={suggestions}
-      getOptionLabel={(option) => option.placePrediction.text.text}
-      onInputChange={(_, value) => fetchAutocomplete(value)}
-      onChange={(_, newValue) => newValue && handleSelect(newValue)}
+      getOptionLabel={(option) => {
+        if (typeof option === "string") return "";
+        return option.placePrediction.text.text;
+      }}
+      onInputChange={(_, value) => {
+        setLocationName(value);
+        fetchAutocomplete(value);
+      }}
+      onChange={(_, newValue) => {
+        if (newValue && typeof newValue !== "string") {
+          handleSelect(newValue);
+        }
+        if (typeof newValue === "string") {
+          setLocationUrl(null);
+          setLocationName(newValue);
+        }
+      }}
       renderInput={(params) => (
         <TextField {...params} label="Location" variant="outlined" fullWidth />
       )}

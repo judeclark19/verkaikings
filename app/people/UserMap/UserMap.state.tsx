@@ -1,5 +1,5 @@
-import { makeAutoObservable, toJS } from "mobx";
-import appState from "@/lib/AppState";
+import { makeAutoObservable } from "mobx";
+import appState, { CityDetails } from "@/lib/AppState";
 import userList, { UserDocType } from "@/lib/UserList";
 
 type MapItem = {
@@ -57,7 +57,8 @@ export class UserMapState {
     });
 
     for (const mapItem of this.mapItems) {
-      let cachedPlace = appState.cityDetails[mapItem.cityId];
+      let cachedPlace: CityDetails | null =
+        appState.cityDetails[mapItem.cityId];
 
       if (!cachedPlace) {
         cachedPlace = await appState.fetchCityDetails(mapItem.cityId);
@@ -69,7 +70,11 @@ export class UserMapState {
     this.updateVisibleMarkerCount();
   }
 
-  async createMarker(place: any, mapItem: MapItem) {
+  async createMarker(place: CityDetails | null, mapItem: MapItem) {
+    if (!place) {
+      return;
+    }
+
     const position = place.location
       ? { lat: place.location.latitude, lng: place.location.longitude }
       : null;

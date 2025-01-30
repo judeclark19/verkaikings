@@ -15,6 +15,9 @@ const nextConfig = {
   compiler: {
     styledComponents: true
   },
+    images: {
+    domains: ["flagcdn.com"],
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/, // Match all `.svg` files

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import {
   collection,
@@ -19,13 +19,23 @@ import userList, { UserDocType } from "@/lib/UserList";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const AUTOCOMPLETE_ENDPOINT = `https://places.googleapis.com/v1/places:autocomplete?key=${API_KEY}`;
 
+type Suggestion = {
+  placePrediction: {
+    placeId: string;
+    text: { text: string };
+  };
+};
+
 const CityPicker = observer(
   ({ setIsEditing }: { setIsEditing: (state: boolean) => void }) => {
     const [loading, setLoading] = useState(false);
     const [country, setCountry] = useState<string | null>(
       myProfileState.countryAbbr
     );
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const initialValue = useRef(
+      myProfileState.cityName ? `${myProfileState.cityName}` : null
+    ).current;
 
     // Fetch city suggestions
     const fetchAutocomplete = async (query: string) => {
@@ -52,7 +62,7 @@ const CityPicker = observer(
     };
 
     // Handle city selection
-    const handleSelect = async (suggestion: any) => {
+    const handleSelect = async (suggestion: Suggestion) => {
       const placeId = suggestion.placePrediction.placeId;
 
       if (!appState.cityDetails[placeId]) {
@@ -67,7 +77,14 @@ const CityPicker = observer(
       myProfileState.setPlaceId(placeId);
       setCountry(
         appState.cityDetails[placeId]?.addressComponents
-          ?.find((c: any) => c.types.includes("country"))
+          ?.find(
+            (c: {
+              longText: string;
+              shortText: string;
+              types: string[];
+              languageCode: string;
+            }) => c.types.includes("country")
+          )
           ?.shortText.toLowerCase() || ""
       );
     };
@@ -89,7 +106,9 @@ const CityPicker = observer(
 
       // User did not change the city
       if (!changedCity) {
+        console.log("City not changed");
         setIsEditing(false);
+        myProfileState.setCityName(initialValue);
         return;
       }
 
@@ -159,7 +178,9 @@ const CityPicker = observer(
             fetchAutocomplete(value);
             myProfileState.setCityName(value);
           }}
-          onChange={(_, newValue) => newValue && handleSelect(newValue)}
+          onChange={(_, newValue) =>
+            newValue && typeof newValue !== "string" && handleSelect(newValue)
+          }
           renderInput={(params) => (
             <TextField
               {...params}
