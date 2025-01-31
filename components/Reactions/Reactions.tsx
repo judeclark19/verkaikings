@@ -223,10 +223,6 @@ const Reactions = observer(
                 >
                   <Button
                     sx={{
-                      backgroundColor:
-                        window.innerWidth < 400
-                          ? "rgba(255, 255, 255, 0.3)"
-                          : "transparent",
                       px: window.innerWidth < 400 ? 0.5 : 1,
                       color:
                         type === "love" && reactionCount > 0
