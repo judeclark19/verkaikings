@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Typography, Link as MuiLink } from "@mui/material";
+import { Button, Paper, Typography } from "@mui/material";
 import BirthdayCardList from "./BirthdayCardList";
 import Link from "next/link";
 import { Cake as CakeIcon } from "@mui/icons-material";
