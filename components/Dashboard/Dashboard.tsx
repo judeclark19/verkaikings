@@ -1,83 +1,56 @@
 "use client";
 
-import {
-  checkIfBirthdayRecent,
-  checkIfBirthdaySoon,
-  checkIfBirthdayToday
-} from "@/lib/clientUtils";
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Button, Paper, Typography, Link as MuiLink } from "@mui/material";
 import Link from "next/link";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import BirthdayCardList from "./BirthdayCardList";
-import CakeIcon from "@mui/icons-material/Cake";
-import userList, { UserDocType } from "@/lib/UserList";
+import { Cake as CakeIcon, Event as EventIcon } from "@mui/icons-material";
+import eventsState, { EventDocType } from "@/app/events/Events.state";
+import { toJS } from "mobx";
+import BirthdayDashboard from "./BirthdayDashboard";
 // import FundraiserPreview from "../../app/fundraisers/FundraiserPreview";
 // import fundraiserState from "@/lib/FundraiserState";
 
 const Dashboard = observer(() => {
-  const [recentBirthdays, setRecentBirthdays] = useState<UserDocType[]>([]);
-  const [todaysBirthdays, setTodaysBirthdays] = useState<UserDocType[]>([]);
-  const [upcomingBirthdays, setUpcomingBirthdays] = useState<UserDocType[]>([]);
+  const [recentEvents, setRecentEvents] = useState<EventDocType[]>([]);
+  const [todaysEvents, setTodaysEvents] = useState<EventDocType[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<EventDocType[]>([]);
 
   useEffect(() => {
-    const recentBirthdays: UserDocType[] = [];
-    const todayBirthdays: UserDocType[] = [];
-    const upcomingBirthdays: UserDocType[] = [];
-
-    userList.users
-      .filter((user) => user.birthday)
-      .forEach((user) => {
-        if (checkIfBirthdayToday(user.birthday!)) {
-          todayBirthdays.push(user);
-        } else if (checkIfBirthdayRecent(user.birthday!)) {
-          recentBirthdays.push(user);
-        } else if (checkIfBirthdaySoon(user.birthday!)) {
-          upcomingBirthdays.push(user);
-        }
-      });
+    console.log("todays date is", new Date().toLocaleDateString("en-CA"));
+    // console.log("events", eventsState.allEvents);
+    const recentEvents: EventDocType[] = [];
+    const todayEvents: EventDocType[] = [];
+    const upcomingEvents: EventDocType[] = [];
 
     const today = new Date();
-    const currentYear = today.getFullYear();
+    const todayStr = today.toLocaleDateString("en-CA");
 
-    function getComparableDate(birthday: string) {
-      let month;
-      let day;
+    const pastWeek = new Date();
+    pastWeek.setDate(today.getDate() - 7); // 7 days ago
 
-      if (birthday.startsWith("--")) {
-        month = birthday.split("-")[2];
-        day = birthday.split("-")[3];
-      } else {
-        month = birthday.split("-")[1];
-        day = birthday.split("-")[2];
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7); // 7 days ahead
+
+    eventsState.allEvents.forEach((event) => {
+      const eventDate = new Date(event.date);
+
+      if (event.date === todayStr) {
+        todayEvents.push(event);
+      } else if (eventDate >= pastWeek && eventDate < today) {
+        recentEvents.push(event);
+      } else if (eventDate > today && eventDate <= nextWeek) {
+        upcomingEvents.push(event);
       }
-
-      // Create a Date object using the normalized year
-      return new Date(Number(currentYear), Number(month) - 1, Number(day));
-    }
-
-    // Sort recent birthdays: most recent first
-    recentBirthdays.sort((a, b) => {
-      const dateA = getComparableDate(a.birthday!);
-      const dateB = getComparableDate(b.birthday!);
-
-      // Sort by month/day first, treating them as same-year dates
-      return dateB.getTime() - dateA.getTime();
     });
+    console.log("recent events", toJS(recentEvents));
+    console.log("today events", toJS(todayEvents));
+    console.log("upcoming events", toJS(upcomingEvents));
 
-    // Sort upcoming birthdays: soonest first
-    upcomingBirthdays.sort((a, b) => {
-      const dateA = getComparableDate(a.birthday!);
-      const dateB = getComparableDate(b.birthday!);
-
-      // Sort by month/day first, treating them as same-year dates
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    setRecentBirthdays(recentBirthdays);
-    setTodaysBirthdays(todayBirthdays);
-    setUpcomingBirthdays(upcomingBirthdays);
-  }, [userList.users]);
+    setRecentEvents(recentEvents);
+    setTodaysEvents(todayEvents);
+    setUpcomingEvents(upcomingEvents);
+  }, [eventsState.allEvents]);
 
   return (
     <div>
@@ -107,97 +80,139 @@ const Dashboard = observer(() => {
           ))}
       </Box> */}
 
-      <Box
+      <BirthdayDashboard />
+
+      {/* EVENTS */}
+      <Paper
         sx={{
-          display: "grid",
+          p: 2,
           gap: 2,
+          justifyContent: "center",
+          width: "100%",
+          maxWidth: "1000px",
+          margin: "auto",
+          display: "grid",
+
           gridTemplateAreas: {
-            xs: `"todaysBirthdays"
-           "recentBirthdays"
-           "upcomingBirthdays"`,
-            sm: `"todaysBirthdays todaysBirthdays"
-           "recentBirthdays upcomingBirthdays"`,
-            lg: `"recentBirthdays todaysBirthdays upcomingBirthdays"`
+            xs: `"todaysEvents"
+           "recentEvents"
+           "upcomingEvents"`,
+            md: `"recentEvents todaysEvents upcomingEvents"`
           },
           gridTemplateColumns: {
             xs: "1fr",
-            sm: "1fr 1fr",
-            lg: "1fr 1fr 1fr"
+            md: "1fr 1fr 1fr"
           },
           gridTemplateRows: {
             xs: "auto auto auto",
-            sm: "auto auto",
-            lg: "auto"
+            md: "auto"
           }
         }}
+        elevation={5}
       >
-        <Paper
-          sx={{
-            p: 2,
-            gridArea: "recentBirthdays"
-          }}
-          elevation={0}
-        >
+        <div style={{ flex: 1, gridArea: "recentEvents" }}>
           <Typography
             variant="h3"
             sx={{
               color: "secondary.dark"
             }}
           >
-            Recent Birthdays
+            Recent Events
           </Typography>
-          <BirthdayCardList
-            users={recentBirthdays}
-            emptyMessage="None in the past week"
-          />
-        </Paper>
-        <Paper
-          sx={{
-            p: 2,
-            gridArea: "todaysBirthdays"
-          }}
-        >
+          {recentEvents.length === 0 && (
+            <Typography
+              sx={{
+                color: "text.secondary"
+              }}
+            >
+              None in the past week
+            </Typography>
+          )}
+          {recentEvents.length > 0 &&
+            recentEvents.map((event) => (
+              <MuiLink
+                key={event.id}
+                component={Link}
+                href={`/events/${event.id}`}
+              >
+                {event.title}
+              </MuiLink>
+            ))}
+        </div>
+        <div style={{ flex: 1, gridArea: "todaysEvents" }}>
           <Typography
             variant="h3"
             sx={{
               color: "primary.dark"
             }}
           >
-            Today&apos;s Birthdays
+            Today&apos;s Events
           </Typography>
-          <BirthdayCardList users={todaysBirthdays} emptyMessage="None today" />
-        </Paper>
-        <Paper
-          sx={{
-            p: 2,
-            gridArea: "upcomingBirthdays"
-          }}
-          elevation={6}
-        >
+
+          {todaysEvents.length === 0 && (
+            <Typography
+              sx={{
+                color: "text.secondary"
+              }}
+            >
+              None today
+            </Typography>
+          )}
+
+          {todaysEvents.length > 0 &&
+            todaysEvents.map((event) => (
+              <MuiLink
+                key={event.id}
+                component={Link}
+                href={`/events/${event.id}`}
+              >
+                {event.title}
+              </MuiLink>
+            ))}
+        </div>
+        <div style={{ flex: 1, gridArea: "upcomingEvents" }}>
           <Typography
             variant="h3"
             sx={{
               color: "secondary.dark"
             }}
           >
-            Upcoming Birthdays
+            Upcoming Events
           </Typography>
-          <BirthdayCardList
-            users={upcomingBirthdays}
-            emptyMessage="None within the next week"
-          />
-        </Paper>
-      </Box>
+          {upcomingEvents.length === 0 && (
+            <Typography
+              sx={{
+                color: "text.secondary"
+              }}
+            >
+              None within the next week
+            </Typography>
+          )}
+
+          {upcomingEvents.length > 0 &&
+            upcomingEvents.map((event) => (
+              <MuiLink
+                key={event.id}
+                component={Link}
+                href={`/events/${event.id}`}
+              >
+                {event.title}
+              </MuiLink>
+            ))}
+        </div>
+      </Paper>
+
       <Button
         variant="contained"
         sx={{
-          marginTop: "2rem"
+          marginTop: "2rem",
+          marginBottom: "2rem"
         }}
         component={Link}
-        href="/people?viewBy=birthday"
+        href="/events"
       >
-        Click to see the full birthday list &nbsp;
-        <CakeIcon />
+        Full events list &nbsp;
+        <EventIcon />
       </Button>
     </div>
   );
