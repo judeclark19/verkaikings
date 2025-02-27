@@ -377,22 +377,23 @@ const Event = observer(
                 })`}
               </Button>
             </Box>
-
-            <Button
-              variant="contained"
-              color={imGoing ? "secondary" : "primary"}
-              onClick={updateAttendance}
-              startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
-              sx={{
-                width: {
-                  xs: "100%",
-                  sm: "170px"
-                },
-                maxWidth: 400
-              }}
-            >
-              {imGoing ? "I'm not going" : "I'm going!"}
-            </Button>
+            {!isPast && (
+              <Button
+                variant="contained"
+                color={imGoing ? "secondary" : "primary"}
+                onClick={updateAttendance}
+                startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
+                sx={{
+                  width: {
+                    xs: "100%",
+                    sm: "170px"
+                  },
+                  maxWidth: 400
+                }}
+              >
+                {imGoing ? "I'm not going" : "I'm going!"}
+              </Button>
+            )}
           </Box>
         </Box>
         <EventComments event={event} readOnly={!!isPast} />
