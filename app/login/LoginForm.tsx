@@ -40,8 +40,8 @@ const LoginForm = observer(() => {
       // Get the Firebase ID token
       const token = await user.getIdToken();
 
-      // Store the token in cookies (expires in 10 days)
-      Cookies.set("authToken", token, { expires: 10 });
+      // Store the token in cookies (expires in 30 days)
+      Cookies.set("authToken", token, { expires: 30 });
 
       // Force server-side navigation to ensure middleware checks the cookie
       window.location.href = "/"; // Triggers full page load
