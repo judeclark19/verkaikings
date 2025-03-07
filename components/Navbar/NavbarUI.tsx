@@ -58,8 +58,12 @@ const NavbarUI = observer(
       }
     };
 
-    const isActive = (path: string) =>
-      pathname.startsWith(path) && (path !== "/" || pathname === "/");
+    const isActive = (path: string) => {
+      if (path === "/profile") {
+        return pathname === path;
+      }
+      return pathname.startsWith(path) && (path !== "/" || pathname === "/");
+    };
 
     const getNavLinkStyle = (link: string) => {
       return {
