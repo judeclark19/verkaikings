@@ -1,6 +1,11 @@
 import { EventDocType } from "@/app/events/Events.state";
 import appState from "@/lib/AppState";
-import { Typography, Link as MuiLink, CircularProgress } from "@mui/material";
+import {
+  Typography,
+  Link as MuiLink,
+  CircularProgress,
+  Box
+} from "@mui/material";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 
@@ -27,16 +32,23 @@ const EventCardList = observer(
             {emptyMessage}
           </Typography>
         )}
-        {events.length > 0 &&
-          events.map((event) => (
-            <MuiLink
-              key={event.id}
-              component={Link}
-              href={`/events/${event.id}`}
-            >
-              {event.title}
-            </MuiLink>
-          ))}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column"
+          }}
+        >
+          {events.length > 0 &&
+            events.map((event) => (
+              <MuiLink
+                key={event.id}
+                component={Link}
+                href={`/events/${event.id}`}
+              >
+                {event.title}
+              </MuiLink>
+            ))}
+        </Box>
       </>
     );
   }

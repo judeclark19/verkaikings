@@ -20,26 +20,23 @@ const EventsDashboard = observer(() => {
     const today = new Date();
     const todayStr = today.toLocaleDateString("en-CA");
 
-    const pastWeek = new Date();
-    pastWeek.setDate(today.getDate() - 7); // 7 days ago
+    const pastMonth = new Date();
+    pastMonth.setDate(today.getDate() - 30); // 30 days ago
 
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7); // 7 days ahead
+    const nextMonth = new Date();
+    nextMonth.setDate(today.getDate() + 30); // 30 days ahead
 
     eventsState.allEvents.forEach((event) => {
       const eventDate = new Date(event.date);
 
       if (event.date === todayStr) {
         todayEvents.push(event);
-      } else if (eventDate >= pastWeek && eventDate < today) {
+      } else if (eventDate >= pastMonth && eventDate < today) {
         recentEvents.push(event);
-      } else if (eventDate > today && eventDate <= nextWeek) {
+      } else if (eventDate > today && eventDate <= nextMonth) {
         upcomingEvents.push(event);
       }
     });
-    console.log("recent events", toJS(recentEvents));
-    console.log("today events", toJS(todayEvents));
-    console.log("upcoming events", toJS(upcomingEvents));
 
     setRecentEvents(recentEvents);
     setTodaysEvents(todayEvents);
@@ -86,7 +83,7 @@ const EventsDashboard = observer(() => {
           </Typography>
           <EventCardList
             events={recentEvents}
-            emptyMessage="None in the past week"
+            emptyMessage="None in the past 30 days"
           />
         </div>
         <div style={{ flex: 1, gridArea: "todaysEvents" }}>
@@ -112,7 +109,7 @@ const EventsDashboard = observer(() => {
           </Typography>
           <EventCardList
             events={upcomingEvents}
-            emptyMessage="None in the next week"
+            emptyMessage="None in the next 30 days"
           />
         </div>
       </Paper>
