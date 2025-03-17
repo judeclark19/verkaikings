@@ -30,11 +30,11 @@ const EventsDashboard = observer(() => {
       const eventDate = new Date(event.date);
 
       if (event.date === todayStr) {
-        todayEvents.push(event);
+        todayEvents.unshift(event);
       } else if (eventDate >= pastMonth && eventDate < today) {
         recentEvents.push(event);
       } else if (eventDate > today && eventDate <= nextMonth) {
-        upcomingEvents.push(event);
+        upcomingEvents.unshift(event);
       }
     });
 
