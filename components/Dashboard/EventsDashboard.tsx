@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import eventsState, { EventDocType } from "@/app/events/Events.state";
 import Link from "next/link";
 import { Event as EventIcon } from "@mui/icons-material";
-import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import EventCardList from "./EventCardList";
 
