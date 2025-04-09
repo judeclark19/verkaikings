@@ -16,6 +16,7 @@ import appState from "@/lib/AppState";
 import StoryComments from "@/app/people/ByStory/StoryComments";
 import SaveIcon from "@mui/icons-material/Save";
 import Reactions from "@/components/Reactions/Reactions";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
@@ -154,7 +155,20 @@ const MyWillemijnStory = observer(() => {
           documentRef={doc(db, "myWillemijnStories", mws.id)}
         />
       )}
-      {mws && mws.storyContent && <StoryComments story={mws} />}
+      {/* {mws && mws.storyContent && <StoryComments story={mws} />} */}
+
+      {mws && mws.storyContent && (
+        <CommentAccordion
+          featureName="story"
+          docPath="myWillemijnStories"
+          docId={mws.id}
+          comments={mws.comments}
+          authorId={mws.authorId}
+          label="Comments"
+          notifyUrl="/profile"
+          readOnly={false}
+        />
+      )}
     </>
   );
 });
