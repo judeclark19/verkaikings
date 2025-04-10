@@ -12,22 +12,35 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useState } from "react";
 import appState from "@/lib/AppState";
+import Reactions, { ReactionType } from "../Reactions/Reactions";
+import { StoryDocType } from "@/lib/MyWillemijnStories";
+import { DocumentData, DocumentReference } from "firebase/firestore";
 
 export type CommentType = {
   id: string;
   authorId: string;
   createdAt: string;
   text: string;
+  reactions: ReactionType[];
 };
 
 type Props = {
   comment: CommentType;
+  parentDocRef: DocumentReference<DocumentData, DocumentData>;
+  collectionName: "myWillemijnStories";
   onDelete?: (comment: CommentType) => void;
   onEdit?: (updatedText: string) => void;
   readOnly?: boolean;
 };
 
-const Comment = ({ comment, onDelete, onEdit, readOnly }: Props) => {
+const Comment = ({
+  comment,
+  parentDocRef,
+  collectionName,
+  onDelete,
+  onEdit,
+  readOnly
+}: Props) => {
   const user = appState.userList.users.find((u) => u.id === comment.authorId);
   const isOwn = comment.authorId === appState.loggedInUser?.id;
 
@@ -115,6 +128,12 @@ const Comment = ({ comment, onDelete, onEdit, readOnly }: Props) => {
           </IconButton>
         </Box>
       )}
+
+      <Reactions
+        collectionName={collectionName}
+        target={comment}
+        documentRef={parentDocRef}
+      />
     </Box>
   );
 };

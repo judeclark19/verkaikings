@@ -76,8 +76,8 @@ const Column = observer(({ users }: { users: UserDocType[] }) => {
 
               {story && (
                 <Reactions
-                  collection="myWillemijnStories"
-                  document={storyDoc!}
+                  collectionName="myWillemijnStories"
+                  target={storyDoc!}
                   documentRef={doc(db, "myWillemijnStories", storyDoc!.id)}
                 />
               )}

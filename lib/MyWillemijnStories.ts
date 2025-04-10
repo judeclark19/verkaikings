@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import appState from "./AppState";
 import { ReactionType } from "@/components/Reactions/Reactions";
+import { CommentType } from "@/components/Comments/Comment";
 
 export type StoryCommentType = {
   id: string;
@@ -14,7 +15,7 @@ export type StoryDocType = {
   authorId: string;
   storyContent: string;
   createdAt: string;
-  comments: StoryCommentType[];
+  comments: CommentType[];
   reactions: ReactionType[];
 };
 

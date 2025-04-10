@@ -150,8 +150,8 @@ const MyWillemijnStory = observer(() => {
 
       {mws && mws.storyContent && (
         <Reactions
-          collection="myWillemijnStories"
-          document={mws}
+          collectionName="myWillemijnStories"
+          target={mws}
           documentRef={doc(db, "myWillemijnStories", mws.id)}
         />
       )}
@@ -160,7 +160,7 @@ const MyWillemijnStory = observer(() => {
       {mws && mws.storyContent && (
         <CommentAccordion
           featureName="story"
-          docPath="myWillemijnStories"
+          collectionName="myWillemijnStories"
           docId={mws.id}
           comments={mws.comments}
           authorId={mws.authorId}

@@ -352,8 +352,8 @@ const UserProfile = observer(
                     }}
                   >
                     <Reactions
-                      collection="myWillemijnStories"
-                      document={usersWillemijnStory}
+                      collectionName="myWillemijnStories"
+                      target={usersWillemijnStory}
                       documentRef={doc(
                         db,
                         "myWillemijnStories",

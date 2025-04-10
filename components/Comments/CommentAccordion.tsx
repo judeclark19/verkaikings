@@ -20,7 +20,7 @@ import Comment, { CommentType } from "./Comment";
 
 type Props = {
   featureName: string;
-  docPath: string;
+  collectionName: "myWillemijnStories";
   docId: string;
   comments: CommentType[];
   authorId: string;
@@ -31,7 +31,7 @@ type Props = {
 
 const CommentAccordion = ({
   featureName,
-  docPath,
+  collectionName,
   docId,
   comments: initialComments,
   authorId,
@@ -46,7 +46,8 @@ const CommentAccordion = ({
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const docRef = doc(db, docPath, docId);
+  const docRef = doc(db, collectionName, docId);
+  console.log("docRef", docRef);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -55,17 +56,18 @@ const CommentAccordion = ({
       }
     });
     return unsubscribe;
-  }, [docPath, docId]);
+  }, [collectionName, docId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
     const newComment: CommentType = {
-      id: doc(collection(db, `${docPath}/${docId}/comments`)).id,
+      id: doc(collection(db, `${collectionName}/${docId}/comments`)).id,
       authorId: appState.loggedInUser!.id,
       createdAt: new Date().toISOString(),
-      text: commentText.trim()
+      text: commentText.trim(),
+      reactions: []
     };
 
     setLoading(true);
@@ -85,7 +87,7 @@ const CommentAccordion = ({
       //   );
       // }
 
-      console.log("send notification", {
+      console.log("fake send notification", {
         recipientId: authorId,
         title: `New comment on your post`,
         body: `${myProfileState.user!.firstName} ${
@@ -136,6 +138,8 @@ const CommentAccordion = ({
           >
             <Comment
               comment={comment}
+              parentDocRef={docRef}
+              collectionName={collectionName}
               onDelete={handleDelete}
               onEdit={(text) => handleEdit(comment.id, text)}
               readOnly={readOnly}

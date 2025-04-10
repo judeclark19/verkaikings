@@ -226,8 +226,8 @@ const Answer = observer(
         )}
 
         <Reactions
-          collection="qanda"
-          document={answer}
+          collectionName="qanda"
+          target={answer}
           documentRef={qAndADocRef}
         />
         {!noDivider && (
