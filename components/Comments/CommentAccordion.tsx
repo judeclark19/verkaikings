@@ -14,12 +14,10 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, updateDoc, collection } from "firebase/firestore";
 import { CollectionName, db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
-import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
 import Comment, { CommentType } from "./Comment";
 
 type Props = {
-  featureName: string;
   collectionName: CollectionName;
   docId: string;
   comments: CommentType[];
@@ -31,7 +29,6 @@ type Props = {
 };
 
 const CommentAccordion = ({
-  featureName,
   collectionName,
   docId,
   comments: initialComments,
@@ -85,23 +82,46 @@ const CommentAccordion = ({
         [fieldName]: [...comments, newComment]
       });
 
+      let notificationTitle = "";
+      const notificationBody =
+        newComment.text.length <= 50
+          ? newComment.text
+          : `${newComment.text.slice(0, 50)}...`;
+
+      switch (collectionName) {
+        case "qanda":
+          notificationTitle = `${appState.loggedInUser!.firstName} ${
+            appState.loggedInUser!.lastName
+          } answered your question`;
+
+          break;
+        case "myWillemijnStories":
+          notificationTitle = `${appState.loggedInUser!.firstName} ${
+            appState.loggedInUser!.lastName
+          } commented on your story`;
+
+          break;
+        case "events":
+          notificationTitle = `${appState.loggedInUser!.firstName} ${
+            appState.loggedInUser!.lastName
+          } commented on your event`;
+
+          break;
+      }
+
       // if (authorId !== appState.loggedInUser!.id) {
       //   sendNotification(
       //     authorId,
-      //     `New ${label.toLowerCase().slice(0, -1)} on your post`,
-      //     `${myProfileState.user!.firstName} ${
-      //       myProfileState.user!.lastName
-      //     } left a ${label.toLowerCase().slice(0, -1)}`,
+      //     notificationTitle,
+      //     notificationBody,
       //     `${notifyUrl}?notif=${newComment.id}`
       //   );
       // }
 
       console.log("fake send notification", {
         recipientId: authorId,
-        title: `New comment on your post`,
-        body: `${myProfileState.user!.firstName} ${
-          myProfileState.user!.lastName
-        } left a comment on your ${featureName}`,
+        title: notificationTitle,
+        body: `"${notificationBody}"`,
         url: `${notifyUrl}?notif=${newComment.id}`
       });
 

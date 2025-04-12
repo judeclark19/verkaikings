@@ -399,7 +399,6 @@ const Event = observer(
           </Box>
         </Box>
         <CommentAccordion
-          featureName="event"
           collectionName="events"
           docId={event.id}
           comments={event.comments}

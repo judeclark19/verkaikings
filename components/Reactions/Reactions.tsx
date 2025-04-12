@@ -20,6 +20,7 @@ import { sendNotification } from "@/lib/clientUtils";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { CommentType } from "../Comments/Comment";
 import { CollectionName } from "@/lib/firebase";
+import { app } from "firebase-admin";
 
 export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
 
@@ -183,7 +184,7 @@ const Reactions = observer(
             body: `${myProfileState.user!.firstName} ${
               myProfileState.user!.lastName
             } left a "${reactionType}"`,
-            url: `/profile?notif=story-${reactionType}`
+            url: `/profile?notif=my-willemijn-story`
           });
         } catch (error) {
           alert(`Error adding reaction: ${error}`);
@@ -207,17 +208,37 @@ const Reactions = observer(
           reaction.type === reactionType
       );
 
+      let notifyUrl = ``;
+
+      switch (collectionName) {
+        case "myWillemijnStories":
+          const op = appState.userList.users.find(
+            (u) => u.id === documentRef.id
+          );
+          const opUsername = `${op!.firstName}_${op!.lastName}`;
+          notifyUrl = `/profile/${opUsername}`;
+          break;
+        case "qanda":
+          notifyUrl = `/qanda`;
+          break;
+        case "events":
+          notifyUrl = `/events/${documentRef.id}`;
+          break;
+        default:
+          notifyUrl = ``;
+          break;
+      }
+
       if (!existingReaction) {
         console.log("fake send notification", {
           recipientId: target.authorId,
-          title: `New reaction on your comment`,
+          title: `New reaction on your ${
+            collectionName === "qanda" ? "answer" : "comment"
+          }`,
           body: `${myProfileState.user!.firstName} ${
             myProfileState.user!.lastName
           } left a "${reactionType}"`,
-          url:
-            collectionName === "qanda"
-              ? `/qanda?notif=${target.id}`
-              : `/${collectionName}/${documentRef.id}?notif=${target.id}`
+          url: `${notifyUrl}?notif=${target.id}`
         });
       }
     };

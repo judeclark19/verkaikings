@@ -104,6 +104,7 @@ const Reply = observer(
 
     return (
       <Box
+        id={reply.id}
         sx={{
           display: "flex",
           alignItems: "center",

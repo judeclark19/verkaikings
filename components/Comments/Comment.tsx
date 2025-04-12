@@ -6,7 +6,8 @@ import {
   Button,
   CircularProgress,
   Link,
-  Divider
+  Divider,
+  Avatar
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -45,7 +46,12 @@ const Comment = ({
   readOnly
 }: Props) => {
   const user = appState.userList.users.find((u) => u.id === comment.authorId);
-  const isOwn = comment.authorId === appState.loggedInUser?.id;
+  if (!user) {
+    console.error("User not found for comment:", comment);
+    return null;
+  }
+
+  const isOwn = comment.authorId === appState.loggedInUser!.id;
 
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(comment.text);
@@ -66,23 +72,36 @@ const Comment = ({
   return (
     <Box
       sx={{
-        // display: "flex",
-        // flexDirection: "column",
-        // alignItems: "flex-start",
         position: "relative"
-        // border: "1px solid red",
       }}
     >
-      <Typography variant="body2" fontWeight="bold">
+      <Typography variant="body2" fontWeight="bold" component={"div"}>
         <Link
-          href={`/profile/${user?.username || "#"}`}
+          href={`/profile/${user.username || "#"}`}
           sx={{
             textDecoration: "none",
             color: "inherit",
-            "&:hover": { textDecoration: "underline" }
+            "&:hover": { textDecoration: "underline" },
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 0.5
           }}
         >
-          {user?.firstName} {user?.lastName}
+          <Avatar
+            src={user!.profilePicture || ""}
+            alt={`${user!.firstName} ${user!.lastName}`}
+            sx={{
+              width: 24,
+              height: 24,
+              fontSize: 12,
+              bgcolor: "primary.main"
+            }}
+          >
+            {!user!.profilePicture &&
+              `${user!.firstName?.[0] || ""}${user!.lastName?.[0] || ""}`}
+          </Avatar>
+          {user.firstName} {user.lastName}
         </Link>
       </Typography>
       <Typography variant="body2" sx={{ fontSize: 12, color: "gray" }}>

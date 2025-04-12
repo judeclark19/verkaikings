@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { CollectionName, db } from "@/lib/firebase";
 import Reply from "./Reply";
+import { sendNotification } from "@/lib/clientUtils";
 
 export type ReplyType = {
   id: string;
@@ -58,10 +59,6 @@ const CommentReplies = observer(
         text: replyText.trim()
       };
 
-      // if (newReply.authorId !== comment.authorId) {
-      console.log("send fake notification to", comment.authorId, newReply);
-      // }
-
       try {
         const parentSnapshot = await getDoc(parentDocRef);
         const parentData = parentSnapshot.data();
@@ -82,7 +79,55 @@ const CommentReplies = observer(
           { merge: true }
         );
 
-        console.log("send reply notification to", comment.authorId, newReply);
+        let notifUrl = ``;
+
+        switch (collectionName) {
+          case "myWillemijnStories":
+            const op = appState.userList.users.find(
+              (u) => u.id === parentDocRef.id
+            );
+            notifUrl = `/profile/${op?.username}`;
+            break;
+          case "qanda":
+            notifUrl = `/qanda`;
+            break;
+          case "events":
+            notifUrl = `/events/${parentDocRef.id}`;
+            break;
+          default:
+            notifUrl = ``;
+            break;
+        }
+
+        // if (newReply.authorId !== comment.authorId) {
+
+        // sendNotification(
+        //   comment.authorId,
+        //   'New reply to your comment',
+        //   ``
+        // comment.authorId,
+        //       `${appState.loggedInUser!.firstName} ${
+        //         appState.loggedInUser!.lastName
+        //       } replied to your comment`,
+        //       newReply.text.length <= 50
+        //         ? newReply.text
+        //         : `${newReply.text.slice(0, 50)}...`,
+        //       `${notifUrl}?notif=${newReply.id}`
+        // )
+
+        console.log("send fake notification to", {
+          recipientId: comment.authorId,
+          title: `${appState.loggedInUser!.firstName} ${
+            appState.loggedInUser!.lastName
+          } replied to your ${
+            collectionName === "qanda" ? "answer" : "comment"
+          }`,
+          body:
+            newReply.text.length <= 50
+              ? `"${newReply.text}"`
+              : `"${newReply.text.slice(0, 50)}..."`,
+          url: `${notifUrl}?notif=${newReply.id}`
+        });
 
         setReplyText("");
       } catch (err) {

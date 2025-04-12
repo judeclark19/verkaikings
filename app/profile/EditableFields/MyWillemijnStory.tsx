@@ -171,7 +171,6 @@ const MyWillemijnStory = observer(() => {
 
       {mws && mws.storyContent && (
         <CommentAccordion
-          featureName="story"
           collectionName="myWillemijnStories"
           docId={mws.id}
           comments={mws.comments}

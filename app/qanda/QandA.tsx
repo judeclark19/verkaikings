@@ -190,7 +190,6 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
       {/* <QandAAnswers qAndA={qAndA} qAndADocRef={qAndADocRef} /> */}
 
       <CommentAccordion
-        featureName="question"
         collectionName="qanda"
         docId={qAndA.id}
         comments={qAndA.answers}

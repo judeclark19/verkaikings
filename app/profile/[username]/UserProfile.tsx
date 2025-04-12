@@ -361,7 +361,6 @@ const UserProfile = observer(
                       )}
                     />
                     <CommentAccordion
-                      featureName="story"
                       collectionName="myWillemijnStories"
                       docId={usersWillemijnStory.id}
                       comments={usersWillemijnStory.comments}
