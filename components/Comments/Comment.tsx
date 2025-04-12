@@ -16,6 +16,7 @@ import appState from "@/lib/AppState";
 import Reactions, { ReactionType } from "../Reactions/Reactions";
 import { DocumentData, DocumentReference } from "firebase/firestore";
 import CommentReplies, { ReplyType } from "./Replies/CommentReplies";
+import { CollectionName } from "@/lib/firebase";
 
 export type CommentType = {
   id: string;
@@ -29,7 +30,7 @@ export type CommentType = {
 type Props = {
   comment: CommentType;
   parentDocRef: DocumentReference<DocumentData, DocumentData>;
-  collectionName: "myWillemijnStories";
+  collectionName: CollectionName;
   onDelete?: (comment: CommentType) => void;
   onEdit?: (updatedText: string) => void;
   readOnly?: boolean;
@@ -111,7 +112,7 @@ const Comment = ({
         </Box>
       ) : (
         <>
-          <Typography variant="body2" sx={{ mt: 1 }}>
+          <Typography variant="body2" sx={{ mt: 1 }} id={comment.id}>
             {comment.text}
           </Typography>
           {/* <Divider sx={{ my: 1, borderColor: "grey.800" }} /> */}

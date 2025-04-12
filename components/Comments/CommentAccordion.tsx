@@ -12,7 +12,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot, updateDoc, collection } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { CollectionName, db } from "@/lib/firebase";
 import appState from "@/lib/AppState";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { sendNotification } from "@/lib/clientUtils";
@@ -20,13 +20,14 @@ import Comment, { CommentType } from "./Comment";
 
 type Props = {
   featureName: string;
-  collectionName: "myWillemijnStories";
+  collectionName: CollectionName;
   docId: string;
   comments: CommentType[];
   authorId: string;
   label?: string;
   notifyUrl?: string;
   readOnly?: boolean;
+  startExpanded?: boolean;
 };
 
 const CommentAccordion = ({
@@ -37,13 +38,15 @@ const CommentAccordion = ({
   authorId,
   label = "Comments",
   notifyUrl = "",
-  readOnly = false
+  readOnly = false,
+  startExpanded = false
 }: Props) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<CommentType[]>(
     initialComments || []
   );
-  const [expanded, setExpanded] = useState(false);
+
+  const [expanded, setExpanded] = useState(startExpanded);
   const [loading, setLoading] = useState(false);
 
   const docRef = doc(db, collectionName, docId);
@@ -51,7 +54,11 @@ const CommentAccordion = ({
   useEffect(() => {
     const unsubscribe = onSnapshot(docRef, (snapshot) => {
       if (snapshot.exists()) {
-        setComments(snapshot.data().comments || []);
+        const data = snapshot.data();
+        // Use 'answers' for qanda docs; fallback to 'comments' otherwise
+        const commentsField =
+          collectionName === "qanda" ? data.answers : data.comments;
+        setComments(commentsField || []);
       }
     });
     return unsubscribe;
@@ -70,10 +77,12 @@ const CommentAccordion = ({
       replies: []
     };
 
+    const fieldName = collectionName === "qanda" ? "answers" : "comments";
+
     setLoading(true);
     try {
       await updateDoc(docRef, {
-        comments: [...comments, newComment]
+        [fieldName]: [...comments, newComment]
       });
 
       // if (authorId !== appState.loggedInUser!.id) {
@@ -106,14 +115,16 @@ const CommentAccordion = ({
 
   const handleDelete = async (toDelete: CommentType) => {
     const updated = comments.filter((c) => c.id !== toDelete.id);
-    await updateDoc(docRef, { comments: updated });
+    const fieldName = collectionName === "qanda" ? "answers" : "comments";
+    await updateDoc(docRef, { [fieldName]: updated });
   };
 
   const handleEdit = async (commentId: string, newText: string) => {
     const updated = comments.map((c) =>
       c.id === commentId ? { ...c, text: newText } : c
     );
-    await updateDoc(docRef, { comments: updated });
+    const fieldName = collectionName === "qanda" ? "answers" : "comments";
+    await updateDoc(docRef, { [fieldName]: updated });
   };
 
   const renderedComments = (
@@ -147,9 +158,19 @@ const CommentAccordion = ({
           </Box>
         ))
       ) : (
-        <Typography variant="body2" color="textSecondary" sx={{ px: 2 }}>
-          No {label.toLowerCase()} yet.
-        </Typography>
+        <Box
+          sx={{
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 1,
+            p: 2,
+            mb: 2
+          }}
+        >
+          <Typography variant="body2" color="textSecondary">
+            No {label.toLowerCase()} yet.
+          </Typography>
+        </Box>
       )}
     </List>
   );

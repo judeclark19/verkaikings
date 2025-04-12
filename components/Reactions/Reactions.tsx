@@ -1,6 +1,5 @@
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import { Favorite, ThumbUp } from "@mui/icons-material";
-import { AnswerType } from "@/lib/QandAState";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
 import {
@@ -20,6 +19,7 @@ import { StoryDocType } from "@/lib/MyWillemijnStories";
 import { sendNotification } from "@/lib/clientUtils";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { CommentType } from "../Comments/Comment";
+import { CollectionName } from "@/lib/firebase";
 
 export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
 
@@ -103,8 +103,8 @@ const Reactions = observer(
     target,
     documentRef
   }: {
-    collectionName: "myWillemijnStories" | "qanda";
-    target: StoryDocType | AnswerType | CommentType;
+    collectionName: CollectionName;
+    target: StoryDocType | CommentType;
     documentRef: DocumentReference;
   }) => {
     const reactions = target.reactions || [];
@@ -192,12 +192,34 @@ const Reactions = observer(
       }
     };
     const handleCommentReaction = async (reactionType: ReactionName) => {
+      const fieldName = collectionName === "qanda" ? "answers" : "comments";
       await handleReaction(reactionType, {
         documentRef,
         itemId: target.id,
-        getArray: (doc) => doc.comments || [],
-        updateArray: (_, updated) => ({ comments: updated })
+        getArray: (doc) => doc[fieldName] || [],
+        updateArray: (_, updated) => ({ [fieldName]: updated })
       });
+
+      // was a reaction added or removed?
+      const existingReaction = reactions.find(
+        (reaction) =>
+          reaction.authorId === appState.loggedInUser!.id &&
+          reaction.type === reactionType
+      );
+
+      if (!existingReaction) {
+        console.log("fake send notification", {
+          recipientId: target.authorId,
+          title: `New reaction on your comment`,
+          body: `${myProfileState.user!.firstName} ${
+            myProfileState.user!.lastName
+          } left a "${reactionType}"`,
+          url:
+            collectionName === "qanda"
+              ? `/qanda?notif=${target.id}`
+              : `/${collectionName}/${documentRef.id}?notif=${target.id}`
+        });
+      }
     };
 
     return (
@@ -219,14 +241,14 @@ const Reactions = observer(
             }}
           >
             {[
-              { type: "like", icon: <ThumbUp />, label: "Likes" },
-              { type: "love", icon: <Favorite />, label: "Loves" },
-              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
-              { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
+              { type: "like", icon: <ThumbUp />, label: "Like" },
+              { type: "love", icon: <Favorite />, label: "Love" },
+              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laugh" },
+              { type: "wow", icon: <WowIcon count={0} />, label: "Wow" },
               {
                 type: "mindBlown",
                 icon: <MindBlownIcon count={0} />,
-                label: "Minds Blown"
+                label: "Mind Blown"
               }
             ].map(({ type, icon, label }) => {
               const reactionCount = countReactions(type as ReactionName);

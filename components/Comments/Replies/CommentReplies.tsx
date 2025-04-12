@@ -1,20 +1,18 @@
 import { observer } from "mobx-react-lite";
 import { CommentType } from "../Comment";
 import { Box, Button, TextField } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import appState from "@/lib/AppState";
 import ReplyIcon from "@mui/icons-material/Reply";
 import {
-  addDoc,
   collection,
   doc,
   DocumentReference,
   getDoc,
   setDoc
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { CollectionName, db } from "@/lib/firebase";
 import Reply from "./Reply";
-import { app } from "firebase-admin";
 
 export type ReplyType = {
   id: string;
@@ -31,7 +29,7 @@ const CommentReplies = observer(
     readOnly = false
   }: {
     comment: CommentType;
-    collectionName: "myWillemijnStories";
+    collectionName: CollectionName;
     parentDocRef: DocumentReference;
     readOnly?: boolean;
   }) => {
@@ -49,17 +47,27 @@ const CommentReplies = observer(
       }
 
       const newReply: ReplyType = {
-        id: crypto.randomUUID(),
+        id: doc(
+          collection(
+            db,
+            `${collectionName}/${parentDocRef.id}/comments/${comment.id}/replies`
+          )
+        ).id,
         authorId: appState.loggedInUser?.id,
         createdAt: new Date().toISOString(),
         text: replyText.trim()
       };
 
+      // if (newReply.authorId !== comment.authorId) {
+      console.log("send fake notification to", comment.authorId, newReply);
+      // }
+
       try {
         const parentSnapshot = await getDoc(parentDocRef);
         const parentData = parentSnapshot.data();
+        const fieldName = collectionName === "qanda" ? "answers" : "comments";
         const updatedComments =
-          parentData?.comments?.map((c: CommentType) =>
+          parentData?.[fieldName]?.map((c: CommentType) =>
             c.id === comment.id
               ? {
                   ...c,
@@ -70,7 +78,7 @@ const CommentReplies = observer(
 
         await setDoc(
           parentDocRef,
-          { comments: updatedComments },
+          { [fieldName]: updatedComments },
           { merge: true }
         );
 
@@ -97,6 +105,7 @@ const CommentReplies = observer(
           <>
             {replies.map((reply) => (
               <Box
+                key={reply.id}
                 sx={{
                   display: "flex",
                   alignItems: "center"
@@ -117,39 +126,45 @@ const CommentReplies = observer(
             ))}
           </>
         )}
-        <Box
-          component="form"
-          onSubmit={handleSubmitReply}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mt: 1,
-            pl: replies.length > 0 ? 3 : 0,
-            width: "100%"
-          }}
-        >
-          {replies.length === 0 && (
-            <ReplyIcon fontSize="small" sx={{ transform: "rotate(180deg)" }} />
-          )}
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Write a reply..."
-            fullWidth
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            size="small"
-            disabled={!replyText.trim()}
-            sx={{ height: "40px" }}
+
+        {!readOnly && (
+          <Box
+            component="form"
+            onSubmit={handleSubmitReply}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mt: 2,
+              pl: replies.length > 0 ? 3 : 0,
+              width: "100%"
+            }}
           >
-            Reply
-          </Button>
-        </Box>
+            {replies.length === 0 && (
+              <ReplyIcon
+                fontSize="small"
+                sx={{ transform: "rotate(180deg)" }}
+              />
+            )}
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Write a reply..."
+              fullWidth
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              size="small"
+              disabled={!replyText.trim()}
+              sx={{ height: "40px" }}
+            >
+              Reply
+            </Button>
+          </Box>
+        )}
       </Box>
     );
   }

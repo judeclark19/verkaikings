@@ -7,10 +7,11 @@ import {
 } from "@mui/material";
 import { DocumentReference, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { AnswerType, QandADocType } from "@/lib/QandAState";
+import { QandADocType } from "@/lib/QandAState";
 import Answer from "./Answer";
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import NewAnswerForm from "./NewAnswerForm";
+import { CommentType } from "@/components/Comments/Comment";
 
 const QandAAnswers = ({
   qAndA,
@@ -19,7 +20,7 @@ const QandAAnswers = ({
   qAndA: QandADocType;
   qAndADocRef: DocumentReference;
 }) => {
-  const [answers, setAnswers] = useState<AnswerType[]>(qAndA.answers || []);
+  const [answers, setAnswers] = useState<CommentType[]>(qAndA.answers || []);
 
   useEffect(() => {
     if (!qAndA) return;

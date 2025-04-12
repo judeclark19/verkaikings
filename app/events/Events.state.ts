@@ -1,14 +1,8 @@
+import { CommentType } from "@/components/Comments/Comment";
 import appState from "@/lib/AppState";
 import { db } from "@/lib/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-
-type EventComment = {
-  id: string;
-  authorId: string;
-  createdAt: string;
-  text: string;
-};
 
 export type EventDocType = {
   id: string;
@@ -22,7 +16,7 @@ export type EventDocType = {
   externalLink: string;
   description: string;
   attendees: string[];
-  comments: EventComment[];
+  comments: CommentType[];
 };
 
 export class Events {

@@ -24,19 +24,21 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import EditEventModal from "./EditEventModal";
-import EventComments from "./EventComments";
 import AttendeeAvatars from "./AttendeeAvatars";
 import FullAttendeeList from "./FullAttendeeList";
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const Event = observer(
   ({
     event,
-    showTitle = true
+    showTitle = true,
+    startCommentsExpanded = false
   }: {
     event: EventDocType;
     showTitle?: boolean;
+    startCommentsExpanded?: boolean;
   }) => {
     const imGoing = event.attendees.includes(appState.loggedInUser!.id);
     const isOwn = event.creatorId === appState.loggedInUser?.id;
@@ -396,7 +398,17 @@ const Event = observer(
             )}
           </Box>
         </Box>
-        <EventComments event={event} readOnly={!!isPast} />
+        <CommentAccordion
+          featureName="event"
+          collectionName="events"
+          docId={event.id}
+          comments={event.comments}
+          authorId={event.creatorId}
+          label="Comments"
+          notifyUrl={`/events/${event.id}`}
+          readOnly={!!isPast}
+          startExpanded={startCommentsExpanded}
+        />
       </Paper>
     );
   }

@@ -23,6 +23,7 @@ import {
 import Tooltip from "@/components/Tooltip";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
   const qAndADocRef = doc(db, "qanda", qAndA.id);
@@ -186,7 +187,17 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         </>
       )}
 
-      <QandAAnswers qAndA={qAndA} qAndADocRef={qAndADocRef} />
+      {/* <QandAAnswers qAndA={qAndA} qAndADocRef={qAndADocRef} /> */}
+
+      <CommentAccordion
+        featureName="question"
+        collectionName="qanda"
+        docId={qAndA.id}
+        comments={qAndA.answers}
+        authorId={qAndA.creatorId}
+        label="Answers"
+        notifyUrl={`/qanda`}
+      />
     </Paper>
   );
 });

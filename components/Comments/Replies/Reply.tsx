@@ -15,6 +15,7 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import { useState } from "react";
 import { getDoc, setDoc, DocumentReference } from "firebase/firestore";
+import { apps } from "firebase-admin";
 
 const Reply = observer(
   ({
@@ -44,8 +45,10 @@ const Reply = observer(
       try {
         const parentSnapshot = await getDoc(parentDocRef);
         const parentData = parentSnapshot.data();
+        const collectionName = parentDocRef.parent.id;
+        const fieldName = collectionName === "qanda" ? "answers" : "comments";
 
-        const updatedComments = parentData?.comments?.map((comment: any) => {
+        const updatedComments = parentData?.[fieldName]?.map((comment: any) => {
           if (comment.id === commentId) {
             const updatedReplies = (comment.replies || []).map((r: ReplyType) =>
               r.id === reply.id ? { ...r, text: inputValue } : r
@@ -57,7 +60,7 @@ const Reply = observer(
 
         await setDoc(
           parentDocRef,
-          { comments: updatedComments },
+          { [fieldName]: updatedComments },
           { merge: true }
         );
 
@@ -74,8 +77,10 @@ const Reply = observer(
       try {
         const parentSnapshot = await getDoc(parentDocRef);
         const parentData = parentSnapshot.data();
+        const collectionName = parentDocRef.parent.id;
+        const fieldName = collectionName === "qanda" ? "answers" : "comments";
 
-        const updatedComments = parentData?.comments?.map((comment: any) => {
+        const updatedComments = parentData?.[fieldName]?.map((comment: any) => {
           if (comment.id === commentId) {
             const updatedReplies = (comment.replies || []).filter(
               (r: ReplyType) => r.id !== reply.id
@@ -87,11 +92,11 @@ const Reply = observer(
 
         await setDoc(
           parentDocRef,
-          { comments: updatedComments },
+          { [fieldName]: updatedComments },
           { merge: true }
         );
 
-        console.log("Reply deleted:", reply.id);
+        appState.setSnackbarMessage("Reply deleted.");
       } catch (error) {
         console.error("Error deleting reply:", error);
       }

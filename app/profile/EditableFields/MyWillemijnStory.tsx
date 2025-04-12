@@ -13,7 +13,6 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditBtn } from ".";
 import appState from "@/lib/AppState";
-import StoryComments from "@/app/people/ByStory/StoryComments";
 import SaveIcon from "@mui/icons-material/Save";
 import Reactions from "@/components/Reactions/Reactions";
 import CommentAccordion from "@/components/Comments/CommentAccordion";
@@ -169,7 +168,6 @@ const MyWillemijnStory = observer(() => {
           documentRef={doc(db, "myWillemijnStories", mws.id)}
         />
       )}
-      {/* {mws && mws.storyContent && <StoryComments story={mws} />} */}
 
       {mws && mws.storyContent && (
         <CommentAccordion
