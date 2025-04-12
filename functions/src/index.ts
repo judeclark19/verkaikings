@@ -8,6 +8,7 @@ import {sendNewEventNotifications} from "./sendNewEventNotifications";
 import {sendNewQNotifications} from "./sendNewQNotifications";
 
 const functionsDisabled = true;
+// firebase deploy --only functions
 
 exports.sendWelcomeNotifications = functionsDisabled ?
   () => null :

@@ -47,7 +47,6 @@ const CommentAccordion = ({
   const [loading, setLoading] = useState(false);
 
   const docRef = doc(db, collectionName, docId);
-  console.log("docRef", docRef);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(docRef, (snapshot) => {
@@ -67,7 +66,8 @@ const CommentAccordion = ({
       authorId: appState.loggedInUser!.id,
       createdAt: new Date().toISOString(),
       text: commentText.trim(),
-      reactions: []
+      reactions: [],
+      replies: []
     };
 
     setLoading(true);

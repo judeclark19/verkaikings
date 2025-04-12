@@ -207,14 +207,15 @@ const Reactions = observer(
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mt: 1
+            mb: 1
           }}
         >
           <ButtonGroup
             variant="text"
             size="small"
             sx={{
-              flexWrap: "wrap"
+              flexWrap: "wrap",
+              backgroundColor: "rgba(255, 255, 255, 0.1)"
             }}
           >
             {[
@@ -230,6 +231,12 @@ const Reactions = observer(
             ].map(({ type, icon, label }) => {
               const reactionCount = countReactions(type as ReactionName);
               const reactionUsers = getReactionUsers(type as ReactionName);
+              const userHasReacted =
+                reactions.find(
+                  (reaction: ReactionType) =>
+                    reaction.authorId === appState.loggedInUser?.id &&
+                    reaction.type === type
+                ) !== undefined;
 
               return (
                 <Tooltip
@@ -255,9 +262,9 @@ const Reactions = observer(
                     sx={{
                       px: window.innerWidth < 400 ? 0.5 : 1,
                       color:
-                        type === "love" && reactionCount > 0
+                        type === "love" && userHasReacted
                           ? "primary.dark"
-                          : type !== "love" && reactionCount > 0
+                          : type !== "love" && userHasReacted
                           ? "warning.main"
                           : "text.secondary",
                       justifyContent: "space-around",

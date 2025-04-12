@@ -78,8 +78,22 @@ const MyWillemijnStory = observer(() => {
   };
 
   return (
-    <>
-      <Typography variant="h2" id="my-willemijn-story">
+    <Box
+      sx={{
+        padding: "16px",
+        borderRadius: "8px",
+        backgroundColor: "#333",
+        boxShadow: 1,
+        mt: 3
+      }}
+    >
+      <Typography
+        variant="h2"
+        id="my-willemijn-story"
+        sx={{
+          mt: 1
+        }}
+      >
         My Willemijn Story
       </Typography>
 
@@ -169,7 +183,7 @@ const MyWillemijnStory = observer(() => {
           readOnly={false}
         />
       )}
-    </>
+    </Box>
   );
 });
 
