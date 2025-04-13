@@ -45,16 +45,16 @@ const Comment = ({
   readOnly
 }: Props) => {
   const user = appState.userList.users.find((u) => u.id === comment.authorId);
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(comment.text);
+  const [loading, setLoading] = useState(false);
+
   if (!user) {
     console.error("User not found for comment:", comment);
     return null;
   }
 
   const isOwn = comment.authorId === appState.loggedInUser!.id;
-
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(comment.text);
-  const [loading, setLoading] = useState(false);
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

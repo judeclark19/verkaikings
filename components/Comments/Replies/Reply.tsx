@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Button,
   IconButton,
   TextField,
   Link,
@@ -15,7 +14,7 @@ import { observer } from "mobx-react-lite";
 import appState from "@/lib/AppState";
 import { useState } from "react";
 import { getDoc, setDoc, DocumentReference } from "firebase/firestore";
-import { apps } from "firebase-admin";
+import { CommentType } from "../Comment";
 
 const Reply = observer(
   ({
@@ -48,15 +47,18 @@ const Reply = observer(
         const collectionName = parentDocRef.parent.id;
         const fieldName = collectionName === "qanda" ? "answers" : "comments";
 
-        const updatedComments = parentData?.[fieldName]?.map((comment: any) => {
-          if (comment.id === commentId) {
-            const updatedReplies = (comment.replies || []).map((r: ReplyType) =>
-              r.id === reply.id ? { ...r, text: inputValue } : r
-            );
-            return { ...comment, replies: updatedReplies };
+        const updatedComments = parentData?.[fieldName]?.map(
+          (comment: CommentType) => {
+            if (comment.id === commentId) {
+              const updatedReplies = (comment.replies || []).map(
+                (r: ReplyType) =>
+                  r.id === reply.id ? { ...r, text: inputValue } : r
+              );
+              return { ...comment, replies: updatedReplies };
+            }
+            return comment;
           }
-          return comment;
-        });
+        );
 
         await setDoc(
           parentDocRef,
@@ -80,15 +82,17 @@ const Reply = observer(
         const collectionName = parentDocRef.parent.id;
         const fieldName = collectionName === "qanda" ? "answers" : "comments";
 
-        const updatedComments = parentData?.[fieldName]?.map((comment: any) => {
-          if (comment.id === commentId) {
-            const updatedReplies = (comment.replies || []).filter(
-              (r: ReplyType) => r.id !== reply.id
-            );
-            return { ...comment, replies: updatedReplies };
+        const updatedComments = parentData?.[fieldName]?.map(
+          (comment: CommentType) => {
+            if (comment.id === commentId) {
+              const updatedReplies = (comment.replies || []).filter(
+                (r: ReplyType) => r.id !== reply.id
+              );
+              return { ...comment, replies: updatedReplies };
+            }
+            return comment;
           }
-          return comment;
-        });
+        );
 
         await setDoc(
           parentDocRef,

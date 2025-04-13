@@ -1,6 +1,7 @@
 // app/api/comments/addMissingIds/route.ts
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
+import { CommentType } from "@/components/Comments/Comment";
 
 /**
  * Generates a unique id using Firebase Admin SDK.
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
 
       // Only proceed if the field exists and is an array
       if (Array.isArray(commentsArray) && commentsArray.length > 0) {
-        const updatedComments = commentsArray.map((comment: any) => {
+        const updatedComments = commentsArray.map((comment: CommentType) => {
           // If there's no id, add one
           if (!comment.id) {
             updatedCount++;

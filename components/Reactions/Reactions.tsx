@@ -5,8 +5,8 @@ import { observer } from "mobx-react-lite";
 import {
   arrayRemove,
   arrayUnion,
-  collection,
   DocumentReference,
+  DocumentData,
   getDoc,
   updateDoc
 } from "firebase/firestore";
@@ -20,7 +20,6 @@ import { sendNotification } from "@/lib/clientUtils";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { CommentType } from "../Comments/Comment";
 import { CollectionName } from "@/lib/firebase";
-import { app } from "firebase-admin";
 
 export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
 
@@ -36,8 +35,11 @@ const handleReaction = async (
   config: {
     documentRef: DocumentReference;
     itemId: string;
-    getArray: (docData: any) => any[];
-    updateArray: (docData: any, updatedArray: any[]) => Partial<any>;
+    getArray: (docData: DocumentData) => CommentType[];
+    updateArray: (
+      docData: DocumentData,
+      updatedArray: CommentType[]
+    ) => Partial<DocumentData>;
   }
 ) => {
   if (!appState.loggedInUser) {
@@ -53,7 +55,7 @@ const handleReaction = async (
 
   const snapshotData = snapshot.data();
   const array = config.getArray(snapshotData);
-  const item = array.find((entry: any) => entry.id === config.itemId);
+  const item = array.find((entry: CommentType) => entry.id === config.itemId);
 
   if (!item) {
     console.error("Item not found.");
@@ -66,12 +68,12 @@ const handleReaction = async (
       reaction.type === reactionType
   );
 
-  const updatedArray = array.map((entry: any) =>
+  const updatedArray = array.map((entry: CommentType) =>
     entry.id === config.itemId
       ? {
           ...entry,
           reactions: existingReaction
-            ? entry.reactions.filter(
+            ? entry.reactions!.filter(
                 (reaction: ReactionType) =>
                   reaction.authorId !== existingReaction.authorId ||
                   reaction.type !== existingReaction.type
@@ -167,6 +169,8 @@ const Reactions = observer(
 
           // send a notification to the author of the story
           if (target.authorId !== appState.loggedInUser.id) {
+            // console.log(
+            //   "fake notification",
             sendNotification(
               target.authorId,
               `New reaction on your story`,
@@ -220,6 +224,8 @@ const Reactions = observer(
       }
 
       if (!existingReaction && target.authorId !== appState.loggedInUser!.id) {
+        // console.log(
+        //   "fake notification",
         sendNotification(
           target.authorId,
           `New reaction on your ${

@@ -100,6 +100,8 @@ const CommentReplies = observer(
         }
 
         if (newReply.authorId !== comment.authorId) {
+          // console.log(
+          // "fake sendNotification",
           sendNotification(
             comment.authorId,
             `${appState.loggedInUser!.firstName} ${

@@ -81,7 +81,7 @@ const Column = observer(({ users }: { users: UserDocType[] }) => {
                   documentRef={doc(db, "myWillemijnStories", storyDoc!.id)}
                 />
               )}
-              {/* {story && <StoryComments story={storyDoc!} />} */}
+
               {story && (
                 <CommentAccordion
                   collectionName="myWillemijnStories"
