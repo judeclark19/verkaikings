@@ -1,8 +1,16 @@
-const MindBlownIcon = ({ color }: { color: boolean }) => {
+const MindBlownIcon = ({
+  color,
+  disabled
+}: {
+  color: boolean;
+  disabled?: boolean;
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill={color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
+      fill={
+        disabled ? "#6A6A6A" : color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"
+      }
       version="1.1"
       id="Layer_1"
       width="20px"

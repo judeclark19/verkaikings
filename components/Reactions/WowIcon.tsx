@@ -1,4 +1,10 @@
-const WowIcon = ({ color }: { color: boolean }) => {
+const WowIcon = ({
+  color,
+  disabled
+}: {
+  color: boolean;
+  disabled?: boolean;
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,7 +17,9 @@ const WowIcon = ({ color }: { color: boolean }) => {
         cx="12"
         cy="12"
         r="9.5"
-        fill={color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
+        fill={
+          disabled ? "#6A6A6A" : color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"
+        }
         strokeLinecap="round"
       />
       <circle // left eye

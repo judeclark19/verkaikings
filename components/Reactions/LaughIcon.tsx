@@ -1,8 +1,16 @@
-const LaughIcon = ({ color }: { color: boolean }) => {
+const LaughIcon = ({
+  color,
+  disabled
+}: {
+  color: boolean;
+  disabled?: boolean;
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill={color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
+      fill={
+        disabled ? "#6A6A6A" : color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"
+      }
       width="16px"
       height="16px"
       viewBox="-8 0 512 512"

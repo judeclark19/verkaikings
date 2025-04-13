@@ -100,15 +100,18 @@ const handleReaction = async (
     appState.setSnackbarMessage(`Error updating reactions: ${error}`);
   }
 };
+
 const Reactions = observer(
   ({
     collectionName,
     target,
-    documentRef
+    documentRef,
+    readOnly = false
   }: {
     collectionName: CollectionName;
     target: StoryDocType | CommentType;
     documentRef: DocumentReference;
+    readOnly?: boolean;
   }) => {
     const reactions = target.reactions || [];
 
@@ -125,6 +128,15 @@ const Reactions = observer(
           return user ? `${user.firstName} ${user.lastName}` : "Unknown User";
         });
     const handleQandAReaction = async (reactionType: ReactionName) => {
+      if (!appState.loggedInUser) {
+        console.error("User must be logged in to react.");
+        return;
+      }
+
+      if (readOnly) {
+        return;
+      }
+
       await handleReaction(reactionType, {
         documentRef,
         itemId: target.id,
@@ -135,6 +147,10 @@ const Reactions = observer(
     const handleStoryReaction = async (reactionType: ReactionName) => {
       if (!appState.loggedInUser) {
         console.error("User must be logged in to react.");
+        return;
+      }
+
+      if (readOnly) {
         return;
       }
 
@@ -187,6 +203,14 @@ const Reactions = observer(
       }
     };
     const handleCommentReaction = async (reactionType: ReactionName) => {
+      if (!appState.loggedInUser) {
+        console.error("User must be logged in to react.");
+        return;
+      }
+      if (readOnly) {
+        return;
+      }
+
       const fieldName = collectionName === "qanda" ? "answers" : "comments";
       await handleReaction(reactionType, {
         documentRef,
@@ -271,6 +295,7 @@ const Reactions = observer(
                           reaction.type === "laugh"
                       )
                     }
+                    disabled={readOnly}
                   />
                 ),
                 label: "Laugh"
@@ -286,6 +311,7 @@ const Reactions = observer(
                           reaction.type === "wow"
                       )
                     }
+                    disabled={readOnly}
                   />
                 ),
                 label: "Wow"
@@ -301,6 +327,7 @@ const Reactions = observer(
                           reaction.type === "mindBlown"
                       )
                     }
+                    disabled={readOnly}
                   />
                 ),
                 label: "Mind Blown"
@@ -335,41 +362,47 @@ const Reactions = observer(
                     </Box>
                   }
                 >
-                  <Button
-                    sx={{
-                      px: window.innerWidth < 400 ? 0.5 : 1,
-                      color: userHasReacted
-                        ? type === "love"
-                          ? "primary.dark"
-                          : "warning.main"
-                        : "text.secondary",
-                      justifyContent: "space-around",
-                      "& .MuiButton-startIcon": {
-                        marginRight: window.innerWidth < 400 ? "4px" : "8px"
-                      }
-                    }}
-                    className={`answer-${type}`}
-                    startIcon={cloneElement(icon, { count: reactionCount })}
-                    onClick={() => {
-                      if (target.id !== documentRef.id) {
-                        handleCommentReaction(type as ReactionName);
-                      } else if (collectionName === "myWillemijnStories") {
-                        handleStoryReaction(type as ReactionName);
-                      } else if (collectionName === "qanda") {
-                        handleQandAReaction(type as ReactionName);
-                      }
-                    }}
-                  >
-                    <Typography
+                  <span>
+                    <Button
                       sx={{
-                        color:
-                          reactionCount > 0 ? "text.primary" : "text.secondary",
-                        fontSize: window.innerWidth < 400 ? 14 : 16
+                        px: window.innerWidth < 400 ? 0.5 : 1,
+                        color: userHasReacted
+                          ? type === "love"
+                            ? "primary.dark"
+                            : "warning.main"
+                          : "text.secondary",
+                        justifyContent: "space-around",
+                        "& .MuiButton-startIcon": {
+                          marginRight: window.innerWidth < 400 ? "4px" : "8px"
+                        }
+                      }}
+                      disabled={readOnly}
+                      className={`answer-${type}`}
+                      startIcon={cloneElement(icon, { count: reactionCount })}
+                      onClick={() => {
+                        if (target.id !== documentRef.id) {
+                          handleCommentReaction(type as ReactionName);
+                        } else if (collectionName === "myWillemijnStories") {
+                          handleStoryReaction(type as ReactionName);
+                        } else if (collectionName === "qanda") {
+                          handleQandAReaction(type as ReactionName);
+                        }
                       }}
                     >
-                      {reactionCount}
-                    </Typography>
-                  </Button>
+                      <Typography
+                        sx={{
+                          color: readOnly
+                            ? "#6A6A6A"
+                            : reactionCount > 0
+                            ? "text.primary"
+                            : "text.secondary",
+                          fontSize: window.innerWidth < 400 ? 14 : 16
+                        }}
+                      >
+                        {reactionCount}
+                      </Typography>
+                    </Button>
+                  </span>
                 </Tooltip>
               );
             })}

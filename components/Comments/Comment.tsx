@@ -158,6 +158,7 @@ const Comment = ({
           collectionName={collectionName}
           target={comment}
           documentRef={parentDocRef}
+          readOnly={readOnly}
         />
       </Box>
 
