@@ -6,7 +6,6 @@ import {
   Button,
   CircularProgress,
   Link,
-  Divider,
   Avatar
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -134,7 +133,6 @@ const Comment = ({
           <Typography variant="body2" sx={{ mt: 1 }} id={comment.id}>
             {comment.text}
           </Typography>
-          {/* <Divider sx={{ my: 1, borderColor: "grey.800" }} /> */}
         </>
       )}
 

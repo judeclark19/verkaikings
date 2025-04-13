@@ -82,6 +82,10 @@ const CommentAccordion = ({
         [fieldName]: [...comments, newComment]
       });
 
+      if ([...comments, newComment].length > 3) {
+        setExpanded(true);
+      }
+
       let notificationTitle = "";
       const notificationBody =
         newComment.text.length <= 50
@@ -109,21 +113,14 @@ const CommentAccordion = ({
           break;
       }
 
-      // if (authorId !== appState.loggedInUser!.id) {
-      //   sendNotification(
-      //     authorId,
-      //     notificationTitle,
-      //     notificationBody,
-      //     `${notifyUrl}?notif=${newComment.id}`
-      //   );
-      // }
-
-      console.log("fake send notification", {
-        recipientId: authorId,
-        title: notificationTitle,
-        body: `"${notificationBody}"`,
-        url: `${notifyUrl}?notif=${newComment.id}`
-      });
+      if (authorId !== appState.loggedInUser!.id) {
+        sendNotification(
+          authorId,
+          notificationTitle,
+          `"${notificationBody}"`,
+          `${notifyUrl}?notif=${newComment.id}`
+        );
+      }
 
       setCommentText("");
     } catch (err) {

@@ -99,35 +99,20 @@ const CommentReplies = observer(
             break;
         }
 
-        // if (newReply.authorId !== comment.authorId) {
-
-        // sendNotification(
-        //   comment.authorId,
-        //   'New reply to your comment',
-        //   ``
-        // comment.authorId,
-        //       `${appState.loggedInUser!.firstName} ${
-        //         appState.loggedInUser!.lastName
-        //       } replied to your comment`,
-        //       newReply.text.length <= 50
-        //         ? newReply.text
-        //         : `${newReply.text.slice(0, 50)}...`,
-        //       `${notifUrl}?notif=${newReply.id}`
-        // )
-
-        console.log("send fake notification to", {
-          recipientId: comment.authorId,
-          title: `${appState.loggedInUser!.firstName} ${
-            appState.loggedInUser!.lastName
-          } replied to your ${
-            collectionName === "qanda" ? "answer" : "comment"
-          }`,
-          body:
+        if (newReply.authorId !== comment.authorId) {
+          sendNotification(
+            comment.authorId,
+            `${appState.loggedInUser!.firstName} ${
+              appState.loggedInUser!.lastName
+            } replied to your ${
+              collectionName === "qanda" ? "answer" : "comment"
+            }`,
             newReply.text.length <= 50
               ? `"${newReply.text}"`
               : `"${newReply.text.slice(0, 50)}..."`,
-          url: `${notifUrl}?notif=${newReply.id}`
-        });
+            `${notifUrl}?notif=${newReply.id}`
+          );
+        }
 
         setReplyText("");
       } catch (err) {

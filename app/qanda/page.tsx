@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { Metadata } from "next/types";
-import QuandAList from "./QandAList";
+import QandAList from "./QandAList";
 
 export const metadata: Metadata = {
   title: "Q and A | Willemijn's World Website"
@@ -17,7 +17,7 @@ const QandAPage = () => {
       >
         Q and A
       </Typography>
-      <QuandAList />
+      <QandAList />
     </div>
   );
 };

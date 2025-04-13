@@ -166,26 +166,16 @@ const Reactions = observer(
           });
 
           // send a notification to the author of the story
-
-          // if (target.authorId !== appState.loggedInUser.id) {
-          //   sendNotification(
-          //     target.authorId,
-          //     "New reaction on your story",
-          //     `${myProfileState.user!.firstName} ${
-          //       myProfileState.user!.lastName
-          //     } left a "${reactionType}"`,
-          //     `/profile?notif=story-${reactionType}`
-          //   );
-          // }
-
-          console.log("fake send notification", {
-            recipientId: target.authorId,
-            title: `New reaction on your story`,
-            body: `${myProfileState.user!.firstName} ${
-              myProfileState.user!.lastName
-            } left a "${reactionType}"`,
-            url: `/profile?notif=my-willemijn-story`
-          });
+          if (target.authorId !== appState.loggedInUser.id) {
+            sendNotification(
+              target.authorId,
+              `New reaction on your story`,
+              `${myProfileState.user!.firstName} ${
+                myProfileState.user!.lastName
+              } left a "${reactionType}"`,
+              `/profile?notif=my-willemijn-story`
+            );
+          }
         } catch (error) {
           alert(`Error adding reaction: ${error}`);
           console.error("Error adding reaction:", error);
@@ -229,17 +219,17 @@ const Reactions = observer(
           break;
       }
 
-      if (!existingReaction) {
-        console.log("fake send notification", {
-          recipientId: target.authorId,
-          title: `New reaction on your ${
+      if (!existingReaction && target.authorId !== appState.loggedInUser!.id) {
+        sendNotification(
+          target.authorId,
+          `New reaction on your ${
             collectionName === "qanda" ? "answer" : "comment"
           }`,
-          body: `${myProfileState.user!.firstName} ${
+          `${myProfileState.user!.firstName} ${
             myProfileState.user!.lastName
           } left a "${reactionType}"`,
-          url: `${notifyUrl}?notif=${target.id}`
-        });
+          `${notifyUrl}?notif=${target.id}`
+        );
       }
     };
 
@@ -264,11 +254,49 @@ const Reactions = observer(
             {[
               { type: "like", icon: <ThumbUp />, label: "Like" },
               { type: "love", icon: <Favorite />, label: "Love" },
-              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laugh" },
-              { type: "wow", icon: <WowIcon count={0} />, label: "Wow" },
+              {
+                type: "laugh",
+                icon: (
+                  <LaughIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "laugh"
+                      )
+                    }
+                  />
+                ),
+                label: "Laugh"
+              },
+              {
+                type: "wow",
+                icon: (
+                  <WowIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "wow"
+                      )
+                    }
+                  />
+                ),
+                label: "Wow"
+              },
               {
                 type: "mindBlown",
-                icon: <MindBlownIcon count={0} />,
+                icon: (
+                  <MindBlownIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "mindBlown"
+                      )
+                    }
+                  />
+                ),
                 label: "Mind Blown"
               }
             ].map(({ type, icon, label }) => {
@@ -304,18 +332,17 @@ const Reactions = observer(
                   <Button
                     sx={{
                       px: window.innerWidth < 400 ? 0.5 : 1,
-                      color:
-                        type === "love" && userHasReacted
+                      color: userHasReacted
+                        ? type === "love"
                           ? "primary.dark"
-                          : type !== "love" && userHasReacted
-                          ? "warning.main"
-                          : "text.secondary",
+                          : "warning.main"
+                        : "text.secondary",
                       justifyContent: "space-around",
                       "& .MuiButton-startIcon": {
                         marginRight: window.innerWidth < 400 ? "4px" : "8px"
                       }
                     }}
-                    id={`answer-${type}`}
+                    className={`answer-${type}`}
                     startIcon={cloneElement(icon, { count: reactionCount })}
                     onClick={() => {
                       if (target.id !== documentRef.id) {
