@@ -13,9 +13,9 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditBtn } from ".";
 import appState from "@/lib/AppState";
-import StoryComments from "@/app/people/ByStory/StoryComments";
 import SaveIcon from "@mui/icons-material/Save";
 import Reactions from "@/components/Reactions/Reactions";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const MyWillemijnStory = observer(() => {
   const [isEditing, setIsEditing] = useState(false);
@@ -77,8 +77,22 @@ const MyWillemijnStory = observer(() => {
   };
 
   return (
-    <>
-      <Typography variant="h2" id="my-willemijn-story">
+    <Box
+      sx={{
+        padding: "16px",
+        borderRadius: "8px",
+        backgroundColor: "#333",
+        boxShadow: 1,
+        mt: 3
+      }}
+    >
+      <Typography
+        variant="h2"
+        id="my-willemijn-story"
+        sx={{
+          mt: 1
+        }}
+      >
         My Willemijn Story
       </Typography>
 
@@ -149,13 +163,24 @@ const MyWillemijnStory = observer(() => {
 
       {mws && mws.storyContent && (
         <Reactions
-          collection="myWillemijnStories"
-          document={mws}
+          collectionName="myWillemijnStories"
+          target={mws}
           documentRef={doc(db, "myWillemijnStories", mws.id)}
         />
       )}
-      {mws && mws.storyContent && <StoryComments story={mws} />}
-    </>
+
+      {mws && mws.storyContent && (
+        <CommentAccordion
+          collectionName="myWillemijnStories"
+          docId={mws.id}
+          comments={mws.comments}
+          authorId={mws.authorId}
+          label="Comments"
+          notifyUrl="/profile"
+          readOnly={false}
+        />
+      )}
+    </Box>
   );
 });
 

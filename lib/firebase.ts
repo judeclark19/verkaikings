@@ -130,3 +130,5 @@ export const authListener = (callback: (user: User | null) => void) => {
     callback(user);
   });
 };
+
+export type CollectionName = "myWillemijnStories" | "events" | "qanda";

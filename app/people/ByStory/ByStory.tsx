@@ -13,12 +13,12 @@ import UserListItem from "../UserListItem";
 import userList, { UserDocType } from "@/lib/UserList";
 import { doc, onSnapshot } from "firebase/firestore";
 import { PeopleViews } from "../PeopleList";
-import StoryComments from "./StoryComments";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { deleteQueryParam } from "@/lib/clientUtils";
 import { StoryDocType } from "@/lib/MyWillemijnStories";
 import Reactions from "@/components/Reactions/Reactions";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const Column = observer(({ users }: { users: UserDocType[] }) => {
   const [stories, setStories] = useState<Record<string, StoryDocType>>({});
@@ -63,7 +63,7 @@ const Column = observer(({ users }: { users: UserDocType[] }) => {
 
         return (
           <Card
-            sx={{ width: 600, maxWidth: "100%", mb: 3 }}
+            sx={{ width: 800, maxWidth: "100%", mb: 3 }}
             key={user.username}
           >
             <CardContent>
@@ -76,12 +76,22 @@ const Column = observer(({ users }: { users: UserDocType[] }) => {
 
               {story && (
                 <Reactions
-                  collection="myWillemijnStories"
-                  document={storyDoc!}
+                  collectionName="myWillemijnStories"
+                  target={storyDoc!}
                   documentRef={doc(db, "myWillemijnStories", storyDoc!.id)}
                 />
               )}
-              {story && <StoryComments story={storyDoc!} />}
+
+              {story && (
+                <CommentAccordion
+                  collectionName="myWillemijnStories"
+                  docId={storyDoc!.id}
+                  comments={storyDoc!.comments}
+                  authorId={storyDoc!.authorId}
+                  label="Comments"
+                  notifyUrl={`/profile`}
+                />
+              )}
             </CardContent>
           </Card>
         );

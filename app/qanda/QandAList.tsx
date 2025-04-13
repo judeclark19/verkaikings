@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import QandA from "./QandA";
 import NewQForm from "./NewQForm";
 
-const QuandAList = observer(() => {
+const QandAList = observer(() => {
   const { qAndA } = qAndAState;
 
   if (!qAndAState.isInitialized) {
@@ -85,4 +85,4 @@ const QuandAList = observer(() => {
   );
 });
 
-export default QuandAList;
+export default QandAList;

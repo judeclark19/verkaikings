@@ -1,8 +1,8 @@
-const MindBlownIcon = ({ count }: { count: number }) => {
+const MindBlownIcon = ({ color }: { color: boolean }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      fill={count > 0 ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
+      fill={color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
       version="1.1"
       id="Layer_1"
       width="20px"

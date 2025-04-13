@@ -7,36 +7,30 @@ import {sendNewStoryNotifications} from "./sendNewStoryNotifications";
 import {sendNewEventNotifications} from "./sendNewEventNotifications";
 import {sendNewQNotifications} from "./sendNewQNotifications";
 
-exports.sendWelcomeNotifications = onDocumentCreated(
-  "users/{docId}",
-  sendWelcomeNotifications
-);
+const functionsDisabled = true;
+// firebase deploy --only functions
 
-exports.sendNewStoryNotifications = onDocumentCreated(
-  "myWillemijnStories/{docId}",
-  sendNewStoryNotifications
-);
+exports.sendWelcomeNotifications = functionsDisabled ?
+  () => null :
+  onDocumentCreated("users/{docId}", sendWelcomeNotifications);
 
-exports.birthdayCheck = onSchedule(
-  {
-    schedule: "every day 08:00",
-    timeZone: "Europe/Berlin",
-  },
-  async () => {
-    await runBirthdayCheck();
-  }
-);
+exports.sendNewStoryNotifications = functionsDisabled ?
+  () => null :
+  onDocumentCreated("myWillemijnStories/{docId}", sendNewStoryNotifications);
 
-exports.sendNewEventNotifications = onDocumentCreated(
-  "events/{docId}",
-  sendNewEventNotifications
-);
+exports.sendNewEventNotifications = functionsDisabled ?
+  () => null :
+  onDocumentCreated("events/{docId}", sendNewEventNotifications);
 
-exports.sendNewQNotifications = onDocumentCreated(
-  "qanda/{docId}",
-  sendNewQNotifications
-);
+exports.sendNewQNotifications = functionsDisabled ?
+  () => null :
+  onDocumentCreated("qanda/{docId}", sendNewQNotifications);
 
-// (async () => {
-//   await runBirthdayCheck();
-// })();
+exports.birthdayCheck = functionsDisabled ?
+  () => null :
+  onSchedule(
+    {schedule: "every day 08:00", timeZone: "Europe/Berlin"},
+    async () => {
+      await runBirthdayCheck();
+    }
+  );

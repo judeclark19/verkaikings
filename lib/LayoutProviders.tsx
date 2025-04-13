@@ -68,13 +68,44 @@ const LayoutProviders = observer(
           const element = document.getElementById(notifParam as string);
 
           if (element) {
+            // Check if the element is inside a Material UI Accordion
+            const accordionContainer = element.closest(".MuiAccordion-root");
+            if (
+              accordionContainer &&
+              !accordionContainer.classList.contains("Mui-expanded")
+            ) {
+              // Find the corresponding AccordionSummary element and click it to expand the accordion.
+              const accordionSummary = accordionContainer.querySelector(
+                ".MuiAccordionSummary-root"
+              );
+              if (accordionSummary) {
+                accordionSummary.dispatchEvent(
+                  new MouseEvent("click", { bubbles: true })
+                );
+                // Delay scrolling until after the accordion has time to expand
+                setTimeout(() => {
+                  element.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                  });
+                  element.classList.add("highlighted");
+                  setTimeout(
+                    () => element.classList.remove("highlighted"),
+                    1500
+                  );
+                }, 300); // adjust delay (in ms) as needed
+                return; // exit early to prevent immediate scrolling
+              }
+            }
+
+            // If no accordion handling is required, scroll immediately
             element.scrollIntoView({ behavior: "smooth", block: "center" });
             element.classList.add("highlighted");
-            setTimeout(() => element.classList.remove("highlighted"), 1500); // Remove after 1.5s
+            setTimeout(() => element.classList.remove("highlighted"), 1500);
           } else {
             const elapsedTime = performance.now() - startTime;
             if (elapsedTime < 8000) {
-              // Retry for up to 8 seconds
+              // Retry for up to 8 seconds if the element hasn't been rendered yet.
               requestAnimationFrame(() => scrollToElement(startTime));
             } else {
               console.warn(

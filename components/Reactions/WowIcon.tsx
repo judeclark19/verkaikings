@@ -1,4 +1,4 @@
-const WowIcon = ({ count }: { count: number }) => {
+const WowIcon = ({ color }: { color: boolean }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -11,7 +11,7 @@ const WowIcon = ({ count }: { count: number }) => {
         cx="12"
         cy="12"
         r="9.5"
-        fill={count > 0 ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
+        fill={color ? "#ffa726" : "rgba(255, 255, 255, 0.7)"}
         strokeLinecap="round"
       />
       <circle // left eye

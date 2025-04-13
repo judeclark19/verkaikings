@@ -34,7 +34,7 @@ function UserListItem({ user }: { user: UserDocType }) {
         <Avatar
           src={user.profilePicture || ""}
           alt={`${user.firstName} ${user.lastName}`}
-          sx={{ width: 24, height: 24, fontSize: 12, bgcolor: "primary.main" }}
+          sx={{ width: 28, height: 28, fontSize: 14, bgcolor: "primary.main" }}
         >
           {!user.profilePicture &&
             `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}

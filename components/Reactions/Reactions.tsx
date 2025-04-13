@@ -1,12 +1,12 @@
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 import { Favorite, ThumbUp } from "@mui/icons-material";
-import { AnswerType } from "@/lib/QandAState";
 import appState from "@/lib/AppState";
 import { observer } from "mobx-react-lite";
 import {
   arrayRemove,
   arrayUnion,
   DocumentReference,
+  DocumentData,
   getDoc,
   updateDoc
 } from "firebase/firestore";
@@ -18,6 +18,8 @@ import LaughIcon from "@/components/Reactions/LaughIcon";
 import { StoryDocType } from "@/lib/MyWillemijnStories";
 import { sendNotification } from "@/lib/clientUtils";
 import myProfileState from "@/app/profile/MyProfile.state";
+import { CommentType } from "../Comments/Comment";
+import { CollectionName } from "@/lib/firebase";
 
 export type ReactionName = "like" | "love" | "laugh" | "wow" | "mindBlown";
 
@@ -27,22 +29,92 @@ export type ReactionType = {
   createdAt: string;
 };
 
+// Utility function for handling reactions
+const handleReaction = async (
+  reactionType: ReactionName,
+  config: {
+    documentRef: DocumentReference;
+    itemId: string;
+    getArray: (docData: DocumentData) => CommentType[];
+    updateArray: (
+      docData: DocumentData,
+      updatedArray: CommentType[]
+    ) => Partial<DocumentData>;
+  }
+) => {
+  if (!appState.loggedInUser) {
+    console.error("User must be logged in to react.");
+    return;
+  }
+
+  const snapshot = await getDoc(config.documentRef);
+  if (!snapshot.exists()) {
+    console.error("No data found in the document.");
+    return;
+  }
+
+  const snapshotData = snapshot.data();
+  const array = config.getArray(snapshotData);
+  const item = array.find((entry: CommentType) => entry.id === config.itemId);
+
+  if (!item) {
+    console.error("Item not found.");
+    return;
+  }
+
+  const existingReaction = item.reactions?.find(
+    (reaction: ReactionType) =>
+      reaction.authorId === appState.loggedInUser!.id &&
+      reaction.type === reactionType
+  );
+
+  const updatedArray = array.map((entry: CommentType) =>
+    entry.id === config.itemId
+      ? {
+          ...entry,
+          reactions: existingReaction
+            ? entry.reactions!.filter(
+                (reaction: ReactionType) =>
+                  reaction.authorId !== existingReaction.authorId ||
+                  reaction.type !== existingReaction.type
+              )
+            : [
+                ...(entry.reactions || []),
+                {
+                  authorId: appState.loggedInUser!.id,
+                  type: reactionType,
+                  createdAt: new Date().toISOString()
+                }
+              ]
+        }
+      : entry
+  );
+
+  try {
+    await updateDoc(
+      config.documentRef,
+      config.updateArray(snapshotData, updatedArray)
+    );
+  } catch (error) {
+    console.error("Error updating reactions:", error);
+    appState.setSnackbarMessage(`Error updating reactions: ${error}`);
+  }
+};
 const Reactions = observer(
   ({
-    collection,
-    document,
+    collectionName,
+    target,
     documentRef
   }: {
-    collection: "myWillemijnStories" | "qanda";
-    document: StoryDocType | AnswerType;
+    collectionName: CollectionName;
+    target: StoryDocType | CommentType;
     documentRef: DocumentReference;
   }) => {
-    const reactions = document.reactions || [];
+    const reactions = target.reactions || [];
 
     const countReactions = (type: ReactionName) =>
       reactions.filter((reaction: ReactionType) => reaction.type === type)
         .length;
-
     const getReactionUsers = (type: ReactionName) =>
       reactions
         .filter((reaction) => reaction.type === type)
@@ -52,69 +124,13 @@ const Reactions = observer(
           );
           return user ? `${user.firstName} ${user.lastName}` : "Unknown User";
         });
-
     const handleQandAReaction = async (reactionType: ReactionName) => {
-      if (!appState.loggedInUser) {
-        console.error("User must be logged in to react.");
-        return;
-      }
-
-      const snapshot = await getDoc(documentRef);
-
-      if (!snapshot.exists()) {
-        console.error("No data found in the document.");
-        return;
-      }
-
-      const snapshotData = snapshot.data();
-
-      const existingReaction = document.reactions.find(
-        (reaction) =>
-          reaction.authorId === appState.loggedInUser!.id &&
-          reaction.type === reactionType
-      );
-
-      let updatedAnswers;
-      if (existingReaction) {
-        // Remove reaction
-        updatedAnswers = snapshotData.answers.map((answerData: AnswerType) => {
-          if (answerData.id === document.id) {
-            return {
-              ...answerData,
-              reactions: answerData.reactions.filter(
-                (reaction) =>
-                  reaction.authorId !== existingReaction.authorId ||
-                  reaction.type !== existingReaction.type
-              )
-            };
-          }
-          return answerData;
-        });
-      } else {
-        // Add reaction
-        const newReaction: ReactionType = {
-          authorId: appState.loggedInUser.id,
-          type: reactionType,
-          createdAt: new Date().toISOString()
-        };
-
-        updatedAnswers = snapshotData.answers.map((answerData: AnswerType) => {
-          if (answerData.id === document.id) {
-            return {
-              ...answerData,
-              reactions: [...(answerData.reactions || []), newReaction]
-            };
-          }
-          return answerData;
-        });
-      }
-
-      try {
-        await updateDoc(documentRef, { answers: updatedAnswers });
-      } catch (error) {
-        console.error("Error updating reactions:", error);
-        appState.setSnackbarMessage(`Error updating reactions: ${error}`);
-      }
+      await handleReaction(reactionType, {
+        documentRef,
+        itemId: target.id,
+        getArray: (doc) => doc.answers || [],
+        updateArray: (_, updated) => ({ answers: updated })
+      });
     };
     const handleStoryReaction = async (reactionType: ReactionName) => {
       if (!appState.loggedInUser) {
@@ -152,21 +168,74 @@ const Reactions = observer(
           });
 
           // send a notification to the author of the story
-
-          if (document.authorId !== appState.loggedInUser.id) {
+          if (target.authorId !== appState.loggedInUser.id) {
+            // console.log(
+            //   "fake notification",
             sendNotification(
-              document.authorId,
-              "New reaction on your story",
+              target.authorId,
+              `New reaction on your story`,
               `${myProfileState.user!.firstName} ${
                 myProfileState.user!.lastName
               } left a "${reactionType}"`,
-              `/profile?notif=story-${reactionType}`
+              `/profile?notif=my-willemijn-story`
             );
           }
         } catch (error) {
           alert(`Error adding reaction: ${error}`);
           console.error("Error adding reaction:", error);
         }
+      }
+    };
+    const handleCommentReaction = async (reactionType: ReactionName) => {
+      const fieldName = collectionName === "qanda" ? "answers" : "comments";
+      await handleReaction(reactionType, {
+        documentRef,
+        itemId: target.id,
+        getArray: (doc) => doc[fieldName] || [],
+        updateArray: (_, updated) => ({ [fieldName]: updated })
+      });
+
+      // was a reaction added or removed?
+      const existingReaction = reactions.find(
+        (reaction) =>
+          reaction.authorId === appState.loggedInUser!.id &&
+          reaction.type === reactionType
+      );
+
+      let notifyUrl = ``;
+
+      switch (collectionName) {
+        case "myWillemijnStories":
+          const op = appState.userList.users.find(
+            (u) => u.id === documentRef.id
+          );
+          const opUsername = `${op!.firstName}_${op!.lastName}`;
+          notifyUrl = `/profile/${opUsername}`;
+          break;
+        case "qanda":
+          notifyUrl = `/qanda`;
+          break;
+        case "events":
+          notifyUrl = `/events/${documentRef.id}`;
+          break;
+        default:
+          notifyUrl = ``;
+          break;
+      }
+
+      if (!existingReaction && target.authorId !== appState.loggedInUser!.id) {
+        // console.log(
+        //   "fake notification",
+        sendNotification(
+          target.authorId,
+          `New reaction on your ${
+            collectionName === "qanda" ? "answer" : "comment"
+          }`,
+          `${myProfileState.user!.firstName} ${
+            myProfileState.user!.lastName
+          } left a "${reactionType}"`,
+          `${notifyUrl}?notif=${target.id}`
+        );
       }
     };
 
@@ -177,29 +246,74 @@ const Reactions = observer(
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mt: 1
+            mb: 1
           }}
         >
           <ButtonGroup
             variant="text"
             size="small"
             sx={{
-              flexWrap: "wrap"
+              flexWrap: "wrap",
+              backgroundColor: "rgba(255, 255, 255, 0.1)"
             }}
           >
             {[
-              { type: "like", icon: <ThumbUp />, label: "Likes" },
-              { type: "love", icon: <Favorite />, label: "Loves" },
-              { type: "laugh", icon: <LaughIcon count={0} />, label: "Laughs" },
-              { type: "wow", icon: <WowIcon count={0} />, label: "Wows" },
+              { type: "like", icon: <ThumbUp />, label: "Like" },
+              { type: "love", icon: <Favorite />, label: "Love" },
+              {
+                type: "laugh",
+                icon: (
+                  <LaughIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "laugh"
+                      )
+                    }
+                  />
+                ),
+                label: "Laugh"
+              },
+              {
+                type: "wow",
+                icon: (
+                  <WowIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "wow"
+                      )
+                    }
+                  />
+                ),
+                label: "Wow"
+              },
               {
                 type: "mindBlown",
-                icon: <MindBlownIcon count={0} />,
-                label: "Minds Blown"
+                icon: (
+                  <MindBlownIcon
+                    color={
+                      !!reactions.find(
+                        (reaction: ReactionType) =>
+                          reaction.authorId === appState.loggedInUser?.id &&
+                          reaction.type === "mindBlown"
+                      )
+                    }
+                  />
+                ),
+                label: "Mind Blown"
               }
             ].map(({ type, icon, label }) => {
               const reactionCount = countReactions(type as ReactionName);
               const reactionUsers = getReactionUsers(type as ReactionName);
+              const userHasReacted =
+                reactions.find(
+                  (reaction: ReactionType) =>
+                    reaction.authorId === appState.loggedInUser?.id &&
+                    reaction.type === type
+                ) !== undefined;
 
               return (
                 <Tooltip
@@ -224,23 +338,24 @@ const Reactions = observer(
                   <Button
                     sx={{
                       px: window.innerWidth < 400 ? 0.5 : 1,
-                      color:
-                        type === "love" && reactionCount > 0
+                      color: userHasReacted
+                        ? type === "love"
                           ? "primary.dark"
-                          : type !== "love" && reactionCount > 0
-                          ? "warning.main"
-                          : "text.secondary",
+                          : "warning.main"
+                        : "text.secondary",
                       justifyContent: "space-around",
                       "& .MuiButton-startIcon": {
                         marginRight: window.innerWidth < 400 ? "4px" : "8px"
                       }
                     }}
-                    id={`answer-${type}`}
+                    className={`answer-${type}`}
                     startIcon={cloneElement(icon, { count: reactionCount })}
                     onClick={() => {
-                      if (collection === "myWillemijnStories") {
+                      if (target.id !== documentRef.id) {
+                        handleCommentReaction(type as ReactionName);
+                      } else if (collectionName === "myWillemijnStories") {
                         handleStoryReaction(type as ReactionName);
-                      } else if (collection === "qanda") {
+                      } else if (collectionName === "qanda") {
                         handleQandAReaction(type as ReactionName);
                       }
                     }}

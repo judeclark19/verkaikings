@@ -1,21 +1,13 @@
-import { ReactionType } from "@/components/Reactions/Reactions";
+import { CommentType } from "@/components/Comments/Comment";
 import { Timestamp } from "firebase/firestore";
 import { makeAutoObservable } from "mobx";
-
-export type AnswerType = {
-  id: string;
-  authorId: string;
-  createdAt: string;
-  text: string;
-  reactions: ReactionType[];
-};
 
 export type QandADocType = {
   id: string;
   question: string;
   creatorId: string;
   createdAt: Timestamp;
-  answers: AnswerType[];
+  answers: CommentType[];
 };
 
 export class QandAState {

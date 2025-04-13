@@ -13,7 +13,6 @@ import {
   CircularProgress
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
-import QandAAnswers from "./QandAAnswers";
 import { useState } from "react";
 import {
   Delete as DeleteIcon,
@@ -23,6 +22,7 @@ import {
 import Tooltip from "@/components/Tooltip";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import CommentAccordion from "@/components/Comments/CommentAccordion";
 
 const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
   const qAndADocRef = doc(db, "qanda", qAndA.id);
@@ -186,7 +186,14 @@ const QandA = observer(({ qAndA }: { qAndA: QandADocType }) => {
         </>
       )}
 
-      <QandAAnswers qAndA={qAndA} qAndADocRef={qAndADocRef} />
+      <CommentAccordion
+        collectionName="qanda"
+        docId={qAndA.id}
+        comments={qAndA.answers}
+        authorId={qAndA.creatorId}
+        label="Answers"
+        notifyUrl={`/qanda`}
+      />
     </Paper>
   );
 });
