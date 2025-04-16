@@ -3,7 +3,7 @@
 import { observer } from "mobx-react-lite";
 import eventsState, { EventDocType } from "./Events.state";
 import Event from "./Event";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, Divider, Skeleton, Typography } from "@mui/material";
 import NewEventModal from "./NewEventModal";
 
 const EventsList = observer(() => {
@@ -75,6 +75,11 @@ const EventsList = observer(() => {
 
         {eventsState.pastEvents.length > 0 && (
           <>
+            <Divider
+              sx={{
+                mt: 8
+              }}
+            />
             <Typography
               variant="h2"
               textAlign="center"

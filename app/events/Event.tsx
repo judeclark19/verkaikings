@@ -87,11 +87,11 @@ const Event = observer(
 
     return (
       <Paper
-        elevation={5}
+        elevation={isPast ? 1 : 5}
         sx={{
           p: 2,
           width: "100%",
-          maxWidth: 670,
+          maxWidth: 800,
           height: "fit-content"
         }}
         id={event.id}
@@ -193,10 +193,30 @@ const Event = observer(
             <Typography>
               <strong>Time:</strong> {event.time}
             </Typography>
-            <Typography>
-              <strong>Location:</strong>{" "}
+            <Typography
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap"
+              }}
+            >
+              <strong>Google Maps:&nbsp;</strong>{" "}
               {event.locationUrl ? (
-                <MuiLink href={event.locationUrl} target="_blank">
+                <MuiLink
+                  href={event.locationUrl}
+                  target="_blank"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5
+                  }}
+                >
+                  <OpenInNewIcon
+                    sx={{
+                      fontSize: "1rem"
+                    }}
+                  />
+
                   {event.locationName}
                 </MuiLink>
               ) : (
@@ -218,20 +238,26 @@ const Event = observer(
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 1
+                  flexWrap: "wrap"
                 }}
               >
-                <strong>External Link:</strong>
-
-                <Button
+                <strong>Event web page:&nbsp;</strong>
+                <MuiLink
                   href={event.externalLink}
                   target="_blank"
-                  variant="outlined"
-                  startIcon={<OpenInNewIcon />}
-                  sx={{ textTransform: "none" }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5
+                  }}
                 >
-                  Event web page
-                </Button>
+                  <OpenInNewIcon
+                    sx={{
+                      fontSize: "1rem"
+                    }}
+                  />
+                  {event.locationName}
+                </MuiLink>
               </Typography>
             )}
 

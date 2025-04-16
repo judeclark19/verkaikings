@@ -51,7 +51,13 @@ const EventDetail = observer(() => {
 
   return (
     <>
-      <Typography variant="h1" sx={{ textAlign: "center" }}>
+      <Typography
+        variant="h1"
+        sx={{
+          textAlign: "center",
+          color: "secondary.dark"
+        }}
+      >
         {eventInfo.title}
       </Typography>
       {isPast && (
