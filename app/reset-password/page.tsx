@@ -7,13 +7,13 @@ import {
 } from "firebase/auth";
 import {
   Box,
-  TextField,
   Button,
   Typography,
   CircularProgress,
   Alert
 } from "@mui/material";
 import RequestResetLinkForm from "./RequestResetLinkForm";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function ResetPassword() {
   const [stage, setStage] = useState<
@@ -144,15 +144,11 @@ export default function ResetPassword() {
           gap: "1rem"
         }}
       >
-        <TextField
+        <PasswordInput
           label="New Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          setValue={setPassword}
+          autoComplete="new-password"
         />
 
         <Button
