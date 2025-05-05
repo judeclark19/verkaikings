@@ -12,15 +12,15 @@ export default function Home() {
       <Box
         sx={{
           margin: "2rem auto 0 auto",
-          width: { xs: "150px", sm: "220px" },
-          height: { xs: "150px", sm: "220px" },
+          width: { xs: "220px", sm: "300px" },
+          height: { xs: "220px", sm: "300px" },
           overflow: "hidden",
           borderRadius: "50%",
           position: "relative"
         }}
       >
         <Image
-          src="/images/willemijn-landing.jpg"
+          src="/images/willemijn-ptsa.png"
           alt="Willemijn Verkaik"
           fill
           style={{ objectFit: "cover" }}
