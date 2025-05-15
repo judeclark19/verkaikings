@@ -22,6 +22,7 @@ const LoginForm = observer(() => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  console.log("env", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
