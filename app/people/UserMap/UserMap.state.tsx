@@ -75,9 +75,8 @@ export class UserMapState {
       return;
     }
 
-    const position = place.location
-      ? { lat: place.location.latitude, lng: place.location.longitude }
-      : null;
+    const { location } = place.geometry;
+    const position = location ? { lat: location.lat, lng: location.lng } : null;
 
     if (!position) {
       console.error("No valid location found for place:", place);
@@ -92,7 +91,7 @@ export class UserMapState {
     const marker = new AdvancedMarkerElement({
       map: this.map,
       position,
-      title: place.displayName?.text || "Unknown Place"
+      title: place.formatted_address || "Unknown Place"
     });
 
     this.markers.set(mapItem.cityId, marker);
