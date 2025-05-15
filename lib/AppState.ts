@@ -1,6 +1,7 @@
 import myProfileState from "@/app/profile/MyProfile.state";
 import { makeAutoObservable, toJS } from "mobx";
 import userList, { UserDocType, UserList } from "./UserList";
+import Cookies from "js-cookie";
 import {
   collection,
   doc,
@@ -11,7 +12,7 @@ import {
   setDoc,
   updateDoc
 } from "firebase/firestore";
-import { db, requestNotificationPermission } from "./firebase";
+import { auth, db, requestNotificationPermission } from "./firebase";
 import myWillemijnStories, {
   MyWillemijnStories,
   StoryDocType
@@ -24,6 +25,7 @@ import fundraiserState, {
 } from "./FundraiserState";
 import qAndAState, { QandADocType, QandAState } from "./QandAState";
 import userMap, { UserMapState } from "@/app/people/UserMap/UserMap.state";
+import { signOut } from "firebase/auth";
 
 export type CityDetails = {
   address_components: {
@@ -75,36 +77,47 @@ class AppState {
 
   async initializeSnapshots(isLoggedIn: boolean, userId?: string) {
     if (isLoggedIn) {
-      if (!this.isInitialized) {
-        const users = await getDocs(collection(db, "users"));
-        const stories = await getDocs(collection(db, "myWillemijnStories"));
-        const events = await getDocs(collection(db, "events"));
-        const fundraisers = await getDocs(collection(db, "fundraisers"));
-        const qAndA = await getDocs(collection(db, "qanda"));
-        this.init(
-          users.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as UserDocType)
-          ),
-          userId!,
-          stories.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as StoryDocType)
-          ),
-          events.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as EventDocType)
-          ),
-          fundraisers.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as FundraiserDocType)
-          ),
-          qAndA.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as QandADocType)
-          )
-        );
+      try {
+        if (!this.isInitialized) {
+          const users = await getDocs(collection(db, "users"));
+          const stories = await getDocs(collection(db, "myWillemijnStories"));
+          const events = await getDocs(collection(db, "events"));
+          const fundraisers = await getDocs(collection(db, "fundraisers"));
+          const qAndA = await getDocs(collection(db, "qanda"));
+          this.init(
+            users.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as UserDocType)
+            ),
+            userId!,
+            stories.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as StoryDocType)
+            ),
+            events.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as EventDocType)
+            ),
+            fundraisers.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as FundraiserDocType)
+            ),
+            qAndA.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as QandADocType)
+            )
+          );
+        }
+        this.subscribeToUsers();
+        this.subscribeToStories();
+        this.subscribeToEvents();
+        this.subscribeToFundraisers();
+        this.subscribeToQandA();
+      } catch (error) {
+        console.error("Error initializing snapshots:", error);
+        await signOut(auth); // Log out the user
+        // Remove the authToken from cookies
+        Cookies.remove("authToken");
+        myProfileState.signOut(); // Reset the user profile state
+
+        // Force server-side navigation to ensure middleware checks the cookie
+        window.location.href = "/"; // Triggers full page load
       }
-      this.subscribeToUsers();
-      this.subscribeToStories();
-      this.subscribeToEvents();
-      this.subscribeToFundraisers();
-      this.subscribeToQandA();
     } else {
       this.unsubscribeFromSnapshots();
     }
