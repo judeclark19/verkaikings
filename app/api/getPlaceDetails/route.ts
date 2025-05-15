@@ -3,12 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const secret = req.headers.get("x-app-secret");
-
-  if (secret !== process.env.NEXT_PUBLIC_APP_SECRET) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 } // Return a 401 Unauthorized status
-    );
+  const EXPECTED = process.env.NEXT_PUBLIC_APP_SECRET;
+  if (secret !== EXPECTED) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -19,24 +16,41 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "placeId is required" }, { status: 400 });
   }
 
-  try {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    const apiUrl = `https://places.googleapis.com/v1/places/${placeId}?key=${apiKey}&languageCode=${language}&fields=displayName,addressComponents,googleMapsUri,location`;
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    const data = await response.json();
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error("Failed to fetch place details:", error);
+  // **Use a server‐only env var** so you’re never exposing this in client bundles
+  const apiKey = process.env.GOOGLE_MAPS_SERVER_KEY;
+  if (!apiKey) {
     return NextResponse.json(
-      { error: "Failed to fetch place details" },
+      { error: "API key not configured" },
       { status: 500 }
     );
+  }
+
+  // Call the HTTP/JSON Place Details endpoint:
+  // https://developers.google.com/maps/documentation/places/web-service/details
+  const url = new URL(
+    "https://maps.googleapis.com/maps/api/place/details/json"
+  );
+  url.searchParams.set("place_id", placeId);
+  url.searchParams.set("language", language);
+  // only pull the fields you actually need:
+  url.searchParams.set(
+    "fields",
+    "address_component,geometry,formatted_address"
+  );
+  url.searchParams.set("key", apiKey);
+
+  try {
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: await response.text() },
+        { status: response.status }
+      );
+    }
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (e) {
+    console.error("Places fetch failed:", e);
+    return NextResponse.json({ error: "Fetch failed" }, { status: 502 });
   }
 }

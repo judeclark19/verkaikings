@@ -70,22 +70,22 @@ const CityPicker = observer(
       }
 
       const newDisplayName = appState.formatCityAndStatefromAddress(
-        appState.cityDetails[placeId]?.addressComponents
+        appState.cityDetails[placeId]?.address_components
       );
 
       myProfileState.setCityName(newDisplayName);
       myProfileState.setPlaceId(placeId);
       setCountry(
-        appState.cityDetails[placeId]?.addressComponents
+        appState.cityDetails[placeId]?.address_components
           ?.find(
             (c: {
-              longText: string;
-              shortText: string;
+              long_name: string;
+              short_name: string;
               types: string[];
               languageCode: string;
             }) => c.types.includes("country")
           )
-          ?.shortText.toLowerCase() || ""
+          ?.short_name.toLowerCase() || ""
       );
     };
 

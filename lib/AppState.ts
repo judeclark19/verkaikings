@@ -26,21 +26,19 @@ import qAndAState, { QandADocType, QandAState } from "./QandAState";
 import userMap, { UserMapState } from "@/app/people/UserMap/UserMap.state";
 
 export type CityDetails = {
-  addressComponents: {
-    longText: string;
-    shortText: string;
+  address_components: {
+    long_name: string;
+    short_name: string;
     types: string[];
     languageCode: string;
   }[];
-  location: {
-    latitude: number;
-    longitude: number;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
   };
-  googleMapsUri: string;
-  displayName: {
-    text: string;
-    languageCode: string;
-  };
+  formatted_address: string;
 };
 
 class AppState {
@@ -131,7 +129,7 @@ class AppState {
 
     this.initPromise = (async () => {
       this.language = navigator.language || "en";
-      // this.language = "nl";
+      // this.language = "en";
       this.userList = userList;
       this.userList.init(users);
 
@@ -338,6 +336,7 @@ class AppState {
       };
 
       const pdcDocRef = doc(db, "placeDataCache", this.language);
+      // console.log("set data", data);
       updateDoc(pdcDocRef, {
         cityNames: JSON.stringify(data.cityNames),
         cityDetails: JSON.stringify(data.cityDetails)
@@ -348,7 +347,7 @@ class AppState {
   }
 
   async fetchCityDetails(cityId: string) {
-    console.log("$$$$$ Fetching city details for:", cityId);
+    console.log("$$$$$ Fetching city details for:", this.language, cityId);
     if (!process.env.NEXT_PUBLIC_APP_SECRET) {
       throw new Error("NEXT_PUBLIC_APP_SECRET is not defined");
     }
@@ -364,12 +363,12 @@ class AppState {
           }
         );
         const data = await response.json();
-
-        if (data.addressComponents) {
+        console.log("City details data:", data);
+        if (data.result.address_components) {
           this.cityNames[cityId] = this.formatCityAndStatefromAddress(
-            data.addressComponents
+            data.result.address_components
           );
-          this.cityDetails[cityId] = data;
+          this.cityDetails[cityId] = data.result;
         }
 
         this.setPDCinDB();
@@ -390,10 +389,10 @@ class AppState {
 
   formatCityAndStatefromAddress(
     addressComponents: {
-      longText: string;
-      shortText: string;
+      long_name: string;
+      short_name: string;
       types: string[];
-      languageCode: string;
+      // languageCode: string;
     }[]
   ) {
     let city = "";
@@ -404,23 +403,23 @@ class AppState {
       component.types.includes("country")
     );
     const countryCodeFromAddressComponents = countryComponent
-      ? countryComponent.shortText
+      ? countryComponent.short_name
       : "";
 
     addressComponents.forEach((component) => {
       if (component.types.includes("locality")) {
-        city = component.longText;
+        city = component.long_name;
       } else if (component.types.includes("sublocality") && !city) {
-        city = component.longText;
+        city = component.long_name;
       } else if (component.types.includes("administrative_area_level_1")) {
-        state = component.shortText;
+        state = component.short_name;
       }
     });
 
     if (!city) {
       addressComponents.forEach((component) => {
         if (component.types.includes("administrative_area_level_2")) {
-          city = component.longText;
+          city = component.short_name;
         }
       });
     }
