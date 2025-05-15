@@ -316,13 +316,7 @@ class AppState {
 
       // Load cached data
       this.cityNames = JSON.parse(pdcSnapshot.data()?.cityNames) || {};
-      // console.log("city names fetched from db:", toJS(this.cityNames));
-
       this.cityDetails = JSON.parse(pdcSnapshot.data()?.cityDetails) || {};
-      // console.log(
-      //   "city details fetched from db:",
-      //   JSON.parse(pdcSnapshot.data()?.cityDetails)
-      // );
     } catch (error) {
       console.error("Error loading from database:", error);
     }
@@ -336,7 +330,7 @@ class AppState {
       };
 
       const pdcDocRef = doc(db, "placeDataCache", this.language);
-      // console.log("set data", data);
+
       updateDoc(pdcDocRef, {
         cityNames: JSON.stringify(data.cityNames),
         cityDetails: JSON.stringify(data.cityDetails)
@@ -363,7 +357,7 @@ class AppState {
           }
         );
         const data = await response.json();
-        console.log("City details data:", data);
+
         if (data.result.address_components) {
           this.cityNames[cityId] = this.formatCityAndStatefromAddress(
             data.result.address_components

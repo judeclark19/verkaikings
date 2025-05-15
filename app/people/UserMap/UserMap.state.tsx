@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import appState, { CityDetails } from "@/lib/AppState";
 import userList, { UserDocType } from "@/lib/UserList";
 
@@ -74,7 +74,7 @@ export class UserMapState {
     if (!place) {
       return;
     }
-    console.log("Creating marker for place:", toJS(place));
+
     const { location } = place.geometry;
     const position = location ? { lat: location.lat, lng: location.lng } : null;
 
