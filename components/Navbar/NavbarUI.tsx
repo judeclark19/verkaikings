@@ -130,7 +130,8 @@ const NavbarUI = observer(
             </Typography>
             <Box
               sx={{
-                display: { xs: "none", md: "flex" }
+                display: { xs: "none", md: "flex" },
+                gap: 0.5
               }}
             >
               {/* HOME */}
