@@ -25,7 +25,6 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
       disableGutters
       sx={{
         backgroundColor: "transparent",
-
         color: "background.default",
         border: "none",
         margin: "0",
@@ -38,7 +37,6 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
           backgroundImage: "none"
         }
       }}
-      // expanded={true}
       onChange={() => setExpanded(!expanded)}
     >
       <AccordionSummary
@@ -68,22 +66,12 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
             position: "relative"
           }}
         >
-          <Box
-            //circle
-            component="span"
-            sx={{
-              position: "absolute",
-              left: "5px",
-              width: "12px",
-              height: "12px",
-              border: "2px solid #232323",
-              borderRadius: "50%"
-            }}
-          />
           <Typography
             component="span"
             sx={{
-              paddingLeft: "40px"
+              paddingLeft: "40px",
+              textDecoration: expanded ? "underline" : "none",
+              fontWeight: expanded ? "700" : "400"
             }}
           >
             {linkGroup.title.toUpperCase()}
@@ -106,17 +94,6 @@ const DrawerAccordion = ({ linkGroup }: { linkGroup: NavLinkGroupType }) => {
             position: "relative"
           }}
         >
-          {/* Vertical Line */}
-          <Box
-            sx={{
-              position: "absolute",
-              left: "-11px",
-              top: 0,
-              bottom: 0,
-              width: "2px",
-              backgroundColor: "#232323"
-            }}
-          />
           {linkGroup.links!.map((submenuLink) => (
             <Box
               component="li"
