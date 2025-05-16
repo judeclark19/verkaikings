@@ -1,5 +1,5 @@
 import { NavLinkType } from "../navLinks.data";
-import { Avatar, Button, CircularProgress, Divider } from "@mui/material";
+import { Avatar, Button, CircularProgress } from "@mui/material";
 import Link from "next/link";
 import myProfileState from "@/app/profile/MyProfile.state";
 import { observer } from "mobx-react-lite";
@@ -49,14 +49,6 @@ const AppBarLink = observer(
             link.title
           )}
         </Button>
-        <Divider
-          orientation="vertical"
-          flexItem
-          sx={{
-            borderColor: "background.default",
-            margin: "0 8px"
-          }}
-        />
       </>
     );
   }

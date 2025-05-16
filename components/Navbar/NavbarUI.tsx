@@ -9,7 +9,6 @@ import {
   IconButton,
   Drawer,
   Box,
-  Divider,
   Badge
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -147,24 +146,8 @@ const NavbarUI = observer(
 
                   {/* PEOPLE */}
                   <SubmenuDropdown linkGroup={peopleLinks} />
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    sx={{
-                      borderColor: "background.default",
-                      margin: "0 8px"
-                    }}
-                  />
 
                   <SubmenuDropdown linkGroup={moreLinks} />
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    sx={{
-                      borderColor: "background.default",
-                      margin: "0 8px"
-                    }}
-                  />
 
                   {/* EVENTS */}
                   {/* <AppBarLink
@@ -174,14 +157,6 @@ const NavbarUI = observer(
 
                   {/* NOTIFICATIONS */}
                   <NotificationsDropdown />
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    sx={{
-                      borderColor: "background.default",
-                      margin: "0 8px"
-                    }}
-                  />
                 </>
               )}
 
@@ -198,24 +173,14 @@ const NavbarUI = observer(
 
               {/* SIGN UP */}
               {!isLoggedIn && (
-                <>
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    sx={{
-                      borderColor: "background.default",
-                      margin: "0 8px"
-                    }}
-                  />
-                  <Button
-                    color="inherit"
-                    component={Link}
-                    href="/signup"
-                    sx={getNavLinkStyle("/signup")}
-                  >
-                    Sign Up
-                  </Button>
-                </>
+                <Button
+                  color="inherit"
+                  component={Link}
+                  href="/signup"
+                  sx={getNavLinkStyle("/signup")}
+                >
+                  Sign Up
+                </Button>
               )}
             </Box>
           </Toolbar>
