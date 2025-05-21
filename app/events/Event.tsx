@@ -211,13 +211,12 @@ const Event = observer(
                     gap: 0.5
                   }}
                 >
+                  {event.locationName}
                   <OpenInNewIcon
                     sx={{
                       fontSize: "1rem"
                     }}
                   />
-
-                  {event.locationName}
                 </MuiLink>
               ) : (
                 event.locationName || (
@@ -251,12 +250,12 @@ const Event = observer(
                     gap: 0.5
                   }}
                 >
+                  Link{" "}
                   <OpenInNewIcon
                     sx={{
                       fontSize: "1rem"
                     }}
                   />
-                  {event.locationName}
                 </MuiLink>
               </Typography>
             )}
