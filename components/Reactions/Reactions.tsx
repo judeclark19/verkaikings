@@ -233,7 +233,10 @@ const Reactions = observer(
           const op = appState.userList.users.find(
             (u) => u.id === documentRef.id
           );
-          const opUsername = `${op!.firstName}_${op!.lastName}`;
+          const opUsername = `${op!.firstName}_${op!.lastName.replace(
+            /\s+/g,
+            "_"
+          )}`;
           notifyUrl = `/profile/${opUsername}`;
           break;
         case "qanda":
@@ -248,8 +251,6 @@ const Reactions = observer(
       }
 
       if (!existingReaction && target.authorId !== appState.loggedInUser!.id) {
-        // console.log(
-        //   "fake notification",
         sendNotification(
           target.authorId,
           `New reaction on your ${
