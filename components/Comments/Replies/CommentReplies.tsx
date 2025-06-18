@@ -143,15 +143,6 @@ const CommentReplies = observer(
           }
 
           if (parentDocCreatorData) {
-            console.log(
-              `${appState.loggedInUser!.firstName} ${
-                appState.loggedInUser!.lastName
-              } replied to ${
-                parentDocType === "question" ? "an answer" : "a comment"
-              } on your ${parentDocType}`,
-              opID
-            );
-
             sendNotification(
               opID,
               `${appState.loggedInUser!.firstName} ${
