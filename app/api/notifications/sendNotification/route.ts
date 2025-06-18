@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         notification: {
           title: notification.title,
           body: notification.body,
-          icon: "/favicon-32x32.png"
+          icon: "/favicon-32x32_v2.png"
         },
         fcm_options: {
           link: notification.url || "https://verkaikings.netlify.app/"

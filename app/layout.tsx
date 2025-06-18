@@ -8,9 +8,9 @@ import { decodeToken } from "@/lib/serverUtils";
 export const metadata: Metadata = {
   title: "Willemijn's World Website",
   icons: {
-    icon: ["/favicon.ico"],
-    apple: ["/apple-touch-icon.png"],
-    shortcut: ["/apple-touch-icon.png"]
+    icon: ["/favicon_v2.ico"],
+    apple: ["/apple-touch-icon_v2.png"],
+    shortcut: ["/apple-touch-icon_v2.png"]
   }
 };
 

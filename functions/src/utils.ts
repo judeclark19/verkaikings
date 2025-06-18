@@ -46,7 +46,7 @@ export async function sendPushNotifications(
       notification: {
         title: message.title,
         body: message.body,
-        icon: message.icon || "/favicon-32x32.png",
+        icon: message.icon || "/favicon-32x32_v2.png"
       },
       fcm_options: {
         link: message.url || "/",
