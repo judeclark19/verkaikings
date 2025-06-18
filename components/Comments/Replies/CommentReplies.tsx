@@ -99,6 +99,7 @@ const CommentReplies = observer(
             break;
         }
 
+        // send notification to the comment author
         if (newReply.authorId !== comment.authorId) {
           sendNotification(
             comment.authorId,
@@ -112,6 +113,58 @@ const CommentReplies = observer(
               : `"${newReply.text.slice(0, 50)}..."`,
             `${notifUrl}?notif=${newReply.id}`
           );
+        }
+
+        // send notification to OP of the parent document (if different from comment author)
+        const parentDocCreator = await getDoc(parentDocRef);
+        const parentDocCreatorData = parentDocCreator.data();
+        let opID = "";
+
+        if (parentDocCreatorData) {
+          opID =
+            parentDocCreatorData.authorId || parentDocCreatorData.creatorId;
+        }
+
+        if (opID && newReply.authorId !== opID && opID !== comment.authorId) {
+          let parentDocType = "";
+
+          switch (collectionName) {
+            case "myWillemijnStories":
+              parentDocType = "story";
+              break;
+            case "qanda":
+              parentDocType = "question";
+              break;
+            case "events":
+              parentDocType = "event";
+              break;
+            default:
+              parentDocType = "";
+          }
+
+          if (parentDocCreatorData) {
+            console.log(
+              `${appState.loggedInUser!.firstName} ${
+                appState.loggedInUser!.lastName
+              } replied to ${
+                parentDocType === "question" ? "an answer" : "a comment"
+              } on your ${parentDocType}`,
+              opID
+            );
+
+            sendNotification(
+              opID,
+              `${appState.loggedInUser!.firstName} ${
+                appState.loggedInUser!.lastName
+              } replied to ${
+                parentDocType === "question" ? "an answer" : "a comment"
+              } on your ${parentDocType}`,
+              newReply.text.length <= 50
+                ? `"${newReply.text}"`
+                : `"${newReply.text.slice(0, 50)}..."`,
+              `${notifUrl}?notif=${newReply.id}`
+            );
+          }
         }
 
         setReplyText("");
