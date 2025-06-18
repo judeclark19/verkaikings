@@ -6,8 +6,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   swcMinify: true,
   disable: false,
   workboxOptions: {
-    disableDevLogs: true,
-    globPatterns: ["**/*.{ico,png,svg,webmanifest,json}"]
+    disableDevLogs: true
   }
 });
 

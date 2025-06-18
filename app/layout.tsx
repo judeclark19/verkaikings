@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     icon: ["/favicon_v2.ico"],
     apple: ["/apple-touch-icon_v2.png"],
     shortcut: ["/apple-touch-icon_v2.png"]
-  }
+  },
+  manifest: "/site_v2.webmanifest"
 };
 
 const inter = Inter({
