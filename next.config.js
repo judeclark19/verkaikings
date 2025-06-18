@@ -6,7 +6,9 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   swcMinify: true,
   disable: false,
   workboxOptions: {
-    disableDevLogs: true
+    disableDevLogs: true,
+    globDirectory: "public",
+    globPatterns: ["**/*.{ico,png,svg,webmanifest,json}"]
   }
 });
 
@@ -15,8 +17,8 @@ const nextConfig = {
   compiler: {
     styledComponents: true
   },
-    images: {
-    domains: ["flagcdn.com"],
+  images: {
+    domains: ["flagcdn.com"]
   },
   webpack: (config) => {
     config.module.rules.push({
