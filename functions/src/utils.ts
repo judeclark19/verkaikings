@@ -1,6 +1,6 @@
-import {initializeApp} from "firebase-admin/app";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
-import {getMessaging} from "firebase-admin/messaging";
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 
 initializeApp();
 
@@ -46,13 +46,13 @@ export async function sendPushNotifications(
       notification: {
         title: message.title,
         body: message.body,
-        icon: message.icon || "/favicon-32x32.png",
+        icon: message.icon || "/favicon-32x32_v2.png"
       },
       fcm_options: {
-        link: message.url || "/",
-      },
+        link: message.url || "/"
+      }
     },
-    tokens,
+    tokens
   };
 
   return adminMessaging.sendEachForMulticast(payload);
@@ -80,7 +80,7 @@ export async function addNotificationsBatch(
     batch.set(notificationRef, {
       ...notification,
       createdAt: Timestamp.now(),
-      read: false,
+      read: false
     });
   });
   await batch.commit();
@@ -95,7 +95,7 @@ export async function addNotificationsBatch(
  */
 export async function notifyUsers({
   userIds,
-  notification,
+  notification
 }: {
   userIds: string[];
   notification: { title: string; body: string; url: string | null };
