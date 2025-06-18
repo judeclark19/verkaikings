@@ -20,7 +20,7 @@ export default function Home() {
         }}
       >
         <Image
-          src="/images/willemijn-ptsa.png"
+          src="/images/willemijn-hamburg-blue.jpg"
           alt="Willemijn Verkaik"
           fill
           style={{ objectFit: "cover" }}
