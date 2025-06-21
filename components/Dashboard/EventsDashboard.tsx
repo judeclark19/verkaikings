@@ -33,7 +33,7 @@ const EventsDashboard = observer(() => {
       } else if (eventDate >= pastMonth && eventDate < today) {
         recentEvents.push(event);
       } else if (eventDate > today && eventDate <= nextMonth) {
-        upcomingEvents.unshift(event);
+        upcomingEvents.push(event);
       }
     });
 
