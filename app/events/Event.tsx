@@ -41,6 +41,9 @@ const Event = observer(
     startCommentsExpanded?: boolean;
   }) => {
     const imGoing = event.attendees.includes(appState.loggedInUser!.id);
+    const imMaybeGoing = event.maybeAttending
+      ? event.maybeAttending.includes(appState.loggedInUser!.id)
+      : false;
     const isOwn = event.creatorId === appState.loggedInUser?.id;
     const isPast = eventsState.pastEvents.find((e) => e.id === event.id);
     const creator = userList.users.find((user) => user.id === event.creatorId);
@@ -57,8 +60,16 @@ const Event = observer(
           ? event.attendees.filter((id) => id !== appState.loggedInUser!.id) // Remove the current user
           : [...event.attendees, appState.loggedInUser!.id]; // Add the current user
 
+        let maybeAttending = event.maybeAttending;
+        if (maybeAttending.includes(appState.loggedInUser!.id)) {
+          maybeAttending = maybeAttending.filter(
+            (id) => id !== appState.loggedInUser!.id
+          ); // Remove the current user from maybe attending
+        }
+
         await updateDoc(eventDocRef, {
-          attendees: updatedAttendees
+          attendees: updatedAttendees,
+          maybeAttending: maybeAttending
         });
 
         // send notification to the creator
@@ -76,6 +87,37 @@ const Event = observer(
         }
       } catch (error) {
         console.error("Error updating attendance:", error);
+      }
+    }
+
+    async function updateMaybeGoing() {
+      try {
+        const eventDocRef = doc(db, "events", event.id);
+
+        const updatedMaybeAttending = event.maybeAttending.includes(
+          appState.loggedInUser!.id
+        )
+          ? event.maybeAttending.filter(
+              (id) => id !== appState.loggedInUser!.id
+            ) // Remove the current user
+          : [...event.maybeAttending, appState.loggedInUser!.id]; // Add the current user
+
+        // remove user from 'attendees' if they are in there
+        let updatedAttendees = event.attendees;
+        if (imGoing) {
+          updatedAttendees = event.attendees.filter(
+            (id) => id !== appState.loggedInUser!.id
+          );
+        }
+
+        await updateDoc(eventDocRef, {
+          attendees: updatedAttendees,
+          maybeAttending: updatedMaybeAttending
+        });
+
+        // Optionally send a notification or handle other logic here
+      } catch (error) {
+        console.error("Error updating maybe attendance:", error);
       }
     }
 
@@ -387,6 +429,7 @@ const Event = observer(
                     event={event}
                     isPast={!!isPast}
                     updateAttendance={updateAttendance}
+                    updateMaybeAttendance={updateMaybeGoing}
                   />
                 </Box>
               </Collapse>
@@ -404,23 +447,56 @@ const Event = observer(
                 })`}
               </Button>
             </Box>
-            {!isPast && (
-              <Button
-                variant="contained"
-                color={imGoing ? "secondary" : "primary"}
-                onClick={updateAttendance}
-                startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
-                sx={{
-                  width: {
-                    xs: "100%",
-                    sm: "170px"
-                  },
-                  maxWidth: 400
-                }}
-              >
-                {imGoing ? "I'm not going" : "I'm going!"}
-              </Button>
-            )}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 1,
+                justifyContent: "space-between"
+              }}
+            >
+              {!isPast && (
+                <Button
+                  variant="contained"
+                  color={imGoing ? "secondary" : "primary"}
+                  onClick={updateAttendance}
+                  startIcon={imGoing ? <CloseIcon /> : <AddIcon />}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "170px"
+                    },
+                    maxWidth: {
+                      xs: "100%",
+                      sm: 400
+                    }
+                  }}
+                >
+                  {imGoing ? "I'm not going" : "I'm going!"}
+                </Button>
+              )}
+
+              {!isPast && (
+                <Button
+                  variant="contained"
+                  color={imMaybeGoing ? "secondary" : "primary"}
+                  onClick={updateMaybeGoing}
+                  startIcon={imMaybeGoing ? <CloseIcon /> : <AddIcon />}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "170px"
+                    },
+                    maxWidth: {
+                      xs: "100%",
+                      sm: 400
+                    }
+                  }}
+                >
+                  Maybe...
+                </Button>
+              )}
+            </Box>
           </Box>
         </Box>
         <CommentAccordion

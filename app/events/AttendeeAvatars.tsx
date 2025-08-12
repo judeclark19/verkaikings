@@ -15,9 +15,28 @@ import Link from "next/link";
 const MAX_DISPLAY = 5; // Limit the number of avatars displayed
 
 const AttendeeAvatars = observer(({ event }: { event: EventDocType }) => {
-  const attendees = event.attendees
-    .map((attendeeId) => userList.users.find((user) => user.id === attendeeId))
-    .filter((user) => user); // Remove any null/undefined users
+  let attendees = [];
+
+  if (event.maybeAttending) {
+    attendees = [
+      ...event.attendees
+        .map((attendeeId) =>
+          userList.users.find((user) => user.id === attendeeId)
+        )
+        .filter((user) => user),
+      ...event.maybeAttending
+        .map((attendeeId) =>
+          userList.users.find((user) => user.id === attendeeId)
+        )
+        .filter((user) => user)
+    ];
+  } else {
+    attendees = event.attendees
+      .map((attendeeId) =>
+        userList.users.find((user) => user.id === attendeeId)
+      )
+      .filter((user) => user);
+  }
 
   const visibleAttendees = attendees.slice(0, MAX_DISPLAY);
   const overflowAttendees = attendees.slice(MAX_DISPLAY);

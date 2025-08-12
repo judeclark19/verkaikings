@@ -103,11 +103,7 @@ class AppState {
             )
           );
         }
-        this.subscribeToUsers();
-        this.subscribeToStories();
-        this.subscribeToEvents();
-        this.subscribeToFundraisers();
-        this.subscribeToQandA();
+        this.subscribeToSnapshots();
       } catch (error) {
         console.error("Error initializing snapshots:", error);
         await signOut(auth); // Log out the user
@@ -202,7 +198,7 @@ class AppState {
     if (this.initPromise) await this.initPromise;
   }
 
-  subscribeToUsers() {
+  subscribeToSnapshots() {
     this.userUnsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
       const updatedUsers = snapshot.docs.map(
         (doc) =>
@@ -213,9 +209,7 @@ class AppState {
       );
       this.userList.setUsers(updatedUsers);
     });
-  }
 
-  subscribeToStories() {
     this.storyUnsubscribe = onSnapshot(
       collection(db, "myWillemijnStories"),
       (snapshot) => {
@@ -230,9 +224,7 @@ class AppState {
         this.myWillemijnStories.updateFilteredStories();
       }
     );
-  }
 
-  subscribeToEvents() {
     this.eventsUnsubscribe = onSnapshot(
       collection(db, "events"),
       (snapshot) => {
@@ -246,9 +238,7 @@ class AppState {
         this.events.setAllEvents(updatedEvents);
       }
     );
-  }
 
-  subscribeToFundraisers() {
     this.fundraisersUnsubscribe = onSnapshot(
       collection(db, "fundraisers"),
       (snapshot) => {
@@ -262,9 +252,7 @@ class AppState {
         this.fundraisers.setFundraisers(fundraisersData);
       }
     );
-  }
 
-  subscribeToQandA() {
     this.qAndAUnsubscribe = onSnapshot(collection(db, "qanda"), (snapshot) => {
       const qAndAData = snapshot.docs.map(
         (doc) =>
