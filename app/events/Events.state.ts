@@ -16,6 +16,7 @@ export type EventDocType = {
   externalLink: string;
   description: string;
   attendees: string[];
+  maybeAttending: string[];
   comments: CommentType[];
 };
 
