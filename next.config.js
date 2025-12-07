@@ -15,8 +15,14 @@ const nextConfig = {
   compiler: {
     styledComponents: true
   },
+  turbopack: {},
   images: {
-    domains: ["flagcdn.com"]
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "flagcdn.com"
+      }
+    ]
   },
   webpack: (config) => {
     config.module.rules.push({

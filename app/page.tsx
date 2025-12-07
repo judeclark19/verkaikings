@@ -4,8 +4,8 @@ import { decodeToken } from "@/lib/serverUtils";
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 
-export default function Home() {
-  const decodedToken = decodeToken();
+export default async function Home() {
+  const decodedToken = await decodeToken();
 
   return (
     <div style={{ textAlign: "center" }}>

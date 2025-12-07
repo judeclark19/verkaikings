@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
 
-export function getTokenFromCookie() {
-  const cookieStore = cookies();
-  const token = cookieStore.get("authToken")?.value;
+export async function getTokenFromCookie() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value ?? null;
   return token;
 }
 
-export function decodeToken() {
-  const token = getTokenFromCookie();
+export async function decodeToken() {
+  const token = await getTokenFromCookie();
   if (!token) return null;
   return JSON.parse(atob(token.split(".")[1]));
 }

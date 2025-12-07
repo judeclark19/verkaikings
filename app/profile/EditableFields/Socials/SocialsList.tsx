@@ -1,5 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import myProfileState from "../../MyProfile.state";
 import { Email as EmailIcon } from "@mui/icons-material";
 import EmailChangeModal from "../../components/EmailChangeModal/EmailChangeModal";
@@ -67,11 +68,12 @@ const SocialsList = observer(() => {
       <SocialMediaInput
         platformName="TikTok"
         platformIcon={
-          <TikTokIcon
-            size={24}
-            style={{
-              flexShrink: 0
-            }}
+          <Image
+            src={TikTokIcon}
+            alt="TikTok"
+            width={24}
+            height={24}
+            style={{ flexShrink: 0 }}
           />
         }
         stateKey="tiktok"
@@ -82,11 +84,12 @@ const SocialsList = observer(() => {
       <SocialMediaInput
         platformName="Duolingo"
         platformIcon={
-          <DuolingoIcon
-            size={24}
-            style={{
-              flexShrink: 0
-            }}
+          <Image
+            src={DuolingoIcon}
+            alt="Duolingo"
+            width={24}
+            height={24}
+            style={{ flexShrink: 0 }}
           />
         }
         stateKey="duolingo"
@@ -97,11 +100,12 @@ const SocialsList = observer(() => {
       <SocialMediaInput
         platformName="BeReal"
         platformIcon={
-          <BeRealIcon
-            size={24}
-            style={{
-              flexShrink: 0
-            }}
+          <Image
+            src={BeRealIcon}
+            alt="BeReal"
+            width={24}
+            height={24}
+            style={{ flexShrink: 0 }}
           />
         }
         stateKey="beReal"
