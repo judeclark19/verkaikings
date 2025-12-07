@@ -26,7 +26,8 @@ const EventsDashboard = observer(() => {
     nextMonth.setDate(today.getDate() + 30); // 30 days ahead
 
     eventsState.allEvents.forEach((event) => {
-      const eventDate = new Date(event.date);
+      const [year, month, day] = event.date.split("-").map(Number);
+      const eventDate = new Date(year, month - 1, day);
 
       if (event.date === todayStr) {
         todayEvents.unshift(event);

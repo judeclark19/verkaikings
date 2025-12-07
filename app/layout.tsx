@@ -21,12 +21,12 @@ const inter = Inter({
   variable: "--font-inter"
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const decodedToken = decodeToken();
+  const decodedToken = await decodeToken();
   return (
     <html>
       <head>

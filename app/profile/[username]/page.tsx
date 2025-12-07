@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: "User Profile | Willemijn's World Website"
 };
 
-function ProfilePage() {
-  const decodedToken = decodeToken();
+async function ProfilePage() {
+  const decodedToken = await decodeToken();
 
   return <UserProfile decodedToken={decodedToken} />;
 }

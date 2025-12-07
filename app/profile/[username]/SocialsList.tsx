@@ -1,5 +1,5 @@
 import { Paper, Typography } from "@mui/material";
-import React from "react";
+import Image from "next/image";
 import ReadOnlyContactItem from "../components/ReadOnlyContactItem";
 import {
   // Email as EmailIcon,
@@ -36,11 +36,12 @@ function SocialsList({ user }: { user: UserDocType }) {
         <ReadOnlyContactItem
           value={user.tiktok}
           icon={
-            <TikTokIcon
-              size={24}
-              style={{
-                flexShrink: 0
-              }}
+            <Image
+              src={TikTokIcon}
+              alt="TikTok"
+              width={24}
+              height={24}
+              style={{ flexShrink: 0 }}
             />
           }
           link={`https://www.tiktok.com/@${user.tiktok}`}
@@ -51,11 +52,12 @@ function SocialsList({ user }: { user: UserDocType }) {
         <ReadOnlyContactItem
           value={user.duolingo}
           icon={
-            <DuolingoIcon
-              size={24}
-              style={{
-                flexShrink: 0
-              }}
+            <Image
+              src={DuolingoIcon}
+              alt="Duolingo"
+              width={24}
+              height={24}
+              style={{ flexShrink: 0 }}
             />
           }
           link={`https://www.duolingo.com/profile/${user.duolingo}`}
@@ -66,11 +68,12 @@ function SocialsList({ user }: { user: UserDocType }) {
         <ReadOnlyContactItem
           value={user.beReal}
           icon={
-            <BeRealIcon
-              size={24}
-              style={{
-                flexShrink: 0
-              }}
+            <Image
+              src={BeRealIcon}
+              alt="BeReal"
+              width={24}
+              height={24}
+              style={{ flexShrink: 0 }}
             />
           }
           link={`https://bere.al/${user.beReal}`}
